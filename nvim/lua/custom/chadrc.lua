@@ -8,10 +8,10 @@ M.mappings = require "custom.mappings"
 M.plugins = "custom.plugins"
 
 -- Themes
-M.ui = { 
-  theme = 'tokyonight',
+M.ui = {
+  theme = 'catppuccin',
   transparency = true,
-  theme_toggle = {"tokyonight", "github_light"},
+  theme_toggle = {"catppuccin", "catppuccin-latte"},
   statusline = {
     theme = "minimal"
   }
