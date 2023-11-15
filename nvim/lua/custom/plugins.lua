@@ -1,5 +1,13 @@
 local plugins = {
   {
+    "edluffy/hologram.nvim",
+    config = function ()
+      require('hologram').setup{
+        auto_display = true,
+      }
+    end
+  },
+  {
     "NvChad/nvterm",
     config = function()
       require "custom.configs.nvterm"
