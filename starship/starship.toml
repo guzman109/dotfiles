@@ -14,3 +14,7 @@ error_symbol = '[󰞷](bold red)'
 # Disable the package module, hiding it from the prompt completely
 [package]
 disabled = false
+
+[username]
+disabled = false
+show_always = true
