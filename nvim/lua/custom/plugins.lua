@@ -1,4 +1,5 @@
 local plugins = {
+  {"ellisonleao/glow.nvim", config = true, cmd = "Glow"}, 
   {
     "edluffy/hologram.nvim",
     config = function ()
@@ -15,7 +16,7 @@ local plugins = {
   },
   {
     "jose-elias-alvarez/null-ls.nvim",
-    ft = { "python" },
+    event = "VeryLazy",
     opts = function()
       return require "custom.configs.null-ls"
     end,
@@ -41,6 +42,12 @@ local plugins = {
         "mypy",
         "ruff",
         "debugpy",
+        "marksman",
+        "clangd",
+        "clang-format",
+        "codelldb",
+        "eslint-lsp",
+        "typescript-language-server",
       },
     },
   },
@@ -54,12 +61,24 @@ local plugins = {
   },
   {
     "mfussenegger/nvim-dap",
-    config = function (_, opts)
+    config = function ()
       require("core.utils").load_mappings("dap")
     end
   },
   {
+    "jay-babu/mason-nvim-dap.nvim",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "mfussenegger/nvim-dap",
+    },
+    event = "VeryLazy",
+    opts = {
+      handles = {}
+    },
+  },
+  {
     "mfussenegger/nvim-dap-python",
+    event = "VeryLazy",
     ft = { "python" },
     dependencies = {
       "mfussenegger/nvim-dap",
@@ -74,6 +93,7 @@ local plugins = {
   },
   {
     "rcarriga/nvim-dap-ui",
+    event = "VeryLazy",
     dependencies = "mfussenegger/nvim-dap",
     config = function()
       local dap = require("dap")
@@ -89,6 +109,10 @@ local plugins = {
         dapui.close()
       end
     end
+  },
+  {
+    "3rd/image.nvim",
+    event = "VeryLazy",
   },
 }
 return plugins
