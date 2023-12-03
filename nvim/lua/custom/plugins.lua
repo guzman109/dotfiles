@@ -1,12 +1,4 @@
 local plugins = {
-  -- Use clipboard over ssh
-  {
-    "ojroques/nvim-osc52",
-    event = "VeryLazy",
-    config = function()
-      require "custom.configs.oscconfig"
-    end,
-  },
   -- Setterminal dimensions
   {
     "NvChad/nvterm",
@@ -59,33 +51,9 @@ local plugins = {
   -- LSP package manager
   {
     "williamboman/mason.nvim",
-    event = "VeryLazy",
-    opts = {
-      ensure_installed = {
-        -- LSP
-        "lua-language-server",
-        "ruff-lsp",
-        "marksman",
-        "clangd",
-        "cmake-language-server",
-        "biome",
-        -- Formatters
-        "stylua",
-        "prettier",
-        "ruff",
-        "clang-format",
-        "cmakelang",
-        "mdformat",
-        "yamlfix",
-        -- Linters
-        "mypy",
-        "pylint",
-        "cmakelint",
-        -- Debuggers
-        "debugpy",
-        "codelldb",
-      },
-    },
+    opts = function()
+      return require "custom.configs.mason"
+    end,
   },
 
   -- In order to modify the `lspconfig` configuration:
@@ -96,57 +64,31 @@ local plugins = {
       require "custom.configs.lspconfig"
     end,
   },
-  -- Formatter
+  -- Formatter & Linter
   {
-    "stevearc/conform.nvim",
-    event = { "BufReadPre", "BufNewFile" },
-    cmd = { "ConformInfo" },
-    config = function()
-      local conform = require "conform"
-
-      conform.setup {
-        formatters_by_ft = {
-          lua = { "stylua" },
-          javascript = { "biome" },
-          typescript = { "biome" },
-          css = { "prettier" },
-          html = { "prettier" },
-          markdown = { "mdformat" },
-          json = { "biome" },
-          yaml = { "yamlfix" },
-          cpp = { "clang-format" },
-          cmake = { "cmake_format" },
-          python = { "ruff_format" },
-        },
-      }
-      vim.keymap.set({ "n", "v" }, "<leader>fm", function()
-        conform.format {
-          lsp_fallback = true,
-          async = false,
-          timeout_ms = 500,
-        }
-      end, { desc = "Format Current File" })
+    "nvimtools/none-ls.nvim",
+    event = "VeryLazy",
+    opts = function()
+      return require "custom.configs.nonels"
     end,
   },
-  -- Linter
-  {
-    "mfussenegger/nvim-lint",
-    event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      local lint = require "lint"
-      lint.linters_by_ft = {
-        javascript = { "biomejs" },
-        typescript = { "biomejs" },
-        json = { "biomejs" },
-        python = { "mypy", "pylint" },
-        cpp = { "clangtidy" },
-        cmake = { "cmakelint" },
-      }
-      vim.keymap.set("n", "<leader>ll", function()
-        lint.try_lint()
-      end, { desc = "Lint Current File" })
-    end,
-  },
+  -- -- Formatter
+  -- {
+  --   "stevearc/conform.nvim",
+  --   event = { "BufReadPre", "BufNewFile" },
+  --   cmd = { "ConformInfo" },
+  --   config = function()
+  --     require "custom.configs.conform"
+  --   end,
+  -- },
+  -- -- Linter
+  -- {
+  --   "mfussenegger/nvim-lint",
+  --   event = { "BufReadPre", "BufNewFile" },
+  --   config = function()
+  --     require "custom.configs.lint"
+  --   end,
+  -- },
   -- For code folding
   {
     "kevinhwang91/nvim-ufo",
@@ -159,7 +101,6 @@ local plugins = {
   -- Debugger
   {
     "mfussenegger/nvim-dap",
-    event = "VeryLazy",
     config = function()
       require("core.utils").load_mappings "dap"
     end,
@@ -167,21 +108,9 @@ local plugins = {
   -- Debugger UI
   {
     "rcarriga/nvim-dap-ui",
-    event = "VeryLazy",
     dependencies = "mfussenegger/nvim-dap",
     config = function()
-      local dap = require "dap"
-      local dapui = require "dapui"
-      dapui.setup()
-      dap.listeners.after.event_initialized["dapui_config"] = function()
-        dapui.open()
-      end
-      dap.listeners.before.event_terminated["dapui_config"] = function()
-        dapui.close()
-      end
-      dap.listeners.before.event_exited["dapui_config"] = function()
-        dapui.close()
-      end
+      require "custom.configs.dapui"
     end,
   },
 
@@ -192,14 +121,12 @@ local plugins = {
       "williamboman/mason.nvim",
       "mfussenegger/nvim-dap",
     },
-    event = "VeryLazy",
     opts = {
       handles = {},
     },
   },
   {
     "mfussenegger/nvim-dap-python",
-    event = "VeryLazy",
     ft = { "python" },
     dependencies = {
       "mfussenegger/nvim-dap",
@@ -211,6 +138,17 @@ local plugins = {
       require("dap-python").setup(path)
       require("core.utils").load_mappings "dap_python"
     end,
+  },
+  -- Scorlling through files
+  {
+    "stevearc/aerial.nvim",
+    event = "VeryLazy",
+    opts = {},
+    -- Optional dependencies
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
   },
 }
 return plugins
