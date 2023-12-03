@@ -9,11 +9,6 @@ lspconfig.tsserver.setup {
   capabilities = capabilities,
   filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
 }
-lspconfig.luals.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  filetypes = { "lua" },
-}
 lspconfig.vuels.setup {
   on_attach = on_attach,
   capabilities = capabilities,
