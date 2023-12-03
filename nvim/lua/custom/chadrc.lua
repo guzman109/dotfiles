@@ -1,3 +1,5 @@
+package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?/init.lua;"
+package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?.lua;"
 ---@type ChadrcConfig
 local M = {}
 
@@ -9,9 +11,9 @@ M.plugins = "custom.plugins"
 
 -- Themes
 M.ui = {
-  theme = 'catppuccin',
+  theme = 'tokyonight',
   transparency = true,
-  theme_toggle = {"catppuccin", "catppuccin-latte"},
+  theme_toggle = {"tokyonight", "catppuccin-latte"},
   statusline = {
     theme = "minimal"
   }
