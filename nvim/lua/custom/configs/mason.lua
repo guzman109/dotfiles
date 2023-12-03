@@ -6,7 +6,7 @@ local opts = {
     "marksman",
     "clangd",
     "cmake-language-server",
-    "vue-language-server",
+    "vetur-vls",
     "typescript-language-server",
     -- Formatters
     "stylua",
