@@ -4,16 +4,20 @@ local capabilities = config.capabilities
 local lspconfig = require "lspconfig"
 
 -- Without the loop, you would have to manually set up each LSP
-lspconfig.biome.setup {
+lspconfig.tsserver.setup {
   on_attach = on_attach,
   capabilities = capabilities,
-  filetypes = { "js", "ts", "tsx", "jsx", "vue", "json" },
+  filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
 }
-
-lspconfig.cssls.setup {
+lspconfig.luals.setup {
   on_attach = on_attach,
   capabilities = capabilities,
-  filetypes = { "css" }
+  filetypes = { "lua" },
+}
+lspconfig.vuels.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = { "vue" },
 }
 
 lspconfig.ruff_lsp.setup {
@@ -34,6 +38,5 @@ lspconfig.clangd.setup {
     on_attach(client, bufnr)
   end,
   capabilities = capabilities,
-  filetypes = { "cpp" },
+  filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
 }
-
