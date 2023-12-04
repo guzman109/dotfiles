@@ -1,5 +1,5 @@
 local plugins = {
-  -- Setterminal dimensions
+  -- Set terminal dimensions
   {
     "NvChad/nvterm",
     config = function()
@@ -72,23 +72,6 @@ local plugins = {
       return require "custom.configs.nonels"
     end,
   },
-  -- -- Formatter
-  -- {
-  --   "stevearc/conform.nvim",
-  --   event = { "BufReadPre", "BufNewFile" },
-  --   cmd = { "ConformInfo" },
-  --   config = function()
-  --     require "custom.configs.conform"
-  --   end,
-  -- },
-  -- -- Linter
-  -- {
-  --   "mfussenegger/nvim-lint",
-  --   event = { "BufReadPre", "BufNewFile" },
-  --   config = function()
-  --     require "custom.configs.lint"
-  --   end,
-  -- },
   -- For code folding
   {
     "kevinhwang91/nvim-ufo",
@@ -149,6 +132,14 @@ local plugins = {
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
     },
+    vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>"),
+  },
+  {
+    "HiPhish/rainbow-delimiters.nvim",
+    event = "VeryLazy",
+  },
+  {
+    "Civitasv/cmake-tools.nvim",
   },
 }
 return plugins
