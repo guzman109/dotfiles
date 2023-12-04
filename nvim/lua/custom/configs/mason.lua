@@ -8,6 +8,8 @@ local opts = {
     "cmake-language-server",
     "vetur-vls",
     "typescript-language-server",
+    "dockerfile-language-server",
+    "docker-compose-language-service",
     -- Formatters
     "stylua",
     "prettierd",
@@ -20,6 +22,7 @@ local opts = {
     "mypy",
     "pylint",
     "eslint_d",
+    "hadolint",
     -- Debuggers
     "debugpy",
     "codelldb",

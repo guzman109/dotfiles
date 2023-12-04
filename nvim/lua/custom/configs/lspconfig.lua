@@ -35,3 +35,15 @@ lspconfig.clangd.setup {
   capabilities = capabilities,
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
 }
+
+lspconfig.dockerls.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = { "dockerfile" },
+}
+
+lspconfig.docker_compose_language_service.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = { "yaml.docker-compose" },
+}
