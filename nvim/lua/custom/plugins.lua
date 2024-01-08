@@ -97,11 +97,27 @@ local plugins = {
     end,
   },
   -- Formatter & Linter
+--   {
+--     "nvimtools/none-ls.nvim",
+--     event = "VeryLazy",
+--     opts = function()
+--       return require "custom.configs.nonels"
+--     end,
+--   },
   {
-    "nvimtools/none-ls.nvim",
-    event = "VeryLazy",
-    opts = function()
-      return require "custom.configs.nonels"
+    "stevearc/conform.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    cmd = { "ConformInfo" },
+    config = function()
+      require "custom.configs.conform"
+    end,
+  },
+  -- Linter
+  {
+    "mfussenegger/nvim-lint",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      require "custom.configs.lint"
     end,
   },
   -- For code folding

@@ -12,7 +12,7 @@ M.plugins = "custom.plugins"
 -- Themes
 M.ui = {
   theme = "catppuccin",
-  transparency = false,
+  transparency = true,
   theme_toggle = { "catppuccin", "catppuccin-latte" },
   statusline = {
     theme = "default",
