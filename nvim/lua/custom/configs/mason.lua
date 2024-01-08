@@ -12,16 +12,14 @@ local opts = {
     "docker-compose-language-service",
     -- Formatters
     "stylua",
-    "prettierd",
+    "prettier",
     "ruff",
     "clang-format",
     "cmakelang",
     "mdformat",
-    "yamlfix",
     -- Linters
     "mypy",
     "pylint",
-    "eslint_d",
     "hadolint",
     -- Debuggers
     "debugpy",
