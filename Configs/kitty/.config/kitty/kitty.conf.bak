@@ -24,7 +24,7 @@ bold_italic_font auto
 #:     italic_font      Operator Mono Book Italic
 #:     bold_italic_font Operator Mono Medium Italic
 
-font_size 11.0
+font_size 14.0
 
 #: Font size (in pts)
 
@@ -850,7 +850,7 @@ tab_bar_margin_height 0.0 0.0
 #: The second number is the margin between the tab bar and the
 #: contents of the current tab.
 
-tab_bar_style hidden
+tab_bar_style powerline
 
 #: The tab bar style, can be one of:
 
@@ -876,7 +876,7 @@ tab_bar_style hidden
 #:     for the select_tab action which presents you with a list of tabs and
 #:     allows for easy switching to a tab.
 map super+tab  select_tab
-tab_bar_align center
+tab_bar_align left
 
 #: The horizontal alignment of the tab bar, can be one of: left,
 #: center, right.
@@ -903,7 +903,7 @@ tab_fade 0.25 0.5 0.75 1
 #: can change the number of cells used by adding/removing entries to
 #: this list.
 
-# tab_separator " ┇"
+tab_separator "󰄛 "
 
 #: The separator between tabs in the tab bar when using separator as
 #: the tab_bar_style.
@@ -1122,7 +1122,7 @@ shell .
 #: --login and --interactive to ensure that the shell starts in
 #: interactive mode and reads its startup rc files.
 
-editor .
+editor /Users/carlosguzman/.local/share/bob/nvim-bin/nvim
 
 #: The terminal based text editor (such as vim or nano) to use when
 #: editing the kitty config file or similar tasks.
@@ -1180,7 +1180,7 @@ close_on_child_death no
 
 #: Relative paths are resolved from the kitty configuration directory.
 
-allow_remote_control no
+allow_remote_control yes
 
 #: Allow other programs to control kitty. If you turn this on, other
 #: programs can control all aspects of kitty, including sending text
@@ -1403,7 +1403,7 @@ term xterm-kitty
 #: background_opacity. If you want to use both, you are probably
 #: better off just hiding the titlebar with hide_window_decorations.
 
-macos_option_as_alt no
+macos_option_as_alt yes
 
 #: Use the Option key as an Alt key on macOS. With this set to no,
 #: kitty will use the macOS native Option+Key to enter Unicode
@@ -1424,7 +1424,7 @@ macos_hide_from_tasks no
 #: Dock). Changing this option by reloading the config is not
 #: supported.
 
-macos_quit_when_last_window_closed no
+macos_quit_when_last_window_closed yes
 
 #: Have kitty quit when all the top-level windows are closed on macOS.
 #: By default, kitty will stay running, even with no open windows, as
@@ -1473,7 +1473,7 @@ macos_custom_beam_cursor no
 #: mouse cursor invisible on dual GPU machines. Changing this option
 #: by reloading the config is not supported.
 
-macos_colorspace srgb
+macos_colorspace default
 
 #: The colorspace in which to interpret terminal colors. The default
 #: of srgb will cause colors to match those seen in web browsers. The

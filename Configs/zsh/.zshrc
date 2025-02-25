@@ -75,7 +75,7 @@ alias klite="kitten themes --reload-in=all 'Catppuccin-Latte'"
 alias knite="kitten themes --reload-in=all 'Catppuccin-Macchiato'"
 alias cargo-update="cargo-install-update install-update --all"
 alias mc="mcli"
-
+alias dotfiles="cd /Users/carlosguzman/Library/'Application Support'/dotfiles"
 eval "$(fnm env --use-on-cd)"
 
 eval "$(uv generate-shell-completion zsh)"
