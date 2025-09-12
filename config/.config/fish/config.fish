@@ -4,7 +4,7 @@ if test (uname -s) = Darwin
 end
 
 # PATHs
-set -U fish_user_paths "$HOME/.bun/bin"
+set -U fish_user_paths "$HOME/.cargo/bin" "$HOME/.bun/bin"
 
 # Starship
 set -Ux STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
