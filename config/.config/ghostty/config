@@ -1,0 +1,26 @@
+font-family = MonoLisa
+font-size = 14.0
+
+theme = light:tokyonight-day,dark:tokyonight
+background-opacity = 0.9
+background-blur = true
+
+working-directory = home
+window-inherit-working-directory = false
+window-padding-balance = true
+window-padding-color = extend
+window-vsync = true
+window-title-font-family = true
+window-theme = ghostty
+window-colorspace = display-p3
+#window-decoration = none
+
+resize-overlay = always
+
+quit-after-last-window-closed = true
+
+shell-integration = fish
+
+macos-option-as-alt = true
+
+bold-is-bright = true

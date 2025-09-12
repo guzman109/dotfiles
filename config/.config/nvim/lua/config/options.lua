@@ -5,5 +5,5 @@ vim.g.lazyvim_mini_snippets_in_completion = true
 vim.g.lazyvim_html_formatter = "superhtml"
 vim.g.root_spec = { "cwd" }
 vim.g.autoformat = false
-vim.g.lazyvim_python_ruff = "ruff"
+vim.g.lazyvim_python_ruff = true
 vim.g.lazyvim_python_lsp = "ruff"

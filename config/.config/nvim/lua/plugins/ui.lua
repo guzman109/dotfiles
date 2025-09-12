@@ -13,6 +13,10 @@ local colors = {
   grey = "#303030",
 }
 
+local tokyonight_day_colors = {
+  foreground = "#82aaff"
+}
+
 local bubbles_theme = {
   normal = {
     a = { fg = colors.black, bg = colors.violet },
@@ -30,11 +34,14 @@ local bubbles_theme = {
     c = { fg = colors.white },
   },
 }
-
+local tokyonight_theme = require("lualine.themes.tokyonight")
+tokyonight_theme.normal.a.bg = tokyonight_day_colors.foreground --terminal color
+tokyonight_theme.normal.b.bg = nil
+tokyonight_theme.normal.c.bg = "None"
 return {
-  -- {
-  --   "HiPhish/rainbow-delimiters.nvim",
-  -- },
+  {
+    "HiPhish/rainbow-delimiters.nvim",
+  },
   {
     "kevinhwang91/nvim-ufo",
     event = "VeryLazy",
@@ -143,7 +150,7 @@ return {
     "Pocco81/auto-save.nvim",
     lazy = false,
     opts = {
-      debounce_delay = 500,
+      debounce_delay = 100,
       execution_message = {
         message = function()
           return ""

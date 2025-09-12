@@ -1,14 +1,26 @@
 return {
-    { -- was missing this
+  { -- was missing this
     "catppuccin/nvim",
     name = "catppuccin",
-		opts = function(_, opts)
-			local module = require("catppuccin.groups.integrations.bufferline")
-			if module then
-				module.get = module.get_theme
-			end
-			return opts
-		end,  },
+    opts = function(_, opts)
+      local module = require("catppuccin.groups.integrations.bufferline")
+      if module then
+        module.get = module.get_theme
+      end
+      return opts
+    end,
+  },
+  {
+    "folke/tokyonight.nvim",
+    opts = {
+      style = "night",
+      transparent = false,
+      styles = {
+        keywords = { bold = true },
+        functions = { bold = true },
+      },
+    },
+  },
   {
     "zaldih/themery.nvim",
     config = function()
@@ -32,10 +44,4 @@ return {
       -- im.keymap.set(),
     end,
   },
-  -- {
-  --   "LazyVim/LazyVim",
-  --   opts = {
-  --     colorscheme = "catppuccin-latte",
-  --   },
-  -- },
 }
