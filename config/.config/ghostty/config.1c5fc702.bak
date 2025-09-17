@@ -1,7 +1,7 @@
 font-family = MonoLisa
 font-size = 14.0
 
-theme = light:"Catppuccin Latte",dark:"Catppuccin Mocha"
+theme = light:catppuccin-latte,dark:catppuccin-mocha
 background-opacity = 0.8
 background-blur = true
 
@@ -13,7 +13,7 @@ window-vsync = true
 window-title-font-family = true
 window-theme = ghostty
 window-colorspace = display-p3
-#macos-titlebar-style = hidden
+macos-titlebar-style = hidden
 
 resize-overlay = always
 
@@ -26,4 +26,3 @@ macos-option-as-alt = true
 bold-is-bright = true
 
 
-keybind = shift+enter=text:\x1b\r

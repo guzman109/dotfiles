@@ -2,14 +2,3 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 vim.keymap.set({ "n", "i" }, "<leader>t", "", { desc = "themes" })
--- vim.keymap.set("n", "<leader>ir", function()
---   require("image").render()
--- end, { desc = "Render Images" })
---
--- vim.keymap.set("n", "<leader>ic", function()
---   require("image").clear()
--- end, { desc = "Clear Images" })
---
--- vim.keymap.set("n", "<leader>ih", function()
---   require("image").hijack_buffer()
--- end, { desc = "Hijack Buffer for Images" })
