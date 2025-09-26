@@ -27,17 +27,6 @@ local bubbles_theme = {
   },
 }
 return {
-  { -- was missing this
-    "catppuccin/nvim",
-    name = "catppuccin",
-    opts = function(_, opts)
-      local module = require("catppuccin.groups.integrations.bufferline")
-      if module then
-        module.get = module.get_theme
-      end
-      return opts
-    end,
-  },
   {
     "folke/tokyonight.nvim",
     opts = {

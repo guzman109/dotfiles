@@ -1,7 +1,7 @@
 font-family = MonoLisa
 font-size = 14.0
 
-theme = light:"Catppuccin Latte",dark:"Catppuccin Mocha"
+theme = light:"TokyoNight Day",dark:"TokyoNight"
 background-opacity = 0.8
 background-blur = true
 
@@ -13,7 +13,8 @@ window-vsync = true
 window-title-font-family = true
 window-theme = ghostty
 window-colorspace = display-p3
-#macos-titlebar-style = hidden
+
+fullscreen = true
 
 resize-overlay = always
 
