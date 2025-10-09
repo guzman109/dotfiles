@@ -28,6 +28,18 @@ local bubbles_theme = {
 }
 return {
   {
+    "catppuccin/nvim",
+    opts = {
+      transparent_background = true,
+      styles = {
+        keywords = { "italic", "bold" },
+        properties = {"bold"},
+        types = {"bold"},
+        operators = {"bold"},
+      },
+    },
+  },
+  {
     "folke/tokyonight.nvim",
     opts = {
       style = "night",
@@ -73,6 +85,7 @@ return {
   },
   {
     "HiPhish/rainbow-delimiters.nvim",
+    event = "VeryLazy",
   },
   -- {
   --   "nvim-lualine/lualine.nvim",

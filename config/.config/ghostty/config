@@ -1,7 +1,7 @@
 font-family = MonoLisa
 font-size = 14.0
 
-theme = light:"TokyoNight Day",dark:"TokyoNight"
+theme = light:"Catppuccin Latte",dark:"Catppuccin Mocha"
 background-opacity = 0.8
 background-blur = true
 
