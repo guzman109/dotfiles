@@ -23,11 +23,13 @@ brew install stow
 
 ### Setup
 
-1. Clone this repository to your home directory:
+1. Clone this repository to your home directory as `.dotfiles`:
 ```bash
-git clone https://github.com/YOUR_USERNAME/.dotfiles.git ~/.dotfiles
+git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ```
+
+**Note:** The repository name on GitHub is `dotfiles`, but we clone it to `~/.dotfiles` (with a dot) to keep it hidden in your home directory.
 
 2. Use Stow to symlink configurations:
 ```bash
