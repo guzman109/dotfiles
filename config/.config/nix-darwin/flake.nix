@@ -39,6 +39,7 @@
         # G
         pkgs.gh
         pkgs.ghostscript
+        pkgs.git
         pkgs.git-lfs
         pkgs.grpcurl
         # H
