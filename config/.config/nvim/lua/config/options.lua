@@ -4,5 +4,6 @@
 vim.g.lazyvim_mini_snippets_in_completion = true
 vim.g.root_spec = { "cwd" }
 vim.g.autoformat = false
-vim.g.lazyvim_python_lsp = "basedpyright"
+vim.g.lazyvim_python_lsp = "pyrefly"
 vim.g.lazyvim_python_ruff = "ruff"
+
