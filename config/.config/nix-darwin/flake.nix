@@ -21,8 +21,8 @@
       # $ nix-env -qaP | grep wget
       environment.systemPackages = [
         # A
-        pkgs.bat
         # B
+        pkgs.bat
         pkgs.btop
         # C
         pkgs.cmake
@@ -80,7 +80,7 @@
         enable = true;
         brews = [
           "luarocks"
-            "mas"
+          "mas"
         ];
         casks = [
           "balenaetcher"
@@ -88,11 +88,11 @@
           "pearcleaner"
         ];
         masApps = {
-            "BearNotes" = 1091189122;
-            "CotEditor" = 1024640650;
-            "Noir" = 1592917505;
-            "OwlFiles" = 510282524;
-            "Wipr2" = 1662217862;
+          "BearNotes" = 1091189122;
+          "CotEditor" = 1024640650;
+          "Noir" = 1592917505;
+          "OwlFiles" = 510282524;
+          "Wipr2" = 1662217862;
         };
         onActivation = {
           autoUpdate = true;
