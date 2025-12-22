@@ -24,12 +24,12 @@
         # B
         pkgs.bat
         pkgs.btop
+          pkgs.bun
         # C
         pkgs.cmake
         pkgs.conan
         # D
         pkgs.dbeaver-bin
-        pkgs.direnv
         # E
         pkgs.eza
         # F
@@ -37,8 +37,8 @@
         pkgs.fishMinimal
         pkgs.fzf
         # G
+        pkgs.gh
         pkgs.ghostscript
-        pkgs.git-credential-manager
         pkgs.git-lfs
         pkgs.grpcurl
         # H
@@ -66,6 +66,7 @@
         pkgs.tree
         pkgs.tree-sitter
         # U
+          pkgs.uv
         # V
         # W
         pkgs.websocat

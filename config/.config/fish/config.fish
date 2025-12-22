@@ -19,7 +19,7 @@ end
 kitty +complete setup fish | source
 
 # PATHs
-set -U fish_user_paths "$HOME/.cargo/bin" "$HOME/.bun/bin"  "/run/current-system/sw/bin" "/nix/var/nix/profiles/default/bin"
+set -U fish_user_paths "/run/current-system/sw/bin" "/nix/var/nix/profiles/default/bin"
 
 # Starship
 set -Ux STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
