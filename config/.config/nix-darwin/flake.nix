@@ -24,15 +24,19 @@
         # B
         pkgs.bat
         pkgs.btop
-          pkgs.bun
+        pkgs.bun
         # C
+        pkgs.cargo
         pkgs.cmake
         pkgs.conan
+        pkgs.coreutils-full
         # D
         pkgs.dbeaver-bin
+        pkgs.direnv
         # E
         pkgs.eza
         # F
+        # pkgs.fancy-cat
         pkgs.fd
         pkgs.fishMinimal
         pkgs.fzf
@@ -46,12 +50,14 @@
         # I
         pkgs.imagemagick
         # J
+        pkgs.jq
         pkgs.just
         # K
         pkgs.kitty
         # L
         pkgs.lazygit
         # M
+        pkgs.mpv
         # N
         pkgs.neovim
         pkgs.ninja
@@ -63,26 +69,34 @@
         # S
         pkgs.starship
         pkgs.stow
+        pkgs.swiftformat
         # T
         pkgs.tree
         pkgs.tree-sitter
         # U
-          pkgs.uv
+        pkgs.uv
         # V
         # W
         pkgs.websocat
         pkgs.wimlib
         # X
         # Y
+        pkgs.yq-go
         # Z
         pkgs.zig
       ];
 
+      environment.variables = {
+        # LD_LIBRARY_PATH = "${PWD}/ext/ParticleMesher/ParticleMesherPy:$LD_LIBRARY_PATH";
+      };
+
       homebrew = {
         enable = true;
         brews = [
+          "ffmpeg"
           "luarocks"
           "mas"
+          "node"
         ];
         casks = [
           "balenaetcher"

@@ -23,7 +23,6 @@
     "lazyvim.plugins.extras.lang.nix",
     "lazyvim.plugins.extras.lang.python",
     "lazyvim.plugins.extras.lang.toml",
-    "lazyvim.plugins.extras.lang.typescript",
     "lazyvim.plugins.extras.lang.yaml",
     "lazyvim.plugins.extras.test.core",
     "lazyvim.plugins.extras.ui.indent-blankline",
@@ -34,7 +33,8 @@
     "lazyvim.plugins.extras.util.mini-hipatterns",
     "lazyvim.plugins.extras.util.project",
     "lazyvim.plugins.extras.util.rest",
-    "lazyvim.plugins.extras.util.startuptime"
+    "lazyvim.plugins.extras.util.startuptime",
+    "plugins.extras.lang.swift"
   ],
   "install_version": 8,
   "news": {

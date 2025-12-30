@@ -8,6 +8,14 @@ return {
       },
     },
   },
+  {
+    "mason-org/mason.nvim",
+    opts = {
+      ensure_installed = {
+        "swiftlint"
+      },
+    },
+  },
 
   -- LSP configuration for Swift (SourceKit)
   {
@@ -32,7 +40,7 @@ return {
       },
       formatters = {
         swiftformat = {
-          command = "/opt/homebrew/bin/swiftformat",
+          command = "/run/current-system/sw/bin/swiftformat",
           args = {
             "--indent",
             "4",

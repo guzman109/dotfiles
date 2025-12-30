@@ -1,3 +1,7 @@
+# Direnv
+direnv hook fish | source
+
+
 # Nix
 if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish'
   source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish'
@@ -31,6 +35,7 @@ alias ls="eza"
 alias cat="bat"
 alias icat="kitty +kitten icat"
 alias ksh="kitty +kitten ssh"
+alias nix_update="sudo nix flake update --flake ~/.config/nix-darwin && sudo darwin-rebuild switch --flake ~/.config/nix-darwin/flake.nix"
 
 # Vi-style keybindings
 # History navigation
