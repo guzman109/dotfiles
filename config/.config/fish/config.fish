@@ -1,17 +1,3 @@
-# Direnv
-direnv hook fish | source
-
-
-# Nix
-if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish'
-  source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish'
-end
-
-# nix-darwin
-if test -e /etc/static/fish/rc.d/nix-darwin.fish
-  source /etc/static/fish/rc.d/nix-darwin.fish
-end
-
 # Homebrew
 if test (uname -s) = Darwin
   /opt/homebrew/bin/brew shellenv | source
@@ -19,11 +5,14 @@ if test (uname -s) = Darwin
   spm completion-tool generate-fish-script | source
 end
 
+# Direnv
+direnv hook fish | source
+
 # Kitty completions
 kitty +complete setup fish | source
 
 # PATHs
-set -U fish_user_paths "/run/current-system/sw/bin" "/nix/var/nix/profiles/default/bin"
+set -U fish_user_paths  "/opt/homebrew/bin"
 
 # Starship
 set -Ux STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
@@ -35,7 +24,7 @@ alias ls="eza"
 alias cat="bat"
 alias icat="kitty +kitten icat"
 alias ksh="kitty +kitten ssh"
-alias nix_update="sudo nix flake update --flake ~/.config/nix-darwin && sudo darwin-rebuild switch --flake ~/.config/nix-darwin/flake.nix"
+alias brew_update="brew bundle --file ~/.config/homebrew/Brewfile"
 
 # Vi-style keybindings
 # History navigation

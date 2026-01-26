@@ -27,6 +27,7 @@
         pkgs.bun
         # C
         pkgs.cargo
+        # pkgs.clang-tools
         pkgs.cmake
         pkgs.conan
         pkgs.coreutils-full
@@ -53,14 +54,15 @@
         pkgs.jq
         pkgs.just
         # K
-        pkgs.kitty
         # L
         pkgs.lazygit
         # M
+        pkgs.meson
         pkgs.mpv
         # N
         pkgs.neovim
         pkgs.ninja
+        pkgs.nushell
         # O
         # P
         # Q
@@ -69,7 +71,7 @@
         # S
         pkgs.starship
         pkgs.stow
-        pkgs.swiftformat
+        # pkgs.swiftformat
         # T
         pkgs.tree
         pkgs.tree-sitter
@@ -92,22 +94,27 @@
 
       homebrew = {
         enable = true;
+        taps = [
+        ];
         brews = [
           "ffmpeg"
+          "libpq"
+          "llvm"
           "luarocks"
           "mas"
           "node"
         ];
         casks = [
           "balenaetcher"
+          "docker-desktop"
           "lookaway"
+          "kitty"
           "pearcleaner"
         ];
         masApps = {
           "BearNotes" = 1091189122;
           "CotEditor" = 1024640650;
           "Noir" = 1592917505;
-          "OwlFiles" = 510282524;
           "Wipr2" = 1662217862;
         };
         onActivation = {

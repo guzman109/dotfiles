@@ -3,5 +3,4 @@
 SETUVAR --export STARSHIP_CONFIG:/Users/guzman\x2e109/\x2econfig/starship/starship\x2etoml
 SETUVAR __fish_initialized:4300
 SETUVAR fish_autosuggestion_enabled:1
-SETUVAR fish_key_bindings:fish_default_key_bindings
-SETUVAR fish_user_paths:/run/current\x2dsystem/sw/bin\x1e/nix/var/nix/profiles/default/bin
+SETUVAR fish_user_paths:/opt/homebrew/bin

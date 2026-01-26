@@ -7,10 +7,10 @@ return {
         light = "latte",
         dark = "mocha",
       },
-      transparent_background = true,
-      float = {
-        transparent = true,
-      },
+      -- transparent_background = true,
+      -- float = {
+      --   transparent = true,
+      -- },
       -- no_italic = true,
       styles = {
         comments = {
