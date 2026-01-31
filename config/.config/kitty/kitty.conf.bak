@@ -362,7 +362,7 @@ macos_quit_when_last_window_closed yes
 macos_thicken_font 0.15
 
 # macOS window appearance
-macos_titlebar_color background
+# macos_titlebar_color background
 hide_window_decorations no
 # macos_show_window_title_in titlebar
 
@@ -466,14 +466,8 @@ box_drawing_line_aa_strength=0.8
 box_drawing_corner_aa_strength=0.8
 
 # BEGIN_KITTY_THEME
-# Catppuccin-Latte
+# Catppuccin-Mocha
 include current-theme.conf
 # END_KITTY_THEME
 
 
-# BEGIN_KITTY_FONTS
-font_family      family="MonoLisa Variable"
-bold_font        auto
-italic_font      auto
-bold_italic_font auto
-# END_KITTY_FONTS

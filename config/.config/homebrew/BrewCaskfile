@@ -1,0 +1,9 @@
+cask "balenaetcher"
+cask "dbeaver-community"
+cask "docker-desktop"
+cask "lookaway"
+cask "kitty"
+cask "pearcleaner"
+
+
+

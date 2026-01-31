@@ -12,7 +12,7 @@ direnv hook fish | source
 kitty +complete setup fish | source
 
 # PATHs
-set -U fish_user_paths  "/opt/homebrew/bin"
+set -U fish_user_paths  "/opt/homebrew/bin" "$HOME/.cargo/bin" "$HOME/.local/share/bob/nvim-bin" "$HOME/.docker/bin"
 
 # Starship
 set -Ux STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"

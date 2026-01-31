@@ -51,9 +51,16 @@ return {
           "fallback",
         },
 
-        ["<C-x>"] = { "cancel" }
+        ["<C-x>"] = { "cancel" },
       },
     },
   },
-
+  {
+    "mistweaverco/kulala.nvim",
+    ft = "http",
+    keys = {
+      { "<leader>RA", "<cmd>lua require('kulala').run_all()<cr>", desc = "Send all requests" },
+    },
+    opts = {},
+  },
 }

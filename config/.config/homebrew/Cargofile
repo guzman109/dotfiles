@@ -1,0 +1,8 @@
+cargo "cargo-update"
+cargo "eza"
+cargo "ripgrep"
+cargo "bat"
+cargo "starship"
+cargo "fd-find"
+cargo "just"
+cargo "bob-nvim"

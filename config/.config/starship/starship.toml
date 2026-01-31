@@ -1,124 +1,413 @@
-# ~/.config/starship/starship.toml
-
-# Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'
-
-format = """
-$battery\
-$time\
-$username\
-$hostname\
-$localip\
-$shlvl\
-$singularity\
-$kubernetes\
-$directory\
-$vcsh\
-$fossil_branch\
-$fossil_metrics\
-$git_branch\
-$git_commit\
-$git_state\
-$git_metrics\
-$git_status\
-$hg_branch\
-$pijul_channel\
-$docker_context\
-$package\
-$c\
-$cmake\
-$cobol\
-$daml\
-$dart\
-$deno\
-$dotnet\
-$elixir\
-$elm\
-$erlang\
-$fennel\
-$gleam\
-$golang\
-$guix_shell\
-$haskell\
-$haxe\
-$helm\
-$java\
-$julia\
-$kotlin\
-$gradle\
-$lua\
-$nim\
-$nodejs\
-$ocaml\
-$opa\
-$perl\
-$php\
-$pulumi\
-$purescript\
-$python\
-$quarto\
-$raku\
-$rlang\
-$red\
-$ruby\
-$rust\
-$scala\
-$solidity\
-$swift\
-$terraform\
-$typst\
-$vlang\
-$vagrant\
-$zig\
-$buf\
-$nix_shell\
-$conda\
-$meson\
-$spack\
-$memory_usage\
-$aws\
-$gcloud\
-$openstack\
-$azure\
-$nats\
-$direnv\
-$env_var\
-$crystal\
-$custom\
-$sudo\
-$cmd_duration\
-$line_break\
-$jobs\
-$status\
-$os\
-$container\
-$shell\
-$character"""
-
-# Inserts a blank line between shell prompts
 add_newline = false
-command_timeout = 3600
+format = """
+$fill\
+[](red)\
+$os\
+$username\
+[](bg:mauve fg:red)\
+${custom.kitty}\
+[](bg:peach fg:mauve)\
+$directory\
+[](bg:yellow fg:peach)\
+$git_branch\
+$git_status\
+[](fg:yellow bg:green)\
+$c\
+$rust\
+$golang\
+$nodejs\
+$php\
+$java\
+$kotlin\
+$haskell\
+$python\
+${custom.cppcompiler}\
+${custom.cppstd}\
+$cmake\
+[](fg:green bg:sapphire)\
+${custom.motivation}\
+[](fg:sapphire bg:lavender)\
+$time\
+${custom.battery_charging}\
+${custom.battery_critical}\
+${custom.battery_low}\
+${custom.battery_medium_low}\
+${custom.battery_medium}\
+${custom.battery_good}\
+$fill
+$line_break\
+$character\
+"""
 
-# Replace the '❯' symbol in the prompt with '➜'
-[character] # The name of the module we are configuring is 'character'
-success_symbol = '[󰞷](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
-error_symbol = '[󰞷](bold red)'
+palette = 'catppuccin_mocha'
 
-# Disable the package module, hiding it from the prompt completely
-[package]
+[os]
 disabled = false
+style = "bg:red fg:crust"
+
+[os.symbols]
+Windows = ""
+Ubuntu = "󰕈"
+SUSE = ""
+Raspbian = "󰐿"
+Mint = "󰣭"
+Macos = "󰀵"
+Manjaro = ""
+Linux = "󰌽"
+Gentoo = "󰣨"
+Fedora = "󰣛"
+Alpine = ""
+Amazon = ""
+Android = ""
+AOSC = ""
+Arch = "󰣇"
+Artix = "󰣇"
+CentOS = ""
+Debian = "󰣚"
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
+
+[custom.kitty]
+command = "kitty --version 2>&1 | grep -o '[0-9]\\.[0-9][0-9]\\.[0-9]' | head -1 | sed 's/^/v/'"
+when = "test -n \"$KITTY_WINDOW_ID\""
+symbol = "󰄛"
+style = "bg:mauve"
+format = '[[ $symbol $output ](fg:crust bg:mauve)]($style)'
 
 [username]
-disabled = false
 show_always = true
+style_user = "bg:red fg:crust"
+style_root = "bg:red fg:crust"
+format = '[ $user]($style)'
 
 [directory]
-style = "bold blue"
-truncation_length = 3
-truncate_to_repo = true
+style = "bg:peach fg:crust"
+format = "[ $path ]($style)"
+truncation_length = 1
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"Projects" = "󰲋 "
+
+[git_branch]
+symbol = ""
+style = "bg:yellow"
+format = '[[ $symbol $branch ](fg:crust bg:yellow)]($style)'
+
+[git_status]
+style = "bg:yellow"
+format = '[[($all_status$ahead_behind )](fg:crust bg:yellow)]($style)'
+
+[nodejs]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[c]
+symbol = " "
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[rust]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[golang]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[php]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[java]
+symbol = " "
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[kotlin]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[haskell]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[python]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:crust bg:green)]($style)'
+
+[custom.cppstd]
+command = "grep 'CMAKE_CXX_STANDARD' CMakeLists.txt 2>/dev/null | grep -o '[0-9][0-9]' | head -1"
+when = 'test -f CMakeLists.txt'
+symbol = "󰙲"
+style = "bg:green"
+format = '[[ $symbol $output ](fg:crust bg:green)]($style)'
+
+[cpp]
+disabled = true
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+detect_files = ["CMakeLists.txt"]
+
+[custom.cppcompiler]
+command = "~/.config/starship/cpp-compiler.sh"
+when = 'test -f CMakeLists.txt'
+style = "bg:green"
+format = '[[ $output ](fg:crust bg:green)]($style)'
+
+[cmake]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[fill]
+symbol = "·"
+style = "fg:overlay0"
+
+[docker_context]
+symbol = ""
+style = "bg:sapphire"
+format = '[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)'
+
+[custom.motivation]
+command = "~/.config/inspiration/quote-cache.sh"
+when = "test -z \"$NVIM\""
+symbol = ""
+style = "bg:sapphire"
+format = '[[ $symbol $output ](fg:crust bg:sapphire)]($style)'
+
+[custom.battery_charging]
+command = """
+pct=$(pmset -g batt | grep -Eo "\\d+%" | cut -d% -f1)
+echo "󰂄 $pct%"
+"""
+when = "pmset -g batt | grep -q 'AC Power'"
+format = "[](bg:green fg:lavender)[ $output ](fg:crust bg:green)[](fg:green)"
+shell = ["bash"]
+
+[custom.battery_critical]
+command = """
+pct=$(pmset -g batt | grep -Eo "\\d+%" | cut -d% -f1)
+echo "󰢟 $pct%"
+"""
+when = "pmset -g batt | grep -Eo '\\d+%' | cut -d% -f1 | awk '{exit !($1 <= 10)}' && ! pmset -g batt | grep -q 'AC Power'"
+format = "[](bg:red fg:lavender)[ $output ](fg:crust bg:red)[](fg:red)"
+shell = ["bash"]
+
+[custom.battery_low]
+command = """
+pct=$(pmset -g batt | grep -Eo "\\d+%" | cut -d% -f1)
+echo "󰂃 $pct%"
+"""
+when = "pmset -g batt | grep -Eo '\\d+%' | cut -d% -f1 | awk '{exit !($1 > 10 && $1 <= 20)}' && ! pmset -g batt | grep -q 'AC Power'"
+format = "[](bg:maroon fg:lavender)[ $output ](fg:crust bg:maroon)[](fg:maroon)"
+shell = ["bash"]
+
+[custom.battery_medium_low]
+command = """
+pct=$(pmset -g batt | grep -Eo "\\d+%" | cut -d% -f1)
+echo "󰂃 $pct%"
+"""
+when = "pmset -g batt | grep -Eo '\\d+%' | cut -d% -f1 | awk '{exit !($1 > 20 && $1 <= 30)}' && ! pmset -g batt | grep -q 'AC Power'"
+format = "[](bg:peach fg:lavender)[ $output ](fg:crust bg:peach)[](fg:peach)"
+shell = ["bash"]
+
+[custom.battery_medium]
+command = """
+pct=$(pmset -g batt | grep -Eo "\\d+%" | cut -d% -f1)
+echo "󰂃 $pct%"
+"""
+when = "pmset -g batt | grep -Eo '\\d+%' | cut -d% -f1 | awk '{exit !($1 > 30 && $1 <= 50)}' && ! pmset -g batt | grep -q 'AC Power'"
+format = "[](bg:yellow fg:lavender)[ $output ](fg:crust bg:yellow)[](fg:yellow)"
+shell = ["bash"]
+
+[custom.battery_good]
+command = """
+pct=$(pmset -g batt | grep -Eo "\\d+%" | cut -d% -f1)
+echo "󰁹 $pct%"
+"""
+when = "pmset -g batt | grep -Eo '\\d+%' | cut -d% -f1 | awk '{exit !($1 > 50)}' && ! pmset -g batt | grep -q 'AC Power'"
+format = "[](bg:green fg:lavender)[ $output ](fg:crust bg:green)[](fg:green)"
+shell = ["bash"]
 
 [time]
 disabled = false
-format = '[\[$time\]]($style) '
-time_format = "%I:%M %p"  # 12-hour with AM/PM
-style = 'dimmed'
+time_format = "%I:%M %p"
+style = "bg:lavender"
+format = '[[  $time ](fg:crust bg:lavender)]($style)'
+
+[battery]
+disabled = false
+full_symbol = "󰁹 "
+charging_symbol = "󰂄 "
+discharging_symbol = "󰂃 "
+unknown_symbol = "󰁽 "
+empty_symbol = "󰂎 "
+format = "[[ $symbol$percentage ]($style)]($style)"
+
+[[battery.display]]
+threshold = 10
+style = "bg:red fg:crust"
+charging_symbol = "󰢟 "
+
+[[battery.display]]
+threshold = 20
+style = "bg:maroon fg:crust"
+
+[[battery.display]]
+threshold = 30
+style = "bg:peach fg:crust"
+
+[[battery.display]]
+threshold = 50
+style = "bg:yellow fg:crust"
+
+[[battery.display]]
+threshold = 100
+style = "bg:lavender fg:crust"
+
+
+[line_break]
+disabled = false
+
+[character]
+disabled = false
+success_symbol = '[∴](bold fg:green)'
+error_symbol = '[∴](bold fg:red)'
+vimcmd_symbol = '[∴](bold fg:green)'
+vimcmd_replace_one_symbol = '[∴](bold fg:lavender)'
+vimcmd_replace_symbol = '[∴](bold fg:lavender)'
+vimcmd_visual_symbol = '[∴](bold fg:yellow)'
+
+[cmd_duration]
+show_milliseconds = true
+format = " in $duration "
+style = "bg:lavender"
+disabled = false
+show_notifications = true
+min_time_to_notify = 45000
+
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"
+
+[palettes.catppuccin_frappe]
+rosewater = "#f2d5cf"
+flamingo = "#eebebe"
+pink = "#f4b8e4"
+mauve = "#ca9ee6"
+red = "#e78284"
+maroon = "#ea999c"
+peach = "#ef9f76"
+yellow = "#e5c890"
+green = "#a6d189"
+teal = "#81c8be"
+sky = "#99d1db"
+sapphire = "#85c1dc"
+blue = "#8caaee"
+lavender = "#babbf1"
+text = "#c6d0f5"
+subtext1 = "#b5bfe2"
+subtext0 = "#a5adce"
+overlay2 = "#949cbb"
+overlay1 = "#838ba7"
+overlay0 = "#737994"
+surface2 = "#626880"
+surface1 = "#51576d"
+surface0 = "#414559"
+base = "#303446"
+mantle = "#292c3c"
+crust = "#232634"
+
+[palettes.catppuccin_latte]
+rosewater = "#dc8a78"
+flamingo = "#dd7878"
+pink = "#ea76cb"
+mauve = "#8839ef"
+red = "#d20f39"
+maroon = "#e64553"
+peach = "#fe640b"
+yellow = "#df8e1d"
+green = "#40a02b"
+teal = "#179299"
+sky = "#04a5e5"
+sapphire = "#209fb5"
+blue = "#1e66f5"
+lavender = "#7287fd"
+text = "#4c4f69"
+subtext1 = "#5c5f77"
+subtext0 = "#6c6f85"
+overlay2 = "#7c7f93"
+overlay1 = "#8c8fa1"
+overlay0 = "#9ca0b0"
+surface2 = "#acb0be"
+surface1 = "#bcc0cc"
+surface0 = "#ccd0da"
+base = "#eff1f5"
+mantle = "#e6e9ef"
+crust = "#dce0e8"
+
+[palettes.catppuccin_macchiato]
+rosewater = "#f4dbd6"
+flamingo = "#f0c6c6"
+pink = "#f5bde6"
+mauve = "#c6a0f6"
+red = "#ed8796"
+maroon = "#ee99a0"
+peach = "#f5a97f"
+yellow = "#eed49f"
+green = "#a6da95"
+teal = "#8bd5ca"
+sky = "#91d7e3"
+sapphire = "#7dc4e4"
+blue = "#8aadf4"
+lavender = "#b7bdf8"
+text = "#cad3f5"
+subtext1 = "#b8c0e0"
+subtext0 = "#a5adcb"
+overlay2 = "#939ab7"
+overlay1 = "#8087a2"
+overlay0 = "#6e738d"
+surface2 = "#5b6078"
+surface1 = "#494d64"
+surface0 = "#363a4f"
+base = "#24273a"
+mantle = "#1e2030"
+crust = "#181926"

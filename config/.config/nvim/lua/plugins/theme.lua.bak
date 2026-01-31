@@ -1,5 +1,77 @@
 return {
   {
+    "EdenEast/nightfox.nvim",
+    opts = {
+      options = {
+        transparent = true,
+        dim_inactive = true,
+        terminal_colors = true,
+        styles = {
+          -- Optimized for C++ and Python (Pydantic/PyTorch) workflow
+          comments = "italic", -- Visible but not screaming (TODOs catch eye)
+          conditionals = "NONE", -- Indentation already handles this
+          constants = "bold", -- C++ enums, PyTorch constants need to pop
+          functions = "italic", -- Spot definitions when scanning
+          keywords = "italic", -- Subtle distinction for def/class/return
+          numbers = "NONE", -- Already colored, don't need extra
+          operators = "NONE", -- Keep visual noise down
+          strings = "NONE", -- Already distinct via color
+          types = "bold", -- CRITICAL - Pydantic, C++ templates, type hints
+          variables = "NONE", -- Most common element, keep clean
+        },
+        inverse = {
+          match_paren = true, -- Matching brackets pop
+          visual = false,
+          search = true, -- Search results unmissable
+        },
+        modules = {
+          diagnostic = { enable = true, background = false },
+          native_lsp = { enable = true, background = false },
+          treesitter = true,
+          lsp_semantic_tokens = true,
+        },
+      },
+      groups = {
+        all = {
+          CursorLine = { bg = "bg1" },
+          CursorLineNr = { fg = "fg1", style = "bold" },
+          ColorColumn = { bg = "bg1" },
+          IndentBlanklineChar = { fg = "bg3" },
+          IndentBlanklineContextChar = { fg = "fg3" },
+
+          -- Python/C++ specific treesitter enhancements
+          ["@type"] = { style = "bold" },
+          ["@type.builtin"] = { style = "bold" },
+          ["@type.qualifier"] = { style = "bold" }, -- const, static in C++
+          ["@storageclass"] = { style = "bold" }, -- static, extern
+          ["@keyword.return"] = { fg = "palette.red", style = "bold" }, -- return pops
+          ["@parameter"] = { style = "italic" }, -- Function params distinct
+          ["@variable.builtin"] = { style = "italic" }, -- self, this
+          ["@constructor"] = { style = "bold" }, -- Class instantiation
+          ["@function.call"] = { style = "NONE" }, -- Calls stay clean
+          ["@method.call"] = { style = "NONE" }, -- Calls stay clean
+          ["@punctuation.bracket"] = { fg = "palette.fg2" }, -- Muted brackets
+          ["@punctuation.delimiter"] = { fg = "palette.fg2" },
+
+          -- Python decorators (FastAPI, Pydantic)
+          ["@attribute"] = { fg = "palette.orange", style = "italic" },
+          ["@decorator"] = { fg = "palette.orange", style = "italic" },
+
+          -- C++ specific
+          ["@namespace"] = { fg = "palette.cyan" },
+          ["@constant.macro"] = { style = "bold" }, -- #define constants
+
+          -- Transparent floats
+          NormalFloat = { bg = "NONE" },
+          FloatBorder = { fg = "palette.blue", bg = "NONE" },
+          TelescopeNormal = { bg = "NONE" },
+          TelescopeBorder = { fg = "palette.blue", bg = "NONE" },
+          WhichKeyFloat = { bg = "NONE" },
+        },
+      },
+    },
+  },
+  {
     "catppuccin/nvim",
     opts = {
       flavour = "auto", -- latte, frappe, macchiato, mocha
@@ -10,14 +82,6 @@ return {
       transparent_background = true,
       float = {
         transparent = true,
-        -- solid = true,
-      },
-      show_end_of_buffer = true, -- shows the '~' characters after the end of buffers
-      term_colors = true, -- sets terminal colors (e.g. `g:terminal_color_0`)
-      dim_inactive = {
-        enabled = true, -- dims the background color of inactive window
-        shade = "dark",
-        percentage = 0.15, -- percentage of the shade to apply to the inactive window
       },
       -- no_italic = true,
       styles = {
@@ -36,18 +100,7 @@ return {
         operators = { "bold" },
         -- miscs = {},
       },
-      integrations = {
-        aerial = true,
-        blink_cmp = true,
-        lsp_trouble = true,
-        mason = true,
-        noice = true,
-        overseer = true,
-        snacks = {
-          enabled = false,
-        },
-        which_key = true,
-      },
+      integrations = { blink_cmp = true },
     },
   },
   {
@@ -84,6 +137,13 @@ return {
           { name = "Tokyo Night OG", colorscheme = "tokyonight-night" },
           { name = "Tokyo Night Moon", colorscheme = "tokyonight-moon" },
           { name = "Tokyo Night Day", colorscheme = "tokyonight-day" },
+          { name = "Carbonfox", colorscheme = "carbonfox" },
+          { name = "Dayfox", colorscheme = "dayfox" },
+          { name = "Dawnfox", colorscheme = "dawnfox" },
+          { name = "Duskfox", colorscheme = "duskfox" },
+          { name = "Nightfox", colorscheme = "nightfox" },
+          { name = "Nordfox", colorscheme = "nordfox" },
+          { name = "Terafox", colorscheme = "terafox" },
         }, -- Your list of installed colorschemes
         livePreview = true, -- Apply theme while browsing. Default to true.
       })
@@ -111,11 +171,11 @@ return {
       update_interval = 1000,
       set_dark_mode = function()
         vim.api.nvim_set_option_value("background", "dark", {})
-        vim.cmd("colorscheme catppuccin-mocha")
+        vim.cmd("colorscheme duskfox")
       end,
       set_light_mode = function()
         vim.api.nvim_set_option_value("background", "light", {})
-        vim.cmd("colorscheme catppuccin-latte")
+        vim.cmd("colorscheme dawnfox")
       end,
     },
   },
