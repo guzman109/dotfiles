@@ -1,3 +1,6 @@
+# Secrets (not tracked in git)
+test -f ~/.config/fish/conf.d/secrets.fish && source ~/.config/fish/conf.d/secrets.fish
+
 # Homebrew
 if test (uname -s) = Darwin
   /opt/homebrew/bin/brew shellenv | source
