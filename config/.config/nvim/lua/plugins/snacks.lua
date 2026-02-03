@@ -19,12 +19,13 @@ return {
           {
             pane = 1,
             section = "terminal",
-            cmd = "bash ~/.config/starship/quote-cache.sh --box 58",
-            height = 4,
-            padding = 1,
+            cmd = "bash ~/.config/inspiration/quote-cache.sh --box 58",
+            height = 5,
+            padding = 0,
+            ttl = 0,
+            icon = "",
             hl = "DiagnosticHint",
-            icon = "",
-            color = "red",
+            title = os.date("%A, %B %d, %Y"),
           },
           { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 2 },
           {
