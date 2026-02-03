@@ -1,6 +1,3 @@
-# Secrets (not tracked in git)
-test -f ~/.config/fish/conf.d/secrets.fish && source ~/.config/fish/conf.d/secrets.fish
-
 # Homebrew
 if test (uname -s) = Darwin
   /opt/homebrew/bin/brew shellenv | source
@@ -15,7 +12,7 @@ direnv hook fish | source
 kitty +complete setup fish | source
 
 # PATHs
-set -U fish_user_paths  "/opt/homebrew/bin" "$HOME/.cargo/bin" "$HOME/.local/share/bob/nvim-bin" "$HOME/.docker/bin"
+set -U fish_user_paths  "/opt/homebrew/bin" "$HOME/.cargo/bin" "$HOME/.local/share/bob/nvim-bin" "$HOME/.docker/bin" "/opt/homebrew/opt/libpq/bin"
 
 # Starship
 set -Ux STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
@@ -26,7 +23,7 @@ starship init fish | source
 alias ls="eza"
 alias cat="bat"
 alias icat="kitty +kitten icat"
-alias ksh="kitty +kitten ssh"
+alias s="kitten ssh"
 alias brew_update="brew bundle --file ~/.config/homebrew/Brewfile"
 
 # Vi-style keybindings

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Load secrets from .env file (not tracked in git)
+[ -f "$HOME/.config/inspiration/.env" ] && source "$HOME/.config/inspiration/.env"
+
 API_KEY="${API_NINJAS_KEY:-}"
 CACHE_DIR="$HOME/.cache/inspiration"
 DB_FILE="$CACHE_DIR/quotes.db"
