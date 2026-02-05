@@ -19,7 +19,7 @@ return {
           {
             pane = 1,
             section = "terminal",
-            cmd = "bash ~/.config/inspiration/quote-cache.sh --box 58",
+            cmd = "fish ~/.config/inspiration/quote-cache.fish --type motivation --box 58",
             height = 5,
             padding = 0,
             ttl = 0,
@@ -27,7 +27,16 @@ return {
             hl = "DiagnosticHint",
             title = os.date("%A, %B %d, %Y"),
           },
-          { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 2 },
+          { icon = " ", title = "Keymaps", section = "keys", indent = 2},
+          {
+            icon = "",
+            key = "t",
+            desc = "TODOs",
+            action = function() Snacks.picker.grep({ search = "TODO|FIXME|HACK|NOTE|WARN" }) end,
+            sections = "keys",
+            indent = 2,
+            padding = 2,
+          },
           {
             icon = " ",
             title = "Recent Files",
