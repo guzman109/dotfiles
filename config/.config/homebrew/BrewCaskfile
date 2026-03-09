@@ -7,3 +7,5 @@ cask "pearcleaner"
 
 
 
+cask "mindwtr"
+cask "codex"

@@ -20,19 +20,21 @@ return {
             pane = 1,
             section = "terminal",
             cmd = "fish ~/.config/inspiration/quote-cache.fish --type motivation --box 58",
-            height = 5,
+            height = 6,
             padding = 0,
             ttl = 0,
             icon = "",
             hl = "DiagnosticHint",
             title = os.date("%A, %B %d, %Y"),
           },
-          { icon = " ", title = "Keymaps", section = "keys", indent = 2},
+          { icon = " ", title = "Keymaps", section = "keys", indent = 2 },
           {
             icon = "",
             key = "t",
             desc = "TODOs",
-            action = function() Snacks.picker.grep({ search = "TODO|FIXME|HACK|NOTE|WARN" }) end,
+            action = function()
+              Snacks.picker.grep({ search = "TODO|FIXME|HACK|NOTE|WARN" })
+            end,
             sections = "keys",
             indent = 2,
             padding = 2,
@@ -63,6 +65,20 @@ return {
       indent = {},
       rename = {},
       words = {},
+    },
+  },
+  {
+    "TKasperczyk/snacks-gallery.nvim",
+    dependencies = { "folke/snacks.nvim" },
+    opts = {},
+    keys = {
+      {
+        "<leader>gi",
+        function()
+          require("snacks-gallery").open()
+        end,
+        desc = "Gallery",
+      },
     },
   },
 }

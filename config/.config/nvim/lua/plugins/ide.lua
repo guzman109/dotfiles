@@ -50,8 +50,6 @@ return {
           "snippet_backward",
           "fallback",
         },
-
-        ["<C-x>"] = { "cancel" },
       },
     },
   },

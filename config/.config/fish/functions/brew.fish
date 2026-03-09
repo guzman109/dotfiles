@@ -14,16 +14,16 @@ function brew --description "Wrapper for brew that auto-appends to separate file
                 if contains -- --cask $argv
                     for pkg in $argv[2..-1]
                         string match -q -- '-*' $pkg; and continue
-                        grep -q "^cask \"$pkg\"" $caskfile 2>/dev/null; or echo "cask \"$pkg\"" >> $caskfile
+                        grep -q "^cask \"$pkg\"" $caskfile 2>/dev/null; or echo "cask \"$pkg\"" >>$caskfile
                     end
                 else
                     for pkg in $argv[2..-1]
                         string match -q -- '-*' $pkg; and continue
                         # Packages from taps (contain /) go to tapfile
                         if string match -q '*/*' $pkg
-                            grep -q "^brew \"$pkg\"" $tapfile 2>/dev/null; or echo "brew \"$pkg\"" >> $tapfile
+                            grep -q "^brew \"$pkg\"" $tapfile 2>/dev/null; or echo "brew \"$pkg\"" >>$tapfile
                         else
-                            grep -q "^brew \"$pkg\"" $brewfile 2>/dev/null; or echo "brew \"$pkg\"" >> $brewfile
+                            grep -q "^brew \"$pkg\"" $brewfile 2>/dev/null; or echo "brew \"$pkg\"" >>$brewfile
                         end
                     end
                 end
@@ -50,7 +50,7 @@ function brew --description "Wrapper for brew that auto-appends to separate file
             case tap
                 for t in $argv[2..-1]
                     string match -q -- '-*' $t; and continue
-                    grep -q "^tap \"$t\"" $tapfile 2>/dev/null; or echo "tap \"$t\"" >> $tapfile
+                    grep -q "^tap \"$t\"" $tapfile 2>/dev/null; or echo "tap \"$t\"" >>$tapfile
                 end
 
             case untap

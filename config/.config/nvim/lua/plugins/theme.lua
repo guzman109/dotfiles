@@ -147,6 +147,22 @@ return {
       },
     },
   },
+  {
+    "nvim-mini/mini.icons",
+    opts = {
+      extension = {
+        hpp = { glyph = "󰫵", hl = "MiniIconsBlue" },
+      },
+      file = {
+        ["conanfile.py"] = { glyph = "󰆦", hl = "MiniIconsBlue" },
+        ["conanfile.txt"] = { glyph = "󰆦", hl = "MiniIconsBlue" },
+      },
+      filetype = {
+        meson = { glyph = "󰰐", hl = "MiniIconsPurple" },
+        cpp = { glyph = "", hl = "MiniIconsBlue" }
+      },
+    },
+  },
   -- Show context of current function/class at top of window
   {
     "nvim-treesitter/nvim-treesitter-context",

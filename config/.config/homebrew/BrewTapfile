@@ -1,3 +1,4 @@
 tap "oven-sh/bun"
 brew "oven-sh/bun/bun"
 
+tap "quickemu-project/quickemu"

@@ -26,27 +26,16 @@ return {
       })
     end,
   },
-  -- {
-  --   "stevearc/conform.nvim",
-  --   optional = true,
-  --   opts = {
-  --     formatters_by_ft = {
-  --       nix = { "alejandra" },
-  --       c = { "clang-format" },
-  --       cpp = { "clang-format" },
-  --     },
-  --   },
-  -- },
-  -- {
-  --   "neovim/nvim-lspconfig",
-  --   opts = {
-  --     servers = {
-  --       clangd = {
-  --         capabilities = {
-  --           documentFormattingProvider = false,
-  --         },
-  --       },
-  --     },
-  --   },
-  -- },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        meson = { "meson" },
+        cmake = { "gersemi" },
+        c = { "clang_format" },
+        cpp = { "clang_format" },
+      },
+    },
+  },
 }

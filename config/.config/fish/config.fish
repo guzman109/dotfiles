@@ -1,48 +1,86 @@
-# Homebrew
-if test (uname -s) = Darwin
-  /opt/homebrew/bin/brew shellenv | source
-  alias spm="swift package"
-  spm completion-tool generate-fish-script | source
+# ~/.config/fish/config.fish
+
+# ─── Platform Detection ───
+set -l is_mac (test (uname -s) = Darwin && echo yes || echo no)
+
+# ─── Homebrew (macOS only) ───
+if test $is_mac = yes
+    /opt/homebrew/bin/brew shellenv | source
+    alias spm="swift package"
+    spm completion-tool generate-fish-script | source
+end
+
+# ─── PATHs ───
+set -gx PATH $PATH
+fish_add_path --path \
+    $HOME/.cargo/bin \
+    $HOME/.local/share/bob/nvim-bin \
+    $HOME/.local/bin
+
+if test $is_mac = yes
+    fish_add_path --path \
+        /opt/homebrew/bin \
+        /opt/homebrew/opt/libpq/bin \
+        $HOME/.docker/bin \
+        $HOME/.bun/bin
+end
+
+# ─── Tools ───
+# vcpkg (same path on macOS and Linux)
+if test -d $HOME/.vcpkg
+    set -gx VCPKG_ROOT $HOME/.vcpkg
+    fish_add_path $VCPKG_ROOT
+    alias vcpkg_update="git -C ~/.vcpkg pull && ~/.vcpkg/bootstrap-vcpkg.sh"
 end
 
 # Direnv
-direnv hook fish | source
-
-# Kitty completions
-kitty +complete setup fish | source
-
-# PATHs
-set -U fish_user_paths  "/opt/homebrew/bin" "$HOME/.cargo/bin" "$HOME/.local/share/bob/nvim-bin" "$HOME/.docker/bin" "/opt/homebrew/opt/libpq/bin"
+if command -q direnv
+    direnv hook fish | source
+end
 
 # Starship
-set -Ux STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
-starship init fish | source
+if command -q starship
+    set -gx STARSHIP_CONFIG $HOME/.config/starship/starship.toml
+    starship init fish | source
+end
 
+# Kitty
+if test "$TERM" = xterm-kitty
+    kitty +complete setup fish | source
+    alias icat="kitty +kitten icat"
+    alias s="kitten ssh"
+end
 
-# Aliases
-alias ls="eza"
-alias cat="bat"
-alias icat="kitty +kitten icat"
-alias s="kitten ssh"
-alias brew_update="brew bundle --file ~/.config/homebrew/Brewfile"
+# ─── Aliases ───
+command -q eza && alias ls="eza"
+command -q bat && alias cat="bat"
 
-# Vi-style keybindings
-# History navigation
-bind \ej down-or-search  # Alt+j for next command
-bind \ek up-or-search    # Alt+k for previous command
+if test $is_mac = yes
+    alias brew_update="brew bundle --file ~/.config/homebrew/Brewfile"
+end
 
-# Line navigation
-bind \eh backward-char        # Alt+h - move left
-bind \el forward-char         # Alt+l - move right
-bind \e^ beginning-of-line    # Alt+^ - go to start of line
-bind \e\$ end-of-line         # Alt+$ - go to end of line
+# # ─── Keybindings (Alt + vim-style) ───
+# # History
+# bind \ej down-or-search
+# bind \ek up-or-search
+#
+# # Line navigation
+# bind \eh backward-char
+# bind \el forward-char
+# bind \e^ beginning-of-line
+# bind \e\$ end-of-line
+#
+# # Word navigation
+# bind \eb backward-word
+# bind \ew forward-word
+# bind \ee forward-word
+#
+# # Delete operations
+# bind \ex kill-line
+# bind \eu backward-kill-line
+# bind \ed kill-word
 
-# Word navigation
-bind \eb backward-word        # Alt+b - move back one word
-bind \ew forward-word         # Alt+w - move forward one word
-bind \ee forward-word         # Alt+e - move to end of word (same as w in fish)
-
-# Delete operations
-bind \ex kill-line            # Alt+x - delete to end of line
-bind \eu backward-kill-line   # Alt+u - delete to beginning of line
-bind \ed kill-word            # Alt+d - delete word forward
+# ZVM
+set -gx ZVM_INSTALL "$HOME/.zvm/self"
+set -gx PATH $PATH "$HOME/.zvm/bin"
+set -gx PATH $PATH "$ZVM_INSTALL/"
