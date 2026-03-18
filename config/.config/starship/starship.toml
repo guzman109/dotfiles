@@ -23,6 +23,7 @@ $java\
 $kotlin\
 $haskell\
 $python\
+$zig\
 ${custom.cppcompiler}\
 ${custom.cppstd}\
 $cmake\
@@ -163,6 +164,11 @@ format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 symbol = ""
 style = "bg:green"
 format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:crust bg:green)]($style)'
+
+[zig]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
 [custom.cppstd]
 command = "grep 'CMAKE_CXX_STANDARD' CMakeLists.txt 2>/dev/null | grep -o '[0-9][0-9]' | head -1"
