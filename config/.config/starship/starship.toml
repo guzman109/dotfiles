@@ -4,13 +4,9 @@ format = """
 [](red)\
 $os\
 $username\
-[](bg:mauve fg:red)\
-${custom.kitty}\
-[](bg:peach fg:mauve)\
-${custom.claude}\
-[](bg:maroon fg:peach)\
+[](fg:red bg:maroon)\
 $directory\
-[](bg:yellow fg:maroon)\
+[](fg:maroon bg:yellow)\
 $git_branch\
 $git_status\
 [](fg:yellow bg:green)\
@@ -27,9 +23,7 @@ $zig\
 ${custom.cppcompiler}\
 ${custom.cppstd}\
 $cmake\
-[](fg:green bg:sapphire)\
-${custom.motivation}\
-[](fg:sapphire bg:lavender)\
+[](fg:green bg:lavender)\
 $time\
 ${custom.battery_charging}\
 ${custom.battery_critical}\
@@ -69,29 +63,6 @@ Debian = "󰣚"
 Redhat = "󱄛"
 RedHatEnterprise = "󱄛"
 
-[custom.kitty]
-command = "kitty --version 2>&1 | grep -o '[0-9]\\.[0-9][0-9]\\.[0-9]' | head -1 | sed 's/^/v/'"
-when = "test -n \"$KITTY_WINDOW_ID\""
-symbol = "󰄛"
-style = "bg:mauve"
-format = '[[ $symbol $output ](fg:crust bg:mauve)]($style)'
-
-[custom.claude]
-command = """
-model=$(jq -r '.model // "sonnet"' ~/.claude/settings.json 2>/dev/null)
-case "$model" in
-  opus) echo "Opus 4.5" ;;
-  sonnet) echo "Sonnet 4" ;;
-  haiku) echo "Haiku 3.5" ;;
-  *) echo "$model" ;;
-esac
-"""
-when = "test -f ~/.claude/settings.json"
-symbol = "󱚥"
-style = "bg:peach"
-format = '[[ $symbol $output ](fg:crust bg:peach)]($style)'
-shell = ["bash"]
-
 [username]
 show_always = true
 style_user = "bg:red fg:crust"
@@ -101,7 +72,7 @@ format = '[ $user]($style)'
 [directory]
 style = "bg:maroon fg:crust"
 format = "[ $path ]($style)"
-truncation_length = 1
+truncation_length = 4
 truncation_symbol = "…/"
 
 [directory.substitutions]
@@ -307,12 +278,12 @@ disabled = false
 
 [character]
 disabled = false
-success_symbol = '[∴](bold fg:green)'
-error_symbol = '[∴](bold fg:red)'
-vimcmd_symbol = '[∴](bold fg:green)'
-vimcmd_replace_one_symbol = '[∴](bold fg:lavender)'
-vimcmd_replace_symbol = '[∴](bold fg:lavender)'
-vimcmd_visual_symbol = '[∴](bold fg:yellow)'
+success_symbol = '[](bold fg:green)'
+error_symbol = '[](bold fg:red)'
+vimcmd_symbol = '[](bold fg:green)'
+vimcmd_replace_one_symbol = '[](bold fg:lavender)'
+vimcmd_replace_symbol = '[](bold fg:lavender)'
+vimcmd_visual_symbol = '[](bold fg:yellow)'
 
 [cmd_duration]
 show_milliseconds = true
