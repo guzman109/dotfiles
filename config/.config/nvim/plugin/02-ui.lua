@@ -9,6 +9,7 @@ vim.pack.add({
   'https://github.com/nvim-lualine/lualine.nvim',
   'https://github.com/lukas-reineke/indent-blankline.nvim',
   'https://github.com/goolord/alpha-nvim',
+  'https://github.com/nanozuki/tabby.nvim',
 })
 
 -- ── Catppuccin ─────────────────────────────────
@@ -49,10 +50,16 @@ require('auto-dark-mode').setup({
   set_dark_mode = function()
     vim.api.nvim_set_option_value('background', 'dark', {})
     vim.cmd.colorscheme('catppuccin-mocha')
+    package.loaded['tabby_cfg'] = nil
+    vim.api.nvim_set_hl(0, 'TabLineFill', { bg = 'NONE' })
+    require('tabby').setup({ tabline = require('tabby_cfg') })
   end,
   set_light_mode = function()
     vim.api.nvim_set_option_value('background', 'light', {})
     vim.cmd.colorscheme('catppuccin-latte')
+    package.loaded['tabby_cfg'] = nil
+    vim.api.nvim_set_hl(0, 'TabLineFill', { bg = 'NONE' })
+    require('tabby').setup({ tabline = require('tabby_cfg') })
   end,
 })
 
@@ -98,6 +105,23 @@ require('ibl').setup({
   },
 })
 
+-- ── Tabby (tabline) ───────────────────────────
+require('tabby').setup({
+  tabline = require('tabby_cfg'),
+})
+
+vim.api.nvim_create_autocmd('ColorScheme', {
+  group = vim.api.nvim_create_augroup('ClaudlosTabby', { clear = true }),
+  callback = function()
+    require('tabby').setup({
+      tabline = require('tabby_cfg'),
+    })
+  end,
+})
+local mantle = require('catppuccin.palettes').get_palette().mantle
+vim.api.nvim_set_hl(0, 'TabLineFill', { bg = mantle })
+vim.api.nvim_set_hl(0, 'TabLine', { bg = mantle })
+
 -- ── Alpha (dashboard) ─────────────────────────
 local alpha = require('alpha')
 local dashboard = require('alpha.themes.dashboard')
@@ -114,12 +138,12 @@ end
 -- Header: ASCII title + date + quote
 local header_lines = {
   '',
-  '   ██████╗██╗      █████╗ ██╗   ██╗██████╗ ██╗      ██████╗ ███████╗██╗   ██╗██╗███╗   ███╗',
-  '  ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██║     ██╔═══██╗██╔════╝██║   ██║██║████╗ ████║',
-  '  ██║     ██║     ███████║██║   ██║██║  ██║██║     ██║   ██║███████╗██║   ██║██║██╔████╔██║',
-  '  ██║     ██║     ██╔══██║██║   ██║██║  ██║██║     ██║   ██║╚════██║╚██╗ ██╔╝██║██║╚██╔╝██║',
-  '  ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗╚██████╔╝███████║ ╚████╔╝ ██║██║ ╚═╝ ██║',
-  '   ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝  ╚═══╝  ╚═╝╚═╝     ╚═╝',
+  '  ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗',
+  '  ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║',
+  '  ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║',
+  '  ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║',
+  '  ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║',
+  '  ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝',
   '',
   '   ' .. os.date('%A, %B %d, %Y'),
   '',
@@ -128,6 +152,7 @@ vim.list_extend(header_lines, get_quote())
 table.insert(header_lines, '')
 
 dashboard.section.header.val = header_lines
+dashboard.section.header.opts = { hl = 'DiagnosticOk', position = 'center' }
 
 -- Buttons: close alpha first so fzf-lua gets a real buffer
 local function alpha_fzf(fzf_fn, opts)
@@ -145,17 +170,22 @@ dashboard.section.buttons.val = {
   dashboard.button('c', '  Edit config', '<cmd>e ' .. vim.fn.stdpath('config') .. '/init.lua<cr>'),
   dashboard.button('k', '  Keymaps', '<cmd>e ' .. vim.fn.stdpath('config') .. '/KEYMAPS.md<cr>'),
   dashboard.button('u', '  Update plugins', '<cmd>lua vim.pack.update()<cr>'),
-  dashboard.button('x', '  Show unused plugins', function()
+  dashboard.button('x', '  Clean plugins', function()
     local unused = vim.iter(vim.pack.get())
         :filter(function(x) return not x.active end)
         :map(function(x) return x.spec.name end)
         :totable()
     if #unused == 0 then
-      vim.notify('No unused plugins', vim.log.levels.INFO)
+      vim.notify('No unused plugins to clean', vim.log.levels.INFO)
     else
-      vim.notify('Unused: ' .. table.concat(unused, ', '), vim.log.levels.INFO)
+      vim.notify('Removing: ' .. table.concat(unused, ', '), vim.log.levels.INFO)
+      for _, name in ipairs(unused) do
+        vim.pack.del({ name }, { force = true })
+      end
+      vim.notify('Done! Removed ' .. #unused .. ' plugins', vim.log.levels.INFO)
     end
-  end), dashboard.button('q', '  Quit', '<cmd>qa<cr>'),
+  end),
+  dashboard.button('q', '  Quit', '<cmd>qa<cr>'),
 }
 
 -- Footer

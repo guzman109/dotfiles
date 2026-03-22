@@ -60,13 +60,15 @@ opt.fillchars = {
   eob = ' ', -- hide the ~ tildes on empty lines past end of file
 }
 
+opt.laststatus = 3
+
 -- Keymaps ------------------------------------------------
 
 local map = vim.keymap.set
 
 -- General
-map('n', '<leader>w', '<cmd>w<cr>', { desc = 'Save' })
-map('n', '<leader>q', '<cmd>q<cr>', { desc = 'Quit' })
+
+map('n', '<C-s>', '<cmd>w<cr>', { desc = 'Save' })
 map('n', '<Esc>', '<cmd>nohlsearch<cr>', { desc = 'Clear search' })
 
 -- When lines wrap, j/k move by visual line (not actual line)
@@ -93,13 +95,56 @@ map('n', '<C-l>', '<C-w>l', { desc = 'Go to right window' })
 -- Tabs
 map('n', '<leader>tn', '<cmd>tabnew<cr>', { desc = 'New tab' })
 map('n', '<leader>tc', '<cmd>tabclose<cr>', { desc = 'Close tab' })
+map('n', '<leader>to', '<cmd>tabonly<cr>', { desc = 'Close other tabs' })
+map('n', '<leader>tr', function()
+  local current = vim.fn.tabpagenr()
+  local last = vim.fn.tabpagenr('$')
+  for i = last, current + 1, -1 do
+    vim.cmd('tabclose ' .. i)
+  end
+end, { desc = 'Close tabs to right' })
 map('n', '<S-h>', '<cmd>tabprevious<cr>', { desc = 'Previous tab' })
 map('n', '<S-l>', '<cmd>tabnext<cr>', { desc = 'Next tab' })
 
+-- Windows
+map('n', '<leader>wv', '<cmd>vsplit<cr>', { desc = 'Split vertical' })
+map('n', '<leader>ws', '<cmd>split<cr>', { desc = 'Split horizontal' })
+map('n', '<leader>wd', '<cmd>close<cr>', { desc = 'Close split' })
+map('n', '<leader>wo', '<cmd>only<cr>', { desc = 'Close other splits' })
+map('n', '<leader>w=', '<C-w>=', { desc = 'Equalize splits' })
+map('n', '<leader>wT', '<C-w>T', { desc = 'Split to tab' })
+
+-- Open Keymaps File
+map('n', '<leader>fk', function()
+  vim.cmd('e ' .. vim.fn.stdpath('config') .. '/KEYMAPS.md')
+end, { desc = 'Open keymaps' })
+
+-- Toggle terminal (bottom split)
+local term_buf = nil
+map('n', '<leader>tt', function()
+  if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      if vim.api.nvim_win_get_buf(win) == term_buf then
+        vim.api.nvim_win_close(win, true)
+        return
+      end
+    end
+    vim.cmd('botright 15split')
+    vim.api.nvim_win_set_buf(0, term_buf)
+  else
+    vim.cmd('botright 15split | terminal')
+    term_buf = vim.api.nvim_get_current_buf()
+  end
+end, { desc = 'Toggle terminal' })
+
+-- Terminal in new tab
+map('n', '<leader>tT', '<cmd>tabnew | terminal<cr>', { desc = 'Terminal (tab)' })
 -- Format: wrapped in function so it doesn't error if conform isn't loaded yet
 map('n', '<leader>cf', function()
   require('conform').format({ lsp_format = 'fallback' })
 end, { desc = 'Format' })
+map('n', '<leader>tv', '<cmd>vsplit | terminal<cr>', { desc = 'Terminal (vsplit)' })
+map('n', '<leader>ts', '<cmd>split | terminal<cr>', { desc = 'Terminal (split)' })
 
 -- Diagnostics: jump between errors/warnings
 map('n', ']d', vim.diagnostic.goto_next, { desc = 'Next diagnostic' })
@@ -114,10 +159,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     local m = function(mode, lhs, rhs, desc)
       vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, desc = desc })
     end
-    m('n', 'gd', vim.lsp.buf.definition, 'Go to definition')
+    m('n', 'gd', '<cmd>tab split | lua vim.lsp.buf.definition()<cr>', 'Go to definition (tab)')
     m('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration')
     m('n', 'gr', vim.lsp.buf.references, 'References')
-    m('n', 'gi', vim.lsp.buf.implementation, 'Implementation')
+    m('n', 'gi', '<cmd>tab split | lua vim.lsp.buf.implementation()<cr>', 'Implementation (tab)')
     m('n', 'K', vim.lsp.buf.hover, 'Hover')
     m('n', '<leader>cr', vim.lsp.buf.rename, 'Rename')
     m('n', '<leader>ca', vim.lsp.buf.code_action, 'Code action')

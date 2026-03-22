@@ -118,6 +118,10 @@
       "rev": "e3c18ddd27a853f85a6f513a864cf4f2982b9f26",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
+    "tabby.nvim": {
+      "rev": "3c130e1fcb598ce39a9c292847e32d7c3987cf11",
+      "src": "https://github.com/nanozuki/tabby.nvim"
+    },
     "venv-selector.nvim": {
       "rev": "42e8faadf9b819654f29eb1a785797a3a328f301",
       "src": "https://github.com/linux-cultist/venv-selector.nvim"

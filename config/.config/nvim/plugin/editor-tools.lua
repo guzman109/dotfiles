@@ -48,6 +48,7 @@ require('oil').setup({
 
 vim.keymap.set('n', '-', '<cmd>Oil<cr>', { desc = 'Open parent directory' })
 vim.keymap.set('n', '<leader>e', '<cmd>Oil<cr>', { desc = 'File explorer' })
+vim.keymap.set('n', '<leader>E', '<cmd>tabnew | Oil<cr>', { desc = 'File explorer (tab)' })
 
 -- ── UFO (folding) ──────────────────────────────
 vim.o.foldcolumn = '1'
@@ -70,7 +71,34 @@ end, { desc = 'Peek fold' })
 
 -- ── Harpoon ────────────────────────────────────
 local harpoon = require('harpoon')
-harpoon:setup()
+harpoon:setup({
+  settings = {
+    save_on_toggle = true,
+    sync_on_ui_close = true,
+  },
+})
+
+-- Highlight current file in harpoon buffer list
+local harpoon_extensions = require('harpoon.extensions')
+harpoon:extend(harpoon_extensions.builtins.highlight_current_file())
+
+-- Open in splits/tabs from harpoon UI
+harpoon:extend({
+  ADD = function() vim.cmd('redrawtabline') end,
+  REMOVE = function() vim.cmd('redrawtabline') end,
+  LIST_CHANGE = function() vim.cmd('redrawtabline') end,
+  UI_CREATE = function(cx)
+    vim.keymap.set('n', '<C-v>', function()
+      harpoon.ui:select_menu_item({ vsplit = true })
+    end, { buffer = cx.bufnr })
+    vim.keymap.set('n', '<C-x>', function()
+      harpoon.ui:select_menu_item({ split = true })
+    end, { buffer = cx.bufnr })
+    vim.keymap.set('n', '<C-t>', function()
+      harpoon.ui:select_menu_item({ tabedit = true })
+    end, { buffer = cx.bufnr })
+  end,
+})
 
 vim.keymap.set('n', '<leader>ha', function() harpoon:list():add() end, { desc = 'Harpoon add' })
 vim.keymap.set('n', '<leader>hd', function()
@@ -81,11 +109,9 @@ vim.keymap.set('n', '<leader>1', function() harpoon:list():select(1) end, { desc
 vim.keymap.set('n', '<leader>2', function() harpoon:list():select(2) end, { desc = 'Harpoon 2' })
 vim.keymap.set('n', '<leader>3', function() harpoon:list():select(3) end, { desc = 'Harpoon 3' })
 vim.keymap.set('n', '<leader>4', function() harpoon:list():select(4) end, { desc = 'Harpoon 4' })
-vim.keymap.set('n', '<leader>5', function() harpoon:list():select(5) end, { desc = 'Harpoon 5' })
-vim.keymap.set('n', '<leader>6', function() harpoon:list():select(6) end, { desc = 'Harpoon 6' })
-vim.keymap.set('n', '<leader>7', function() harpoon:list():select(7) end, { desc = 'Harpoon 7' })
-vim.keymap.set('n', '<leader>8', function() harpoon:list():select(8) end, { desc = 'Harpoon 8' })
-vim.keymap.set('n', '<leader>9', function() harpoon:list():select(9) end, { desc = 'Harpoon 9' })
+
+vim.keymap.set('n', '<C-S-P>', function() harpoon:list():prev() end, { desc = 'Harpoon prev' })
+vim.keymap.set('n', '<C-S-N>', function() harpoon:list():next() end, { desc = 'Harpoon next' })
 
 -- Harpoon menu via fzf-lua (icons + preview + fuzzy)
 vim.keymap.set('n', '<leader>hh', function()

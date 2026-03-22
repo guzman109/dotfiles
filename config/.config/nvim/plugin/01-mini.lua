@@ -25,61 +25,6 @@ require('mini.icons').setup({
   },
 })
 
--- ── Starter (dashboard) ───────────────────────
--- Recreates the Snacks dashboard layout
--- local starter = require('mini.starter')
-
--- Motivational quote from your fish script (falls back gracefully)
--- local function get_quote()
---   local ok, quote = pcall(vim.fn.system, 'fish ~/.config/inspiration/quote-cache.fish --type motivation --box 58')
---   if ok and vim.v.shell_error == 0 then
---     return quote
---   end
---   return ''
--- end
---
--- -- Date header
--- local date_str = os.date('%A, %B %d, %Y')
---
--- starter.setup({
---   header = table.concat({
---     '',
---     '   ClaudlosVim',
---     '',
---     '   ' .. date_str,
---     '',
---     get_quote(),
---   }, '\n'),
---   items = {
---     -- Keymaps (actions)
---     { name = 'Find files',   action = 'FzfLua files',                                    section = 'Keymaps' },
---     { name = 'Live grep',    action = 'FzfLua live_grep',                                section = 'Keymaps' },
---     { name = 'Recent files', action = 'FzfLua oldfiles',                                 section = 'Keymaps' },
---     { name = 'Edit config',  action = 'e ' .. vim.fn.stdpath('config') .. '/init.lua',   section = 'Keymaps' },
---     { name = 'View keymaps', action = 'e ' .. vim.fn.stdpath('config') .. '/KEYMAPS.md', section = 'Keymaps' },
---
---     -- TODOs
---     {
---       name = 'TODOs',
---       action = function()
---         require('fzf-lua').grep({ search = 'TODO|FIXME|HACK|NOTE|WARN' })
---       end,
---       section = 'Keymaps'
---     },
---
---     -- Recent files (current project)
---     starter.sections.recent_files(5, false, nil, 'Recent Files'),
---
---     -- Projects (recent files global acts as project switcher)
---     starter.sections.recent_files(5, true, nil, 'Projects'),
---   },
---   content_hooks = {
---     starter.gen_hook.adding_bullet(),
---     starter.gen_hook.aligning('center', 'center'),
---   },
---   footer = '',
--- })
---
 -- ── Clue (keymap hints) ───────────────────────
 -- Shows available keymaps in a popup after pressing a leader/prefix key
 local miniclue = require('mini.clue')
@@ -111,6 +56,9 @@ miniclue.setup({
     -- Brackets
     { mode = 'n', keys = '[' },
     { mode = 'n', keys = ']' },
+
+    -- Theme
+    { mode = 'v', keys = '<Leader>a', desc = '+ai' },
   },
 
   -- Give the popup human-readable group names
@@ -134,6 +82,8 @@ miniclue.setup({
     { mode = 'n', keys = '<Leader>k', desc = '+kulala' },
     { mode = 'n', keys = '<Leader>a', desc = '+ai' },
     { mode = 'n', keys = '<Leader>l', desc = '+lua' },
+    { mode = 'n', keys = '<Leader>w', desc = '+window' },
+
   },
 
   window = {
