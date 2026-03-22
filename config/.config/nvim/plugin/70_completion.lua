@@ -1,4 +1,4 @@
--- ── editor-completion.lua ──────────────────────
+-- ── 70_completion.lua ──────────────────────
 -- ClaudlosVim: blink.cmp — fast, Rust-based completion.
 
 vim.pack.add({

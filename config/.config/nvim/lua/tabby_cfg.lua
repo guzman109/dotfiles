@@ -54,7 +54,7 @@ local presets = {
     -- Replace the space below with a Neovim icon:
     --   Neovim:  <C-v>ue7c5  (nf-custom-neovim)
     --   Neovim2: <C-v>uf36f  (nf-linux-neovim) -- try both, see which looks better
-    { ' ', hl = { fg = palette.crust, bg = hl_tab.bg } },
+    { ' ', hl = { fg = palette.green, bg = hl_tab.bg } },
     --    ^^^^ replace ICON with <C-v>ue7c5
 
     -- RIGHT BUBBLE separator after head

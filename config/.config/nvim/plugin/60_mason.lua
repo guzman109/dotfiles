@@ -1,4 +1,4 @@
--- ── editor-mason.lua ───────────────────────────
+-- ── 60_mason.lua ───────────────────────────
 -- ClaudlosVim: Mason — install LSP servers, formatters, and DAP adapters.
 
 vim.pack.add({

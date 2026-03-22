@@ -1,4 +1,4 @@
--- ── 02-ui.lua ──────────────────────────────────
+-- ── 40_ui.lua ──────────────────────────────────
 -- ClaudlosVim: Colorscheme and visual enhancements.
 -- Loads early (02 prefix) so colors are set before first draw.
 
@@ -32,13 +32,28 @@ require('catppuccin').setup({
     operators = { 'bold' },
   },
   integrations = {
+    aerial = true,
+    alpha = true,
     blink_cmp = true,
+    dap = true,
+    dap_ui = true,
     gitsigns = true,
     harpoon = true,
+    indent_blankline = { enabled = true },
     mason = true,
     mini = { enabled = true },
     rainbow_delimiters = true,
+    render_markdown = true,
     ufo = true,
+    native_lsp = {
+      enabled = true,
+      underlines = {
+        errors = { 'undercurl' },
+        hints = { 'undercurl' },
+        warnings = { 'undercurl' },
+        information = { 'undercurl' },
+      },
+    },
   },
 })
 
@@ -118,9 +133,8 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     })
   end,
 })
-local mantle = require('catppuccin.palettes').get_palette().mantle
-vim.api.nvim_set_hl(0, 'TabLineFill', { bg = mantle })
-vim.api.nvim_set_hl(0, 'TabLine', { bg = mantle })
+vim.api.nvim_set_hl(0, 'TabLineFill', { bg = 'NONE' })
+vim.api.nvim_set_hl(0, 'TabLine', { bg = 'NONE' })
 
 -- ── Alpha (dashboard) ─────────────────────────
 local alpha = require('alpha')

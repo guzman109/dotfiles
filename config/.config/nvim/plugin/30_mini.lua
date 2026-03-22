@@ -1,6 +1,5 @@
--- ── 01-mini.lua ────────────────────────────────
+-- ── 30_mini.lua ────────────────────────────────
 -- ClaudlosVim: mini.nvim modules.
--- Loads early (01 prefix) because other plugins may depend on mini.icons.
 
 vim.pack.add({ 'https://github.com/nvim-mini/mini.nvim' })
 
@@ -26,15 +25,13 @@ require('mini.icons').setup({
 })
 
 -- ── Clue (keymap hints) ───────────────────────
--- Shows available keymaps in a popup after pressing a leader/prefix key
 local miniclue = require('mini.clue')
 miniclue.setup({
   triggers = {
-    -- Leader
     { mode = 'n', keys = '<Leader>' },
     { mode = 'x', keys = '<Leader>' },
+    { mode = 'v', keys = '<Leader>' },
 
-    -- Built-in
     { mode = 'n', keys = 'g' },
     { mode = 'x', keys = 'g' },
     { mode = 'n', keys = "'" },
@@ -46,22 +43,15 @@ miniclue.setup({
     { mode = 'i', keys = '<C-r>' },
     { mode = 'c', keys = '<C-r>' },
 
-    -- Window
     { mode = 'n', keys = '<C-w>' },
 
-    -- z (folds, spelling, etc.)
     { mode = 'n', keys = 'z' },
     { mode = 'x', keys = 'z' },
 
-    -- Brackets
     { mode = 'n', keys = '[' },
     { mode = 'n', keys = ']' },
-
-    -- Theme
-    { mode = 'v', keys = '<Leader>a', desc = '+ai' },
   },
 
-  -- Give the popup human-readable group names
   clues = {
     miniclue.gen_clues.builtin_completion(),
     miniclue.gen_clues.g(),
@@ -70,12 +60,11 @@ miniclue.setup({
     miniclue.gen_clues.windows(),
     miniclue.gen_clues.z(),
 
-    -- Custom group descriptions for <leader> prefixes
     { mode = 'n', keys = '<Leader>f', desc = '+find' },
     { mode = 'n', keys = '<Leader>g', desc = '+git' },
     { mode = 'n', keys = '<Leader>c', desc = '+code' },
     { mode = 'n', keys = '<Leader>d', desc = '+debug' },
-    { mode = 'n', keys = '<Leader>t', desc = '+tab' },
+    { mode = 'n', keys = '<Leader>t', desc = '+tab/terminal' },
     { mode = 'n', keys = '<Leader>p', desc = '+python' },
     { mode = 'n', keys = '<Leader>z', desc = '+zig' },
     { mode = 'n', keys = '<Leader>h', desc = '+harpoon' },
@@ -83,11 +72,11 @@ miniclue.setup({
     { mode = 'n', keys = '<Leader>a', desc = '+ai' },
     { mode = 'n', keys = '<Leader>l', desc = '+lua' },
     { mode = 'n', keys = '<Leader>w', desc = '+window' },
-
+    { mode = 'v', keys = '<Leader>a', desc = '+ai' },
   },
 
   window = {
-    delay = 300, -- ms before popup appears
+    delay = 300,
     config = {
       width = 'auto',
     },
@@ -95,4 +84,19 @@ miniclue.setup({
 })
 
 -- Animate
-require('mini.animate').setup()
+require('mini.animate').setup({
+  scroll = { enable = false },
+})
+
+-- Hipatters
+require('mini.hipatterns').setup({
+  highlighters = {
+    fixme     = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+    hack      = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+    todo      = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
+    note      = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
+
+    -- Highlight hex colors inline (shows actual color)
+    hex_color = require('mini.hipatterns').gen_highlighter.hex_color(),
+  },
+})
