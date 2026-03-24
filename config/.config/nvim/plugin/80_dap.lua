@@ -6,6 +6,13 @@ vim.pack.add({
   'https://github.com/rcarriga/nvim-dap-ui',
   'https://github.com/nvim-neotest/nvim-nio',
   'https://github.com/mfussenegger/nvim-dap-python',
+  'https://github.com/williamboman/mason.nvim',
+  'https://github.com/jay-babu/mason-nvim-dap.nvim',
+})
+
+require('mason').setup()
+require('mason-nvim-dap').setup({
+  ensure_installed = { 'codelldb' },
 })
 
 local dap = require('dap')
@@ -30,9 +37,9 @@ dap.adapters.codelldb = {
   },
 }
 
--- debugpy (Python — installed via Mason)
+-- debugpy (Python — installed via uv)
 local dap_python = require('dap-python')
-dap_python.setup(vim.fn.stdpath('data') .. '/mason/packages/debugpy/venv/bin/python')
+dap_python.setup('python3')
 dap_python.test_runner = 'pytest'
 
 -- ── Configurations ─────────────────────────────
