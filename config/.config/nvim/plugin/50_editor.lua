@@ -20,9 +20,6 @@ vim.pack.add({
 	{ src = "https://github.com/ThePrimeagen/harpoon", version = "harpoon2" },
 	"https://github.com/nvim-lua/plenary.nvim",
 
-	-- Command runner (uses harpoon2 for persistence)
-	"https://github.com/samharju/yeet.nvim",
-
 	-- Formatting
 	"https://github.com/stevearc/conform.nvim",
 
@@ -47,6 +44,9 @@ vim.pack.add({
 
 	-- Venv selector
 	"https://github.com/linux-cultist/venv-selector.nvim",
+
+	-- Highlight Colors (CSS, Tailwind)
+	"https://github.com/brenoprata10/nvim-highlight-colors",
 })
 
 -- ── fzf-lua ────────────────────────────────────
@@ -180,22 +180,14 @@ vim.keymap.set("n", "zK", function()
 	end
 end, { desc = "Peek fold" })
 
--- ── Harpoon + Yeet ─────────────────────────────
+-- ── Harpoon ─────────────────────────────
 local harpoon = require("harpoon")
 harpoon:setup({
 	settings = {
 		save_on_toggle = false,
 		sync_on_ui_close = false,
 	},
-	-- Yeet command list — stored per-project by harpoon
-	yeet = {
-		select = function(list_item, _, _)
-			require("yeet").execute(list_item.value)
-		end,
-	},
 })
-
-require("yeet").setup({})
 
 local harpoon_extensions = require("harpoon.extensions")
 harpoon:extend(harpoon_extensions.builtins.highlight_current_file())
@@ -257,33 +249,12 @@ vim.keymap.set("n", "<leader>hh", function()
 	end
 	require("fzf-lua").fzf_exec(files, {
 		prompt = "Harpoon> ",
+		previewer = "builtin",
 		actions = {
 			["default"] = require("fzf-lua.actions").file_edit,
 		},
 	})
 end, { desc = "Harpoon menu" })
-
--- Yeet command list (stored per-project via harpoon)
-vim.keymap.set("n", "<leader>yy", function()
-	require("yeet").execute()
-end, { desc = "Yeet (repeat last)" })
-
-vim.keymap.set("n", "<leader>yl", function()
-	harpoon.ui:toggle_quick_menu(harpoon:list("yeet"))
-end, { desc = "Yeet command list" })
-
-vim.keymap.set("n", "<leader>yn", function()
-	require("yeet").list_cmd()
-end, { desc = "Yeet new command" })
-
-vim.keymap.set("n", "<leader>yt", function()
-	require("yeet").select_target()
-end, { desc = "Yeet select target" })
-
-vim.keymap.set("n", "<leader>yq", function()
-	require("yeet").execute(nil, { clear_before_yeet = false, interrupt_before_yeet = true })
-end, { desc = "Yeet interrupt & run" })
-
 -- ── Conform ────────────────────────────────────
 require("conform").setup({
 	format_on_save = {
@@ -293,11 +264,14 @@ require("conform").setup({
 	formatters_by_ft = {
 		c = { "clang_format" },
 		cpp = { "clang_format" },
+		css = { "biome" },
 		fish = { "fish_indent" },
+		html = { "superhtml" },
 		javascript = { "biome" },
 		javascriptreact = { "biome" },
 		json = { "biome" },
 		jsonc = { "biome" },
+		just = { "just" },
 		lua = { "stylua" },
 		python = { "ruff_format", "ruff_fix", "ruff_organize_imports" },
 		typescript = { "biome" },
@@ -308,6 +282,11 @@ require("conform").setup({
 		clang_format = {
 			command = "/opt/homebrew/opt/llvm/bin/clang-format",
 		},
+		just = {
+			command = "just",
+			args = { "--fmt", "--unstable", "-f", "$FILENAME" },
+			stdin = false,
+		},
 	},
 })
 
@@ -316,9 +295,11 @@ require("nvim-treesitter").setup({
 	ensure_installed = {
 		"bash",
 		"c",
+		"css",
 		"cpp",
 		"fish",
 		"javascript",
+		"just",
 		"html",
 		"http",
 		"json",
@@ -407,3 +388,48 @@ require("venv-selector").setup({
 	name = { "venv", ".venv", "env", ".env" },
 	auto_refresh = true,
 })
+
+-- ── NVIM Highlight Colors ──────────────────────
+require("nvim-highlight-colors").setup({
+	render = "virtual",
+	virtual_symbol = "●",
+	enable_hex = true,
+	enable_short_hex = true,
+	enable_rgb = true,
+	enable_hsl = true,
+	enable_css_variables = true,
+	enable_named_colors = true,
+	enable_tailwind = true,
+})
+
+-- ── Just (command runner) ──────────────────────
+vim.keymap.set("n", "<leader>jr", function()
+	local handle = io.popen("just --summary 2>/dev/null")
+	if not handle then
+		vim.notify("No justfile found", vim.log.levels.WARN)
+		return
+	end
+	local result = handle:read("*a")
+	handle:close()
+	if result == "" then
+		vim.notify("No justfile found", vim.log.levels.WARN)
+		return
+	end
+	local recipes = vim.split(vim.trim(result), " ")
+	require("fzf-lua").fzf_exec(recipes, {
+		prompt = "Just> ",
+		actions = {
+			["default"] = function(selected)
+				vim.cmd("!" .. "just " .. selected[1])
+			end,
+		},
+	})
+end, { desc = "Just run recipe" })
+
+vim.keymap.set("n", "<leader>jl", function()
+	vim.cmd("!just --list")
+end, { desc = "Just list recipes" })
+
+vim.keymap.set("n", "<leader>je", function()
+	vim.cmd("e justfile")
+end, { desc = "Edit justfile" })

@@ -127,15 +127,13 @@
 | `<C-x>` | n | Open in split (in harpoon quick menu) | 50_editor |
 | `<C-t>` | n | Open in new tab (in harpoon quick menu) | 50_editor |
 
-## Yeet (Command Runner)
+## Just (Command Runner)
 
 | Key | Mode | Action | File |
 |-----|------|--------|------|
-| `<leader>yy` | n | Yeet (repeat last command) | 50_editor |
-| `<leader>yl` | n | Yeet command list | 50_editor |
-| `<leader>yn` | n | Yeet new command | 50_editor |
-| `<leader>yt` | n | Yeet select target | 50_editor |
-| `<leader>yq` | n | Yeet interrupt & run | 50_editor |
+| `<leader>jr` | n | Run recipe (fzf picker) | 50_editor |
+| `<leader>jl` | n | List recipes | 50_editor |
+| `<leader>je` | n | Edit justfile | 50_editor |
 
 ## Folding (ufo)
 

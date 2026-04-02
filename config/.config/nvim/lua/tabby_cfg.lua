@@ -53,8 +53,9 @@ local function tab_label(tabid)
 	end
 
 	local harp = is_harpooned(bufnr) and " 󰛢" or ""
+	local modified = vim.bo[bufnr].modified and " ●" or ""
 	local number = vim.api.nvim_tabpage_get_number(tabid)
-	return string.format(" %s %d: %s%s ", icon, number, name, harp)
+	return string.format(" %s %d: %s%s%s ", icon, number, name, harp, modified)
 end
 
 local presets = {

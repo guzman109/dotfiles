@@ -131,6 +131,12 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 		})
 	end,
 })
+vim.api.nvim_create_autocmd({ "BufModifiedSet", "BufWritePost" }, {
+	group = vim.api.nvim_create_augroup("ClaudlosTabbyModified", { clear = true }),
+	callback = function()
+		vim.cmd("redrawtabline")
+	end,
+})
 vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE" })
 vim.api.nvim_set_hl(0, "TabLine", { bg = "NONE" })
 
@@ -204,33 +210,45 @@ starter.setup({
 	header = build_header,
 	items = {
 		-- Files
-		{ name = "f  Find files",   action = "FzfLua files",    section = "Files" },
-		{ name = "g  Live grep",    action = "FzfLua live_grep", section = "Files" },
-		{ name = "r  Recent files", action = "FzfLua oldfiles",  section = "Files" },
-		{ name = "t  TODOs", action = function()
-			require("fzf-lua").grep({ search = "TODO|FIXME|HACK|NOTE|WARN" })
-		end, section = "Files" },
+		{ name = "f  Find files", action = "FzfLua files", section = "Files" },
+		{ name = "g  Live grep", action = "FzfLua live_grep", section = "Files" },
+		{ name = "r  Recent files", action = "FzfLua oldfiles", section = "Files" },
+		{
+			name = "t  TODOs",
+			action = function()
+				require("fzf-lua").grep({ search = "TODO|FIXME|HACK|NOTE|WARN" })
+			end,
+			section = "Files",
+		},
 		-- Config
-		{ name = "e  Edit config", action = "e " .. vim.fn.stdpath("config") .. "/init.lua",    section = "Config" },
-		{ name = "k  Keymaps",     action = "e " .. vim.fn.stdpath("config") .. "/KEYMAPS.md",  section = "Config" },
-		{ name = "c  Commands",    action = "e " .. vim.fn.stdpath("config") .. "/COMMANDS.md", section = "Config" },
+		{ name = "e  Edit config", action = "e " .. vim.fn.stdpath("config") .. "/init.lua", section = "Config" },
+		{ name = "k  Keymaps", action = "e " .. vim.fn.stdpath("config") .. "/KEYMAPS.md", section = "Config" },
+		{ name = "c  Commands", action = "e " .. vim.fn.stdpath("config") .. "/COMMANDS.md", section = "Config" },
 		-- Plugins
 		{ name = "u  Update plugins", action = "lua vim.pack.update()", section = "Plugins" },
-		{ name = "x  Clean plugins", action = function()
-			local unused = vim.iter(vim.pack.get())
-				:filter(function(x) return not x.active end)
-				:map(function(x) return x.spec.name end)
-				:totable()
-			if #unused == 0 then
-				vim.notify("No unused plugins to clean", vim.log.levels.INFO)
-			else
-				vim.notify("Removing: " .. table.concat(unused, ", "), vim.log.levels.INFO)
-				for _, name in ipairs(unused) do
-					vim.pack.del({ name }, { force = true })
+		{
+			name = "x  Clean plugins",
+			action = function()
+				local unused = vim.iter(vim.pack.get())
+					:filter(function(x)
+						return not x.active
+					end)
+					:map(function(x)
+						return x.spec.name
+					end)
+					:totable()
+				if #unused == 0 then
+					vim.notify("No unused plugins to clean", vim.log.levels.INFO)
+				else
+					vim.notify("Removing: " .. table.concat(unused, ", "), vim.log.levels.INFO)
+					for _, name in ipairs(unused) do
+						vim.pack.del({ name }, { force = true })
+					end
+					vim.notify("Done! Removed " .. #unused .. " plugins", vim.log.levels.INFO)
 				end
-				vim.notify("Done! Removed " .. #unused .. " plugins", vim.log.levels.INFO)
-			end
-		end, section = "Plugins" },
+			end,
+			section = "Plugins",
+		},
 		-- Session
 		{ name = "q  Quit", action = "qa", section = "Session" },
 	},

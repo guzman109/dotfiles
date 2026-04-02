@@ -69,13 +69,13 @@ miniclue.setup({
 		{ mode = "n", keys = "<Leader>p", desc = "+python" },
 		{ mode = "n", keys = "<Leader>z", desc = "+zig" },
 		{ mode = "n", keys = "<Leader>h", desc = "+harpoon" },
-		{ mode = "n", keys = "<Leader>y", desc = "+yeet" },
 		{ mode = "n", keys = "<Leader>k", desc = "+kulala" },
 		{ mode = "n", keys = "<Leader>a", desc = "+ai" },
 		{ mode = "n", keys = "<Leader>l", desc = "+lua" },
 		{ mode = "n", keys = "<Leader>m", desc = "+preview" },
 		{ mode = "n", keys = "<Leader>w", desc = "+window" },
 		{ mode = "v", keys = "<Leader>a", desc = "+ai" },
+		{ mode = "n", keys = "<Leader>j", desc = "+just" },
 	},
 
 	window = {
@@ -98,8 +98,5 @@ require("mini.hipatterns").setup({
 		hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
 		todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
 		note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
-
-		-- Highlight hex colors inline (shows actual color)
-		hex_color = require("mini.hipatterns").gen_highlighter.hex_color(),
 	},
 })
