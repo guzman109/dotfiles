@@ -8,7 +8,6 @@ vim.pack.add({
 	"https://github.com/f-person/auto-dark-mode.nvim",
 	"https://github.com/nvim-lualine/lualine.nvim",
 	"https://github.com/lukas-reineke/indent-blankline.nvim",
-	"https://github.com/goolord/alpha-nvim",
 	"https://github.com/nanozuki/tabby.nvim",
 })
 
@@ -33,7 +32,6 @@ require("catppuccin").setup({
 	},
 	integrations = {
 		aerial = true,
-		alpha = true,
 		blink_cmp = true,
 		dap = true,
 		dap_ui = true,
@@ -41,9 +39,9 @@ require("catppuccin").setup({
 		harpoon = true,
 		indent_blankline = { enabled = true },
 		mason = true,
+		markview = true,
 		mini = { enabled = true },
 		rainbow_delimiters = true,
-		render_markdown = true,
 		ufo = true,
 		native_lsp = {
 			enabled = true,
@@ -94,16 +92,16 @@ require("lualine").setup({
 	options = {
 		theme = "auto",
 		component_separators = "",
-		section_separators = { left = "", right = "" },
+		section_separators = { left = "", right = "" },
 	},
 	sections = {
-		lualine_a = { { "mode", separator = { left = "" }, right_padding = 2 } },
+		lualine_a = { { "mode", separator = { left = "" }, right_padding = 2 } },
 		lualine_b = { "branch", "diff", "diagnostics" },
 		lualine_c = { { "filename", path = 1 } },
 		lualine_x = { "encoding", "filetype" },
-		lualine_y = { "progress" },
+		lualine_y = { "progress", "location" },
 		lualine_z = {
-			{ datetime(), separator = { right = "" }, left_padding = 2 },
+			{ datetime(), separator = { right = "" }, left_padding = 2 },
 		},
 	},
 })
@@ -136,18 +134,18 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE" })
 vim.api.nvim_set_hl(0, "TabLine", { bg = "NONE" })
 
--- ── Alpha (dashboard) ─────────────────────────
-local alpha = require("alpha")
-local dashboard = require("alpha.themes.dashboard")
+-- ── Mini.starter (dashboard) ──────────────────
+local starter = require("mini.starter")
 
--- Quote from your fish script
 local function get_quote()
 	local ok, quote = pcall(vim.fn.system, "fish ~/.config/inspiration/quote-cache.fish --type motivation --box 58")
 	if ok and vim.v.shell_error == 0 then
-		return vim.split(quote, "\n")
+		-- strip trailing newline
+		return quote:gsub("\n$", "")
 	end
-	return { "" }
+	return ""
 end
+
 local function get_greeting()
 	local hour = tonumber(os.date("%H"))
 	local greetings = {
@@ -173,7 +171,6 @@ local function get_greeting()
 			"Evening, Carlos. One more feature.",
 		},
 	}
-
 	local pool
 	if hour >= 5 and hour < 12 then
 		pool = greetings.morning
@@ -182,89 +179,71 @@ local function get_greeting()
 	else
 		pool = greetings.evening
 	end
-
 	math.randomseed(os.time())
 	return pool[math.random(#pool)]
 end
--- Header: ASCII title + date + quote
-local header_lines = {
-	"",
-	"  ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗",
-	"  ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║",
-	"  ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║",
-	"  ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║",
-	"  ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║",
-	"  ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
-	"",
-	"   " .. os.date("%A, %B %d, %Y"),
-	"   " .. get_greeting(),
-	"",
-}
-vim.list_extend(header_lines, get_quote())
-table.insert(header_lines, "")
 
-dashboard.section.header.val = header_lines
-dashboard.section.header.opts = { hl = "DiagnosticOk", position = "center" }
-
--- Buttons: close alpha first so fzf-lua gets a real buffer
-local function alpha_fzf(fzf_fn, opts)
-	return function()
-		vim.cmd("enew")
-		fzf_fn(opts or {})
-	end
+local function build_header()
+	return table.concat({
+		"",
+		"  ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗",
+		"  ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║",
+		"  ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║",
+		"  ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║",
+		"  ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║",
+		"  ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
+		"",
+		"   " .. os.date("%A, %B %d, %Y"),
+		"   " .. get_greeting(),
+		"",
+		get_quote(),
+	}, "\n")
 end
 
-dashboard.section.buttons.val = {
-	dashboard.button("f", "  Find files", "<cmd>FzfLua files<cr>"),
-	dashboard.button("g", "  Live grep", "<cmd>FzfLua live_grep<cr>"),
-	dashboard.button("r", "  Recent files", "<cmd>FzfLua oldfiles<cr>"),
-	dashboard.button("t", "  TODOs", function()
-		alpha_fzf(require("fzf-lua").grep, { search = "TODO|FIXME|HACK|NOTE|WARN" })()
-	end),
-	dashboard.button("c", "  Edit config", "<cmd>e " .. vim.fn.stdpath("config") .. "/init.lua<cr>"),
-	dashboard.button("k", "  Keymaps", "<cmd>e " .. vim.fn.stdpath("config") .. "/KEYMAPS.md<cr>"),
-	dashboard.button("u", "  Update plugins", "<cmd>lua vim.pack.update()<cr>"),
-	dashboard.button("x", "  Clean plugins", function()
-		local unused = vim.iter(vim.pack.get())
-			:filter(function(x)
-				return not x.active
-			end)
-			:map(function(x)
-				return x.spec.name
-			end)
-			:totable()
-		if #unused == 0 then
-			vim.notify("No unused plugins to clean", vim.log.levels.INFO)
-		else
-			vim.notify("Removing: " .. table.concat(unused, ", "), vim.log.levels.INFO)
-			for _, name in ipairs(unused) do
-				vim.pack.del({ name }, { force = true })
+starter.setup({
+	header = build_header,
+	items = {
+		-- Files
+		{ name = "f  Find files",   action = "FzfLua files",    section = "Files" },
+		{ name = "g  Live grep",    action = "FzfLua live_grep", section = "Files" },
+		{ name = "r  Recent files", action = "FzfLua oldfiles",  section = "Files" },
+		{ name = "t  TODOs", action = function()
+			require("fzf-lua").grep({ search = "TODO|FIXME|HACK|NOTE|WARN" })
+		end, section = "Files" },
+		-- Config
+		{ name = "e  Edit config", action = "e " .. vim.fn.stdpath("config") .. "/init.lua",    section = "Config" },
+		{ name = "k  Keymaps",     action = "e " .. vim.fn.stdpath("config") .. "/KEYMAPS.md",  section = "Config" },
+		{ name = "c  Commands",    action = "e " .. vim.fn.stdpath("config") .. "/COMMANDS.md", section = "Config" },
+		-- Plugins
+		{ name = "u  Update plugins", action = "lua vim.pack.update()", section = "Plugins" },
+		{ name = "x  Clean plugins", action = function()
+			local unused = vim.iter(vim.pack.get())
+				:filter(function(x) return not x.active end)
+				:map(function(x) return x.spec.name end)
+				:totable()
+			if #unused == 0 then
+				vim.notify("No unused plugins to clean", vim.log.levels.INFO)
+			else
+				vim.notify("Removing: " .. table.concat(unused, ", "), vim.log.levels.INFO)
+				for _, name in ipairs(unused) do
+					vim.pack.del({ name }, { force = true })
+				end
+				vim.notify("Done! Removed " .. #unused .. " plugins", vim.log.levels.INFO)
 			end
-			vim.notify("Done! Removed " .. #unused .. " plugins", vim.log.levels.INFO)
-		end
-	end),
-	dashboard.button("q", "  Quit", "<cmd>qa<cr>"),
-}
+		end, section = "Plugins" },
+		-- Session
+		{ name = "q  Quit", action = "qa", section = "Session" },
+	},
+	content_hooks = {
+		starter.gen_hook.aligning("center", "center"),
+	},
+	footer = "",
+})
 
--- Footer
-dashboard.section.footer.val = ""
-
--- Layout
-dashboard.config.layout = {
-	{ type = "padding", val = 2 },
-	dashboard.section.header,
-	{ type = "padding", val = 2 },
-	dashboard.section.buttons,
-	{ type = "padding", val = 1 },
-	dashboard.section.footer,
-}
-
-alpha.setup(dashboard.config)
-
--- Disable folding in alpha buffer
+-- Disable folding in starter buffer
 vim.api.nvim_create_autocmd("FileType", {
-	group = vim.api.nvim_create_augroup("ClaudlosAlpha", { clear = true }),
-	pattern = "alpha",
+	group = vim.api.nvim_create_augroup("ClaudlosStarter", { clear = true }),
+	pattern = "ministarter",
 	callback = function()
 		vim.opt_local.foldenable = false
 	end,

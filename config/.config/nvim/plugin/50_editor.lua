@@ -1,10 +1,7 @@
 -- ── 50_editor.lua ──────────────────────────────
--- ClaudlosVim: Editor plugins — file explorer, finder, git, navigation, formatting.
+-- ClaudlosVim: Editor plugins — finder, git, navigation, formatting, testing, commands.
 
 vim.pack.add({
-	-- File explorer
-	"https://github.com/stevearc/oil.nvim",
-
 	-- Finder
 	"https://github.com/ibhagwan/fzf-lua",
 
@@ -23,6 +20,9 @@ vim.pack.add({
 	{ src = "https://github.com/ThePrimeagen/harpoon", version = "harpoon2" },
 	"https://github.com/nvim-lua/plenary.nvim",
 
+	-- Command runner (uses harpoon2 for persistence)
+	"https://github.com/samharju/yeet.nvim",
+
 	-- Formatting
 	"https://github.com/stevearc/conform.nvim",
 
@@ -30,7 +30,17 @@ vim.pack.add({
 	"https://github.com/nvim-treesitter/nvim-treesitter",
 
 	-- Markdown rendering
-	"https://github.com/MeanderingProgrammer/render-markdown.nvim",
+	"https://github.com/OXY2DEV/markview.nvim",
+
+	-- Live preview (browser-based for MD/HTML/SVG)
+	"https://github.com/brianhuster/live-preview.nvim",
+
+	-- Testing
+	"https://github.com/nvim-neotest/nvim-nio",
+	"https://github.com/nvim-neotest/neotest",
+	"https://github.com/nvim-neotest/neotest-python",
+	"https://github.com/alfaix/neotest-gtest",
+	"https://github.com/lawrence-laz/neotest-zig",
 
 	-- HTTP client
 	"https://github.com/mistweaverco/kulala.nvim",
@@ -38,27 +48,6 @@ vim.pack.add({
 	-- Venv selector
 	"https://github.com/linux-cultist/venv-selector.nvim",
 })
-
--- ── Oil ────────────────────────────────────────
-require("oil").setup({
-	default_file_explorer = true,
-	view_options = { show_hidden = true },
-	keymaps = {
-		["g?"] = "actions.show_help",
-		["<CR>"] = "actions.select",
-		["<C-v>"] = "actions.select_vsplit",
-		["<C-s>"] = "actions.select_split",
-		["<C-t>"] = "actions.select_tab",
-		["-"] = "actions.parent",
-		["_"] = "actions.open_cwd",
-		["g."] = "actions.toggle_hidden",
-		["q"] = "actions.close",
-	},
-})
-
-vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Open parent directory" })
-vim.keymap.set("n", "<leader>e", "<cmd>Oil<cr>", { desc = "File explorer" })
-vim.keymap.set("n", "<leader>E", "<cmd>tabnew | Oil<cr>", { desc = "File explorer (tab)" })
 
 -- ── fzf-lua ────────────────────────────────────
 require("fzf-lua").setup({
@@ -69,11 +58,34 @@ require("fzf-lua").setup({
 		row = 0.35,
 		scrollbar = false,
 	},
-	files = { cwd_prompt = false },
+	files = {
+		cwd_prompt = false,
+		hidden = false,
+	},
 	grep = {
 		rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
 	},
+	previewers = {
+		builtin = {
+			extensions = {
+				["png"] = { "chafa", "{file}" },
+				["jpg"] = { "chafa", "{file}" },
+				["jpeg"] = { "chafa", "{file}" },
+				["gif"] = { "chafa", "{file}" },
+				["webp"] = { "chafa", "{file}" },
+				["svg"] = { "chafa", "{file}" },
+			},
+		},
+	},
 })
+
+-- File browsing (replaces oil)
+vim.keymap.set("n", "-", function()
+	require("fzf-lua").files({ cwd = vim.fn.expand("%:p:h") })
+end, { desc = "Browse parent directory" })
+vim.keymap.set("n", "<leader>e", function()
+	require("fzf-lua").files({ cwd = vim.fn.expand("%:p:h") })
+end, { desc = "File explorer" })
 
 vim.keymap.set("n", "<leader><space>", function()
 	require("fzf-lua").files()
@@ -151,7 +163,10 @@ vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 
 require("ufo").setup({
-	provider_selector = function()
+	provider_selector = function(_, filetype, _)
+		if filetype == "markdown" then
+			return { "treesitter", "indent" }
+		end
 		return { "lsp", "indent" }
 	end,
 })
@@ -165,14 +180,22 @@ vim.keymap.set("n", "zK", function()
 	end
 end, { desc = "Peek fold" })
 
--- ── Harpoon ────────────────────────────────────
+-- ── Harpoon + Yeet ─────────────────────────────
 local harpoon = require("harpoon")
 harpoon:setup({
 	settings = {
-		save_on_toggle = true,
-		sync_on_ui_close = true,
+		save_on_toggle = false,
+		sync_on_ui_close = false,
+	},
+	-- Yeet command list — stored per-project by harpoon
+	yeet = {
+		select = function(list_item, _, _)
+			require("yeet").execute(list_item.value)
+		end,
 	},
 })
+
+require("yeet").setup({})
 
 local harpoon_extensions = require("harpoon.extensions")
 harpoon:extend(harpoon_extensions.builtins.highlight_current_file())
@@ -200,6 +223,7 @@ harpoon:extend({
 	end,
 })
 
+-- File marks
 vim.keymap.set("n", "<leader>ha", function()
 	harpoon:list():add()
 end, { desc = "Harpoon add" })
@@ -239,6 +263,27 @@ vim.keymap.set("n", "<leader>hh", function()
 	})
 end, { desc = "Harpoon menu" })
 
+-- Yeet command list (stored per-project via harpoon)
+vim.keymap.set("n", "<leader>yy", function()
+	require("yeet").execute()
+end, { desc = "Yeet (repeat last)" })
+
+vim.keymap.set("n", "<leader>yl", function()
+	harpoon.ui:toggle_quick_menu(harpoon:list("yeet"))
+end, { desc = "Yeet command list" })
+
+vim.keymap.set("n", "<leader>yn", function()
+	require("yeet").list_cmd()
+end, { desc = "Yeet new command" })
+
+vim.keymap.set("n", "<leader>yt", function()
+	require("yeet").select_target()
+end, { desc = "Yeet select target" })
+
+vim.keymap.set("n", "<leader>yq", function()
+	require("yeet").execute(nil, { clear_before_yeet = false, interrupt_before_yeet = true })
+end, { desc = "Yeet interrupt & run" })
+
 -- ── Conform ────────────────────────────────────
 require("conform").setup({
 	format_on_save = {
@@ -248,8 +293,15 @@ require("conform").setup({
 	formatters_by_ft = {
 		c = { "clang_format" },
 		cpp = { "clang_format" },
+		fish = { "fish_indent" },
+		javascript = { "biome" },
+		javascriptreact = { "biome" },
+		json = { "biome" },
+		jsonc = { "biome" },
 		lua = { "stylua" },
 		python = { "ruff_format", "ruff_fix", "ruff_organize_imports" },
+		typescript = { "biome" },
+		typescriptreact = { "biome" },
 		zig = { "zigfmt" },
 	},
 	formatters = {
@@ -262,27 +314,87 @@ require("conform").setup({
 -- ── Treesitter ─────────────────────────────────
 require("nvim-treesitter").setup({
 	ensure_installed = {
-		"json",
-		"yaml",
-		"toml",
 		"bash",
-		"vimdoc",
-		"query",
 		"c",
 		"cpp",
+		"fish",
+		"javascript",
+		"html",
+		"http",
+		"json",
+		"latex",
 		"lua",
-		"python",
-		"zig",
 		"markdown",
 		"markdown_inline",
-		"http",
+		"python",
+		"query",
+		"toml",
+		"tsx",
+		"typescript",
+		"vimdoc",
+		"yaml",
+		"zig",
 	},
 })
 
--- ── Render Markdown ────────────────────────────
-require("render-markdown").setup({
-	file_types = { "markdown", "codecompanion" },
+-- ── Markview (markdown rendering) ──────────────
+require("markview").setup({
+	preview = {
+		icon_provider = "mini",
+		filetypes = { "markdown" },
+	},
 })
+
+-- ── Live Preview (browser) ─────────────────────
+require("livepreview.config").set({})
+
+vim.keymap.set("n", "<leader>mp", "<cmd>LivePreview start<cr>", { desc = "Start live preview" })
+vim.keymap.set("n", "<leader>ms", "<cmd>LivePreview stop<cr>", { desc = "Stop live preview" })
+vim.keymap.set("n", "<leader>mf", "<cmd>LivePreview pick<cr>", { desc = "Pick file to preview" })
+
+-- ── Neotest ────────────────────────────────────
+require("neotest").setup({
+	adapters = {
+		require("neotest-python")({
+			dap = { justMyCode = false },
+			runner = "pytest",
+		}),
+		require("neotest-gtest").setup({}),
+		require("neotest-zig")({
+			dap = { adapter = "codelldb" },
+		}),
+	},
+	status = { virtual_text = true },
+	output = { open_on_run = true },
+})
+
+vim.keymap.set("n", "<leader>nr", function()
+	require("neotest").run.run()
+end, { desc = "Run nearest test" })
+vim.keymap.set("n", "<leader>nf", function()
+	require("neotest").run.run(vim.fn.expand("%"))
+end, { desc = "Run file tests" })
+vim.keymap.set("n", "<leader>nA", function()
+	require("neotest").run.run({ suite = true })
+end, { desc = "Run all tests" })
+vim.keymap.set("n", "<leader>nd", function()
+	require("neotest").run.run({ strategy = "dap" })
+end, { desc = "Debug nearest test" })
+vim.keymap.set("n", "<leader>ns", function()
+	require("neotest").run.stop()
+end, { desc = "Stop test" })
+vim.keymap.set("n", "<leader>nl", function()
+	require("neotest").run.run_last()
+end, { desc = "Run last test" })
+vim.keymap.set("n", "<leader>no", function()
+	require("neotest").output.open({ enter = true, auto_close = true })
+end, { desc = "Show output" })
+vim.keymap.set("n", "<leader>nO", function()
+	require("neotest").output_panel.toggle()
+end, { desc = "Toggle output panel" })
+vim.keymap.set("n", "<leader>nv", function()
+	require("neotest").summary.toggle()
+end, { desc = "Toggle summary" })
 
 -- ── Kulala (HTTP) ──────────────────────────────
 require("kulala").setup({

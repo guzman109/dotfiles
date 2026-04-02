@@ -6,7 +6,7 @@ local opt = vim.opt
 -- Line numbers
 opt.number = true
 opt.relativenumber = true
-opt.signcolumn = 'yes'
+opt.signcolumn = "yes"
 
 -- Tabs / indent
 opt.tabstop = 4
@@ -38,48 +38,87 @@ opt.splitbelow = true
 opt.undofile = true
 opt.swapfile = false
 opt.backup = false
+opt.shada = "!,'100,<50,s10,h"
 
 -- Responsiveness
 opt.updatetime = 250
 opt.timeoutlen = 300
 
+-- Navigation
+opt.jumpoptions = "stack"
+
 -- Misc
-opt.completeopt = 'menu,menuone,noselect'
-opt.clipboard = 'unnamedplus'
-opt.mouse = 'a'
+opt.completeopt = "menu,menuone,noselect"
+opt.clipboard = "unnamedplus"
+opt.mouse = "a"
 opt.laststatus = 3
 
 -- Fold icons, hide ~ on empty lines
 opt.fillchars = {
-  fold = ' ',
-  foldopen = '▾',
-  foldclose = '▸',
-  foldsep = ' ',
-  eob = ' ',
+	fold = " ",
+	foldopen = "▾",
+	foldclose = "▸",
+	foldsep = " ",
+	eob = " ",
 }
 
 -- ── Diagnostics ────────────────────────────────
 vim.diagnostic.config({
-  virtual_text = {
-    spacing = 4,
-    prefix = '●',
-  },
-  virtual_lines = {
-    current_line = true,
-  },
-  signs = {
-    text = {
-      [vim.diagnostic.severity.ERROR] = vim.fn.nr2char(0xea87) .. ' ',
-      [vim.diagnostic.severity.WARN]  = vim.fn.nr2char(0xea6c) .. ' ',
-      [vim.diagnostic.severity.HINT]  = vim.fn.nr2char(0xf0335) .. ' ',
-      [vim.diagnostic.severity.INFO]  = vim.fn.nr2char(0xea74) .. ' ',
-    },
-  },
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
-  float = {
-    border = 'rounded',
-    source = true,
-  },
+	virtual_text = false,
+	virtual_lines = false,
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "●",
+			[vim.diagnostic.severity.WARN] = "●",
+			[vim.diagnostic.severity.HINT] = "●",
+			[vim.diagnostic.severity.INFO] = "●",
+		},
+	},
+	underline = true,
+	update_in_insert = false,
+	severity_sort = true,
+	float = {
+		border = "rounded",
+		source = true,
+	},
 })
+
+-- Pack diagnostic dots together at end of line
+local ns = vim.api.nvim_create_namespace("diagnostic_dots")
+local severity_hl = {
+	[vim.diagnostic.severity.ERROR] = "DiagnosticError",
+	[vim.diagnostic.severity.WARN] = "DiagnosticWarn",
+	[vim.diagnostic.severity.HINT] = "DiagnosticHint",
+	[vim.diagnostic.severity.INFO] = "DiagnosticInfo",
+}
+
+vim.diagnostic.handlers["dots"] = {
+	show = function(_, bufnr, diagnostics, _)
+		vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+		local lines = {}
+		for _, d in ipairs(diagnostics) do
+			lines[d.lnum] = lines[d.lnum] or {}
+			table.insert(lines[d.lnum], d.severity)
+		end
+		for lnum, sevs in pairs(lines) do
+			table.sort(sevs)
+			local virt = {}
+			for _, s in ipairs(sevs) do
+				table.insert(virt, { "●", severity_hl[s] })
+			end
+			vim.api.nvim_buf_set_extmark(bufnr, ns, lnum, 0, {
+				virt_text = virt,
+				virt_text_pos = "eol",
+			})
+		end
+	end,
+	hide = function(_, bufnr)
+		vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+	end,
+}
+
+-- Mason Ignores
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0

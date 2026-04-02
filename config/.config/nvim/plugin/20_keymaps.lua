@@ -37,7 +37,8 @@ map("n", "<leader>tr", function()
 end, { desc = "Close tabs to right" })
 map("n", "<S-h>", "<cmd>tabprevious<cr>", { desc = "Previous tab" })
 map("n", "<S-l>", "<cmd>tabnext<cr>", { desc = "Next tab" })
-
+map("n", "<leader>t<", "<cmd>tabmove -1<cr>", { desc = "Move tab left" })
+map("n", "<leader>t>", "<cmd>tabmove +1<cr>", { desc = "Move tab right" })
 -- ── Windows / Splits ───────────────────────────
 map("n", "<leader>wv", "<cmd>vsplit<cr>", { desc = "Split vertical" })
 map("n", "<leader>ws", "<cmd>split<cr>", { desc = "Split horizontal" })
@@ -120,6 +121,9 @@ end, { desc = "LSP info" })
 map("n", "<leader>fk", function()
 	vim.cmd("e " .. vim.fn.stdpath("config") .. "/KEYMAPS.md")
 end, { desc = "Open keymaps" })
+map("n", "<leader>fc", function()
+	vim.cmd("e " .. vim.fn.stdpath("config") .. "/COMMANDS.md")
+end, { desc = "Open commands" })
 
 -- ── LSP (on attach) ───────────────────────────
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -175,6 +179,9 @@ autocmd("BufWritePre", {
 	group = augroup("ClaudlosWhitespace", { clear = true }),
 	pattern = "*",
 	callback = function()
+		if not vim.bo.modifiable then
+			return
+		end
 		local pos = vim.api.nvim_win_get_cursor(0)
 		vim.cmd([[%s/\s\+$//e]])
 		vim.api.nvim_win_set_cursor(0, pos)
@@ -198,5 +205,13 @@ autocmd("FileType", {
 	callback = function(event)
 		vim.bo[event.buf].buflisted = false
 		vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true })
+	end,
+})
+
+-- Clear jumplist on startup so C-o/C-i only navigate within this session
+autocmd("VimEnter", {
+	group = augroup("ClaudlosCleanJumps", { clear = true }),
+	callback = function()
+		vim.cmd("clearjumps")
 	end,
 })
