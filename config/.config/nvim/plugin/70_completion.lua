@@ -46,4 +46,25 @@ require("blink.cmp").setup({
 	fuzzy = {
 		implementation = "rust",
 	},
+	kind_icon = {
+		text = function(ctx)
+			local icon = ctx.kind_icon
+			if ctx.item.source_name == "LSP" then
+				local color_item = require("nvim-highlight-colors").format(ctx.item.documentation, { kind = ctx.kind })
+				if color_item and color_item.abbr ~= "" then
+					icon = color_item.abbr
+				end
+			end
+			return icon .. ctx.icon_gap
+		end,
+		highlight = function(ctx)
+			if ctx.item.source_name == "LSP" then
+				local color_item = require("nvim-highlight-colors").format(ctx.item.documentation, { kind = ctx.kind })
+				if color_item and color_item.abbr_hl_group then
+					return color_item.abbr_hl_group
+				end
+			end
+			return "BlinkCmpKind" .. ctx.kind
+		end,
+	},
 })
