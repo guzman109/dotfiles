@@ -1,4 +1,4 @@
-# ClaudlosVim Commands
+# Neovim Commands
 
 > Enter with `:` in normal mode. Tab-complete to browse.
 
@@ -20,18 +20,18 @@
 | `:AerialNext` | Jump to next symbol | 50_editor |
 | `:Fluoride` | Symbol structure view | 50_editor |
 
-## Finder (fzf-lua)
+## Finder (mini.pick)
 
 | Command | Action | File |
 |---------|--------|------|
-| `:FzfLua files` | Find files | 50_editor |
-| `:FzfLua live_grep` | Live grep | 50_editor |
-| `:FzfLua buffers` | Open buffers | 50_editor |
-| `:FzfLua oldfiles` | Recent files | 50_editor |
-| `:FzfLua help_tags` | Help tags | 50_editor |
-| `:FzfLua diagnostics_document` | Document diagnostics | 50_editor |
-| `:FzfLua lsp_document_symbols` | Document symbols | 50_editor |
-| `:FzfLua <picker>` | Any other fzf-lua picker | 50_editor |
+| `:Pick files` | Find files | 50_editor |
+| `:Pick grep_live` | Live grep | 50_editor |
+| `:Pick buffers` | Open buffers | 50_editor |
+| `:Pick oldfiles` | Recent files | 50_editor |
+| `:Pick help` | Help tags | 50_editor |
+| `:Pick diagnostic scope='current'` | Document diagnostics | 50_editor |
+| `:Pick lsp scope='document_symbol'` | Document symbols | 50_editor |
+| `:Pick <picker>` | Any other mini picker | 50_editor |
 
 ## Live Preview
 
@@ -110,4 +110,3 @@
 | Command | Action | File |
 |---------|--------|------|
 | `:ClangdSwitchSourceHeader` | Switch between header and source file | ftplugin/cpp |
-

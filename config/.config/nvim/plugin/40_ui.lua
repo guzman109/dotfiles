@@ -1,14 +1,12 @@
 -- ── 40_ui.lua ──────────────────────────────────
--- ClaudlosVim: Colorscheme and visual enhancements.
+-- Neovim config: Colorscheme and visual enhancements.
 -- Loads early (02 prefix) so colors are set before first draw.
 
 vim.pack.add({
 	"https://github.com/catppuccin/nvim",
 	"https://github.com/HiPhish/rainbow-delimiters.nvim",
 	"https://github.com/f-person/auto-dark-mode.nvim",
-	"https://github.com/nvim-lualine/lualine.nvim",
 	"https://github.com/lukas-reineke/indent-blankline.nvim",
-	"https://github.com/nanozuki/tabby.nvim",
 })
 
 -- ── Catppuccin ─────────────────────────────────
@@ -16,7 +14,7 @@ require("catppuccin").setup({
 	flavour = "auto",
 	background = {
 		light = "latte",
-		dark = "mocha",
+		dark = "mocha", -- explicit dark default
 	},
 	transparent_background = true,
 	show_end_of_buffer = true,
@@ -29,6 +27,31 @@ require("catppuccin").setup({
 		properties = { "bold" },
 		types = { "italic", "bold" },
 		operators = { "bold" },
+	},
+	highlight_overrides = {
+		all = function(c)
+			return {
+				MiniStatuslineFilename = { fg = c.crust, bg = c.blue, bold = true },
+				MiniStatuslineFileinfo = { fg = c.text, bg = c.surface0 },
+				MiniStatuslineDevinfo = { fg = c.subtext1, bg = c.mantle },
+				MiniStatuslineDiff = { fg = c.crust, bg = c.yellow, bold = true },
+				MiniStatuslineDiagnostics = { fg = c.crust, bg = c.red, bold = true },
+				MiniStatuslineInactive = { fg = c.overlay1, bg = c.mantle },
+				MiniStatuslineModeNormal = { fg = c.crust, bg = c.mauve, bold = true },
+				MiniStatuslineModeInsert = { fg = c.crust, bg = c.green, bold = true },
+				MiniStatuslineModeVisual = { fg = c.crust, bg = c.peach, bold = true },
+				MiniStatuslineModeReplace = { fg = c.crust, bg = c.red, bold = true },
+				MiniStatuslineModeCommand = { fg = c.crust, bg = c.sapphire, bold = true },
+				MiniStatuslineModeOther = { fg = c.crust, bg = c.lavender, bold = true },
+
+				NvimTablineCurrent = { fg = c.crust, bg = c.mauve, bold = true },
+				NvimTablineHidden = { fg = c.text, bg = c.surface0 },
+				NvimTablineHarpoonCurrent = { fg = c.crust, bg = c.lavender, bold = true },
+				NvimTablineHarpoonHidden = { fg = c.lavender, bg = c.surface1, bold = true },
+				NvimTablineFill = { fg = c.overlay0, bg = c.base },
+				NvimTablineSection = { fg = c.crust, bg = c.sapphire, bold = true },
+			}
+		end,
 	},
 	integrations = {
 		aerial = true,
@@ -56,6 +79,8 @@ require("catppuccin").setup({
 })
 
 vim.cmd.colorscheme("catppuccin")
+vim.o.showtabline = 2
+vim.o.tabline = "%!v:lua.require'tabline'.render()"
 
 -- ── Auto Dark Mode ─────────────────────────────
 require("auto-dark-mode").setup({
@@ -63,47 +88,11 @@ require("auto-dark-mode").setup({
 	set_dark_mode = function()
 		vim.api.nvim_set_option_value("background", "dark", {})
 		vim.cmd.colorscheme("catppuccin-mocha")
-		package.loaded["tabby_cfg"] = nil
-		vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE" })
-		require("tabby").setup({ tabline = require("tabby_cfg") })
 	end,
 	set_light_mode = function()
 		vim.api.nvim_set_option_value("background", "light", {})
 		vim.cmd.colorscheme("catppuccin-latte")
-		package.loaded["tabby_cfg"] = nil
-		vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE" })
-		require("tabby").setup({ tabline = require("tabby_cfg") })
 	end,
-})
-
--- ── Lualine ────────────────────────────────────
-local function datetime()
-	local CTimeLine = require("lualine.component"):extend()
-	CTimeLine.init = function(self, options)
-		CTimeLine.super.init(self, options)
-	end
-	CTimeLine.update_status = function(self)
-		return os.date(self.options.format or "%a %b %d %I:%M %p", os.time())
-	end
-	return CTimeLine
-end
-
-require("lualine").setup({
-	options = {
-		theme = "auto",
-		component_separators = "",
-		section_separators = { left = "", right = "" },
-	},
-	sections = {
-		lualine_a = { { "mode", separator = { left = "" }, right_padding = 2 } },
-		lualine_b = { "branch", "diff", "diagnostics" },
-		lualine_c = { { "filename", path = 1 } },
-		lualine_x = { "encoding", "filetype" },
-		lualine_y = { "progress", "location" },
-		lualine_z = {
-			{ datetime(), separator = { right = "" }, left_padding = 2 },
-		},
-	},
 })
 
 -- ── Indent Guides ──────────────────────────────
@@ -118,28 +107,6 @@ require("ibl").setup({
 	},
 })
 
--- ── Tabby (tabline) ───────────────────────────
-require("tabby").setup({
-	tabline = require("tabby_cfg"),
-})
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-	group = vim.api.nvim_create_augroup("ClaudlosTabby", { clear = true }),
-	callback = function()
-		require("tabby").setup({
-			tabline = require("tabby_cfg"),
-		})
-	end,
-})
-vim.api.nvim_create_autocmd({ "BufModifiedSet", "BufWritePost" }, {
-	group = vim.api.nvim_create_augroup("ClaudlosTabbyModified", { clear = true }),
-	callback = function()
-		vim.cmd("redrawtabline")
-	end,
-})
-vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE" })
-vim.api.nvim_set_hl(0, "TabLine", { bg = "NONE" })
-
 -- ── Mini.starter (dashboard) ──────────────────
 local starter = require("mini.starter")
 
@@ -150,43 +117,6 @@ local function get_quote()
 		return quote:gsub("\n$", "")
 	end
 	return ""
-end
-
-local function get_greeting()
-	local hour = tonumber(os.date("%H"))
-	local greetings = {
-		morning = {
-			"Good morning, Carlos.",
-			"Rise and grind, Carlos.",
-			"Early bird, Carlos.",
-			"Morning, Carlos. Let's build something.",
-			"Coffee first, code second. Morning, Carlos.",
-		},
-		afternoon = {
-			"Carlos returns.",
-			"Back at it, Carlos.",
-			"Welcome back, Carlos.",
-			"Afternoon, Carlos. What are we breaking today?",
-			"Carlos is in the building.",
-		},
-		evening = {
-			"Late night session, Carlos?",
-			"The grind never stops. Evening, Carlos.",
-			"Carlos after dark.",
-			"Still going, Carlos?",
-			"Evening, Carlos. One more feature.",
-		},
-	}
-	local pool
-	if hour >= 5 and hour < 12 then
-		pool = greetings.morning
-	elseif hour >= 12 and hour < 18 then
-		pool = greetings.afternoon
-	else
-		pool = greetings.evening
-	end
-	math.randomseed(os.time())
-	return pool[math.random(#pool)]
 end
 
 local function build_header()
@@ -200,7 +130,6 @@ local function build_header()
 		"  ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
 		"",
 		"   " .. os.date("%A, %B %d, %Y"),
-		"   " .. get_greeting(),
 		"",
 		get_quote(),
 	}, "\n")
@@ -210,9 +139,9 @@ starter.setup({
 	header = build_header,
 	items = {
 		-- Files
-		{ name = "f  Find files", action = "FzfLua files", section = "Files" },
-		{ name = "g  Live grep", action = "FzfLua live_grep", section = "Files" },
-		{ name = "r  Recent files", action = "FzfLua oldfiles", section = "Files" },
+		{ name = "f  Find files", action = function() require("fzf-lua").files() end, section = "Files" },
+		{ name = "g  Live grep", action = function() require("fzf-lua").live_grep() end, section = "Files" },
+		{ name = "r  Recent files", action = function() require("fzf-lua").oldfiles() end, section = "Files" },
 		{
 			name = "t  TODOs",
 			action = function()
@@ -260,7 +189,7 @@ starter.setup({
 
 -- Disable folding in starter buffer
 vim.api.nvim_create_autocmd("FileType", {
-	group = vim.api.nvim_create_augroup("ClaudlosStarter", { clear = true }),
+	group = vim.api.nvim_create_augroup("NvimConfigStarter", { clear = true }),
 	pattern = "ministarter",
 	callback = function()
 		vim.opt_local.foldenable = false

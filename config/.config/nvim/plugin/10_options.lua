@@ -1,5 +1,5 @@
 -- ── 10_options.lua ─────────────────────────────
--- ClaudlosVim: Built-in Neovim behavior.
+-- Neovim config: Built-in Neovim behavior.
 
 local opt = vim.opt
 
@@ -13,7 +13,7 @@ opt.tabstop = 4
 opt.shiftwidth = 4
 opt.softtabstop = 4
 opt.expandtab = true
-opt.smartindent = true
+opt.smartindent = false
 
 -- Search
 opt.ignorecase = true
@@ -29,6 +29,7 @@ opt.sidescrolloff = 8
 opt.wrap = false
 opt.showmode = false
 opt.pumheight = 10
+opt.cmdheight = 0
 
 -- Splits
 opt.splitright = true
@@ -52,6 +53,7 @@ opt.completeopt = "menu,menuone,noselect"
 opt.clipboard = "unnamedplus"
 opt.mouse = "a"
 opt.laststatus = 3
+opt.autoread = true
 
 -- Fold icons, hide ~ on empty lines
 opt.fillchars = {
@@ -64,7 +66,10 @@ opt.fillchars = {
 
 -- ── Diagnostics ────────────────────────────────
 vim.diagnostic.config({
-	virtual_text = false,
+	virtual_text = {
+		source = "if_many",
+		spacing = 2,
+	},
 	virtual_lines = false,
 	signs = {
 		text = {
@@ -82,40 +87,6 @@ vim.diagnostic.config({
 		source = true,
 	},
 })
-
--- Pack diagnostic dots together at end of line
-local ns = vim.api.nvim_create_namespace("diagnostic_dots")
-local severity_hl = {
-	[vim.diagnostic.severity.ERROR] = "DiagnosticError",
-	[vim.diagnostic.severity.WARN] = "DiagnosticWarn",
-	[vim.diagnostic.severity.HINT] = "DiagnosticHint",
-	[vim.diagnostic.severity.INFO] = "DiagnosticInfo",
-}
-
-vim.diagnostic.handlers["dots"] = {
-	show = function(_, bufnr, diagnostics, _)
-		vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-		local lines = {}
-		for _, d in ipairs(diagnostics) do
-			lines[d.lnum] = lines[d.lnum] or {}
-			table.insert(lines[d.lnum], d.severity)
-		end
-		for lnum, sevs in pairs(lines) do
-			table.sort(sevs)
-			local virt = {}
-			for _, s in ipairs(sevs) do
-				table.insert(virt, { "●", severity_hl[s] })
-			end
-			vim.api.nvim_buf_set_extmark(bufnr, ns, lnum, 0, {
-				virt_text = virt,
-				virt_text_pos = "eol",
-			})
-		end
-	end,
-	hide = function(_, bufnr)
-		vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-	end,
-}
 
 -- Mason Ignores
 vim.g.loaded_python3_provider = 0

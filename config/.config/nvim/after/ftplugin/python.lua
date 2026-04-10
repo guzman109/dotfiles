@@ -6,6 +6,9 @@ vim.opt_local.textwidth = 0
 
 vim.keymap.set("n", "<leader>pv", "<cmd>VenvSelect<cr>", { buffer = true, desc = "Select venv" })
 vim.keymap.set("n", "<leader>pc", "<cmd>VenvSelectCached<cr>", { buffer = true, desc = "Cached venv" })
+vim.keymap.set("n", "<leader>px", function()
+	require("venv-selector").deactivate()
+end, { buffer = true, desc = "Deactivate venv" })
 vim.keymap.set("n", "<leader>pr", function()
 	vim.cmd("!python3 %")
 end, { buffer = true, desc = "Run file" })

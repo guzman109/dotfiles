@@ -18,12 +18,12 @@ No lazy-loading complexity. No plugin manager to debug. Just files.
 │   ├── 10_options.lua         # vim.opt settings, diagnostics
 │   ├── 20_keymaps.lua         # keymaps, autocmds
 │   ├── 30_mini.lua            # mini.nvim — surround, pairs, icons, statusline
-│   ├── 40_ui.lua              # catppuccin, tabby, rainbow-delimiters
-│   ├── 50_editor.lua          # oil, fzf-lua, gitsigns, harpoon, conform, ufo
+│   ├── 40_ui.lua              # catppuccin, mini UI, rainbow-delimiters
+│   ├── 50_editor.lua          # mini.files, mini.pick, gitsigns, harpoon, conform, ufo
 │   ├── 60_mason.lua           # mason — LSP auto-installer
 │   ├── 70_completion.lua      # blink.cmp
 │   ├── 80_dap.lua             # nvim-dap + dap-ui
-│   └── 90_ai.lua              # codecompanion
+│   └── 90_ai.lua              # Claude Code + Codex launcher
 │
 ├── after/
 │   ├── ftplugin/              # per-language settings (tabstop, formatters, keymaps)
@@ -97,7 +97,7 @@ Drop both files in. Restart. Done.
 | `<C-s>` | n/i | Save |
 | `<leader>q` | n | Quit |
 | `<leader>/` | n | Live grep |
-| `-` / `<leader>e` | n | File explorer (oil) |
+| `-` / `<leader>e` | n | File explorer (mini.files) |
 | `<leader>cf` | n | Format |
 
 ### Navigation
@@ -106,6 +106,9 @@ Drop both files in. Restart. Done.
 |-----|------|--------|
 | `<leader><space>` | n | Find files |
 | `<leader>ff` | n | Find files |
+| `<leader>jj` | n | Jump2d |
+| `<leader>b` | n | Buffer switcher |
+| `<leader><Tab>` | n | Alternate buffer |
 | `<leader>fb` | n | Find buffers |
 | `<leader>fr` | n | Recent files |
 

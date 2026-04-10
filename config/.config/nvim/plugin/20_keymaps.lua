@@ -1,5 +1,5 @@
 -- ── 20_keymaps.lua ─────────────────────────────
--- ClaudlosVim: Custom mappings and autocommands.
+-- Neovim config: Custom mappings and autocommands.
 
 local map = vim.keymap.set
 
@@ -127,19 +127,19 @@ end, { desc = "Open commands" })
 
 -- ── LSP (on attach) ───────────────────────────
 vim.api.nvim_create_autocmd("LspAttach", {
-	group = vim.api.nvim_create_augroup("ClaudlosLsp", { clear = true }),
+	group = vim.api.nvim_create_augroup("NvimConfigLsp", { clear = true }),
 	callback = function(event)
 		local m = function(mode, lhs, rhs, desc)
 			vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, desc = desc })
 		end
 
-		m("n", "gd", vim.lsp.buf.definition, "Go to definition")
-		m("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
-		m("n", "gr", vim.lsp.buf.references, "References")
-		m("n", "gi", vim.lsp.buf.implementation, "Implementation")
+		m("n", "gd", function() require("fzf-lua").lsp_definitions() end, "Go to definition")
+		m("n", "gD", function() require("fzf-lua").lsp_declarations() end, "Go to declaration")
+		m("n", "gr", function() require("fzf-lua").lsp_references() end, "References")
+		m("n", "gi", function() require("fzf-lua").lsp_implementations() end, "Implementation")
 		m("n", "K", vim.lsp.buf.hover, "Hover")
 		m("n", "<leader>cr", vim.lsp.buf.rename, "Rename")
-		m("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
+		m({ "n", "x" }, "<leader>ca", function() require("fzf-lua").lsp_code_actions() end, "Code action")
 		m("n", "<leader>cs", vim.lsp.buf.signature_help, "Signature help")
 		m("i", "<C-s>", vim.lsp.buf.signature_help, "Signature help")
 
@@ -156,7 +156,7 @@ local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
 autocmd("FileType", {
-	group = augroup("ClaudlosTreesitter", { clear = true }),
+	group = augroup("NvimConfigTreesitter", { clear = true }),
 	pattern = "*",
 	callback = function()
 		pcall(vim.treesitter.start)
@@ -164,32 +164,31 @@ autocmd("FileType", {
 })
 
 autocmd("TextYankPost", {
-	group = augroup("ClaudlosYank", { clear = true }),
+	group = augroup("NvimConfigYank", { clear = true }),
 	callback = function()
-		vim.hl.on_yank({ timeout = 200 })
+		return
 	end,
 })
 
 autocmd("VimResized", {
-	group = augroup("ClaudlosResize", { clear = true }),
+	group = augroup("NvimConfigResize", { clear = true }),
 	command = "tabdo wincmd =",
 })
 
 autocmd("BufWritePre", {
-	group = augroup("ClaudlosWhitespace", { clear = true }),
+	group = augroup("NvimConfigWhitespace", { clear = true }),
 	pattern = "*",
 	callback = function()
 		if not vim.bo.modifiable then
 			return
 		end
-		local pos = vim.api.nvim_win_get_cursor(0)
-		vim.cmd([[%s/\s\+$//e]])
-		vim.api.nvim_win_set_cursor(0, pos)
+		MiniTrailspace.trim()
+		MiniTrailspace.trim_last_lines()
 	end,
 })
 
 autocmd("BufReadPost", {
-	group = augroup("ClaudlosLastPos", { clear = true }),
+	group = augroup("NvimConfigLastPos", { clear = true }),
 	callback = function()
 		local mark = vim.api.nvim_buf_get_mark(0, '"')
 		local line_count = vim.api.nvim_buf_line_count(0)
@@ -200,7 +199,7 @@ autocmd("BufReadPost", {
 })
 
 autocmd("FileType", {
-	group = augroup("ClaudlosQuickClose", { clear = true }),
+	group = augroup("NvimConfigQuickClose", { clear = true }),
 	pattern = { "help", "man", "qf", "checkhealth", "dap-float" },
 	callback = function(event)
 		vim.bo[event.buf].buflisted = false
@@ -210,8 +209,18 @@ autocmd("FileType", {
 
 -- Clear jumplist on startup so C-o/C-i only navigate within this session
 autocmd("VimEnter", {
-	group = augroup("ClaudlosCleanJumps", { clear = true }),
+	group = augroup("NvimConfigCleanJumps", { clear = true }),
 	callback = function()
 		vim.cmd("clearjumps")
+	end,
+})
+
+-- Auto-reload buffers changed on disk (e.g. by CodeCompanion's claude_code adapter)
+autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+	group = augroup("NvimConfigAutoread", { clear = true }),
+	callback = function()
+		if vim.fn.mode() ~= "c" then
+			vim.cmd("checktime")
+		end
 	end,
 })

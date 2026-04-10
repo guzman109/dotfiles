@@ -1,5 +1,5 @@
 -- ── 80_dap.lua ─────────────────────────────────
--- ClaudlosVim: Debug Adapter Protocol.
+-- Neovim config: Debug Adapter Protocol.
 
 vim.pack.add({
   'https://github.com/mfussenegger/nvim-dap',

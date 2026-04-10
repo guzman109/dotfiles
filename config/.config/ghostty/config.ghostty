@@ -6,7 +6,7 @@ font-size = 14
 font-thicken = true
 
 # --- Cursor ---
-cursor-style-blink = false
+cursor-style-blink = true
 
 # --- Window ---
 background-opacity = 0.9
@@ -14,12 +14,15 @@ window-padding-x = 0
 window-padding-y = 0
 window-padding-balance = true
 window-colorspace = display-p3
+working-directory = home
+tab-inherit-working-directory = false
+window-inherit-working-directory = true
 
 # --- Scrollback ---
 scrollback-limit = 10000
 
 # --- Shell Integration ---
-shell-integration = detect
+shell-integration = fish
 
 # --- URLs ---
 link-url = true
@@ -30,9 +33,9 @@ quit-after-last-window-closed = true
 confirm-close-surface = true
 
 # --- Theme: Catppuccin (auto light/dark) ---
-# Light: Catppuccin Latte, Dark: Catppuccin Macchiato
+# Light: Catppuccin Latte, Dark: Catppuccin Mocha
 # Ghostty automatically switches based on macOS appearance.
-theme = light:Catppuccin Latte,dark:Catppuccin Macchiato
+theme = light:Catppuccin Latte,dark:Catppuccin Mocha
 
 # --- Keybindings ---
 
@@ -41,8 +44,7 @@ keybind = super+c=copy_to_clipboard
 keybind = super+v=paste_from_clipboard
 
 # Tabs
-keybind = super+t=new_tab
-keybind = ctrl+shift+y=new_tab
+keybind = cmd+t=new_tab
 keybind = super+w=close_surface
 keybind = super+shift+w=close_window
 keybind = super+shift+right_bracket=next_tab

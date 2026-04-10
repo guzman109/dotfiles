@@ -1,4 +1,4 @@
-# ClaudlosVim Keymaps
+# Neovim Keymaps
 
 > Leader: `<Space>` | LocalLeader: `<Space>`
 
@@ -88,13 +88,16 @@
 | `]d` | n | Next diagnostic | 20_keymaps |
 | `[d` | n | Prev diagnostic | 20_keymaps |
 
-## Finder (fzf-lua)
+## Finder (mini.pick)
 
 | Key | Mode | Action | File |
 |-----|------|--------|------|
 | `<leader><space>` | n | Find files | 50_editor |
 | `ff` | n | Find files | 50_editor |
 | `<leader>/` | n | Live grep | 50_editor |
+| `<leader>jj` | n | Jump2d | 50_editor |
+| `<leader>b` | n | Buffer switcher | 50_editor |
+| `<leader><Tab>` | n | Alternate buffer | 50_editor |
 | `<leader>fb` | n | Buffers | 50_editor |
 | `<leader>fh` | n | Help tags | 50_editor |
 | `<leader>fr` | n | Recent files | 50_editor |
@@ -103,7 +106,7 @@
 | `<leader>fk` | n | Open keymaps file | 20_keymaps |
 | `<leader>fc` | n | Open commands file | 20_keymaps |
 
-## File Explorer (fzf-lua)
+## File Explorer (mini.files)
 
 | Key | Mode | Action | File |
 |-----|------|--------|------|
@@ -115,6 +118,7 @@
 | Key | Mode | Action | File |
 |-----|------|--------|------|
 | `<leader>ha` | n | Add file to harpoon | 50_editor |
+| `<leader>hc` | n | Clear harpoon list | 50_editor |
 | `<leader>hd` | n | Remove current file | 50_editor |
 | `<leader>hh` | n | Harpoon menu (fzf) | 50_editor |
 | `<leader>1` | n | Jump to harpoon file 1 | 50_editor |
@@ -194,12 +198,12 @@
 | `<leader>du` | n | Toggle DAP UI | 80_dap |
 | `<leader>de` | n/v | Eval under cursor / selection | 80_dap |
 
-## AI (Claude Code)
+## AI
 
 | Key | Mode | Action | File |
 |-----|------|--------|------|
-| `<leader>ac` | n | Open Claude Code (terminal tab) | 90_ai |
-| `<leader>af` | n | Add current file to Claude | 90_ai |
+| `<leader>ac` | n | Open AI agent (agent + model picker) | 90_ai |
+| `<leader>af` | n | Add current file to last AI session | 90_ai |
 
 ## Completion (blink.cmp)
 
@@ -302,4 +306,3 @@ Type letters to filter items, `<CR>` to confirm. Source: `40_ui`.
 | `<leader>l` | +lua |
 | `<leader>m` | +preview |
 | `<leader>w` | +window |
-

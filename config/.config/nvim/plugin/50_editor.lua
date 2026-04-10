@@ -1,10 +1,7 @@
 -- ── 50_editor.lua ──────────────────────────────
--- ClaudlosVim: Editor plugins — finder, git, navigation, formatting, testing, commands.
+-- Neovim config: Editor plugins — finder, git, navigation, formatting, testing, commands.
 
 vim.pack.add({
-	-- Finder
-	"https://github.com/ibhagwan/fzf-lua",
-
 	-- Git
 	"https://github.com/lewis6991/gitsigns.nvim",
 
@@ -29,6 +26,9 @@ vim.pack.add({
 	-- Markdown rendering
 	"https://github.com/OXY2DEV/markview.nvim",
 
+	-- Image paste
+	"https://github.com/HakonHarnes/img-clip.nvim",
+
 	-- Live preview (browser-based for MD/HTML/SVG)
 	"https://github.com/brianhuster/live-preview.nvim",
 
@@ -38,7 +38,6 @@ vim.pack.add({
 	"https://github.com/nvim-neotest/neotest-python",
 	"https://github.com/alfaix/neotest-gtest",
 	"https://github.com/lawrence-laz/neotest-zig",
-
 	-- HTTP client
 	"https://github.com/mistweaverco/kulala.nvim",
 
@@ -47,70 +46,109 @@ vim.pack.add({
 
 	-- Highlight Colors (CSS, Tailwind)
 	"https://github.com/brenoprata10/nvim-highlight-colors",
+
+	-- Fuzzy finder
+	"https://github.com/ibhagwan/fzf-lua",
 })
 
--- ── fzf-lua ────────────────────────────────────
-require("fzf-lua").setup({
+local function open_mini_files(path, use_latest)
+	local target = path
+	if not target or target == "" or vim.fn.filereadable(target) == 0 and vim.fn.isdirectory(target) == 0 then
+		target = vim.fn.getcwd()
+	end
+	require("mini.files").open(target, use_latest)
+end
+
+vim.keymap.set("n", "-", function()
+	local path = vim.api.nvim_buf_get_name(0)
+	if path == "" or vim.fn.filereadable(path) == 0 and vim.fn.isdirectory(path) == 0 then
+		path = vim.fn.getcwd()
+	end
+	open_mini_files(path, false)
+end, { desc = "Open parent directory" })
+vim.keymap.set("n", "<leader>e", function()
+	local path = vim.api.nvim_buf_get_name(0)
+	if path == "" or vim.fn.filereadable(path) == 0 and vim.fn.isdirectory(path) == 0 then
+		path = vim.fn.getcwd()
+	end
+	open_mini_files(path, false)
+end, { desc = "File explorer" })
+vim.keymap.set("n", "<leader>E", function()
+	vim.cmd("tabnew")
+	local path = vim.fn.getcwd()
+	open_mini_files(path, false)
+end, { desc = "File explorer (tab)" })
+
+-- ── fzf-lua ───────────────────────────────────
+local fzf = require("fzf-lua")
+
+local with_preview = {
+	height = 0.75,
+	width = 0.80,
+	row = 1,
+	col = 0,
+	preview = { hidden = "nohidden", layout = "horizontal", horizontal = "right:55%" },
+}
+
+fzf.setup({
 	"default-title",
 	winopts = {
-		height = 0.85,
-		width = 0.80,
-		row = 0.35,
-		scrollbar = false,
+		height = 0.35,
+		width = 0.45,
+		row = 1,
+		col = 0,
+		preview = { hidden = "hidden" },
 	},
-	files = {
-		cwd_prompt = false,
-		hidden = false,
-	},
-	grep = {
-		rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
-	},
-	previewers = {
-		builtin = {
-			extensions = {
-				["png"] = { "chafa", "{file}" },
-				["jpg"] = { "chafa", "{file}" },
-				["jpeg"] = { "chafa", "{file}" },
-				["gif"] = { "chafa", "{file}" },
-				["webp"] = { "chafa", "{file}" },
-				["svg"] = { "chafa", "{file}" },
-			},
+	keymap = {
+		fzf = {
+			["alt-j"] = "down",
+			["alt-k"] = "up",
 		},
 	},
+	files = { fd_opts = "--color=never --type f --hidden --follow --exclude .git", winopts = with_preview },
+	grep = { winopts = with_preview },
+	lsp = { winopts = with_preview },
+	git = { winopts = with_preview },
+	helptags = { winopts = with_preview },
+	oldfiles = { winopts = with_preview },
+	buffers = {
+		winopts = function()
+			local count = #vim.fn.getbufinfo({ buflisted = 1 })
+			local h = math.max(0.20, math.min(0.50, (count + 4) / vim.o.lines))
+			return { height = h, width = 0.45, row = 1, col = 0, preview = { hidden = "hidden" } }
+		end,
+	},
 })
+fzf.register_ui_select(function(_, items)
+	local count = #items
+	local h = math.max(0.15, math.min(0.50, (count + 4) / vim.o.lines))
+	local w = math.max(0.25, math.min(0.50, 0.02 * count + 0.20))
+	return { winopts = { height = h, width = w, row = 1, col = 0 } }
+end)
 
--- File browsing (replaces oil)
-vim.keymap.set("n", "-", function()
-	require("fzf-lua").files({ cwd = vim.fn.expand("%:p:h") })
-end, { desc = "Browse parent directory" })
-vim.keymap.set("n", "<leader>e", function()
-	require("fzf-lua").files({ cwd = vim.fn.expand("%:p:h") })
-end, { desc = "File explorer" })
-
-vim.keymap.set("n", "<leader><space>", function()
-	require("fzf-lua").files()
-end, { desc = "Find files" })
-vim.keymap.set("n", "ff", function()
-	require("fzf-lua").files()
-end, { desc = "Find files" })
-vim.keymap.set("n", "<leader>/", function()
-	require("fzf-lua").live_grep()
-end, { desc = "Live grep" })
-vim.keymap.set("n", "<leader>fb", function()
-	require("fzf-lua").buffers()
-end, { desc = "Buffers" })
-vim.keymap.set("n", "<leader>fh", function()
-	require("fzf-lua").help_tags()
-end, { desc = "Help" })
-vim.keymap.set("n", "<leader>fr", function()
-	require("fzf-lua").oldfiles()
-end, { desc = "Recent files" })
-vim.keymap.set("n", "<leader>fd", function()
-	require("fzf-lua").diagnostics_document()
-end, { desc = "Diagnostics" })
-vim.keymap.set("n", "<leader>fs", function()
-	require("fzf-lua").lsp_document_symbols()
-end, { desc = "Symbols" })
+vim.keymap.set("n", "<leader><space>", fzf.files, { desc = "Find files" })
+vim.keymap.set("n", "ff", fzf.files, { desc = "Find files" })
+vim.keymap.set("n", "<leader>/", fzf.live_grep, { desc = "Live grep" })
+vim.keymap.set("n", "<leader>jj", function()
+	MiniJump2d.start(MiniJump2d.builtin_opts.single_character)
+end, { desc = "Jump2d" })
+vim.keymap.set("n", "<leader>b", fzf.buffers, { desc = "Buffer switcher" })
+vim.keymap.set("n", "<leader><Tab>", "<cmd>b#<cr>", { desc = "Alternate buffer" })
+vim.keymap.set("n", "<leader>fb", fzf.buffers, { desc = "Buffers" })
+vim.keymap.set("n", "<leader>fh", fzf.helptags, { desc = "Help" })
+vim.keymap.set("n", "<leader>fr", fzf.oldfiles, { desc = "Recent files" })
+vim.keymap.set("n", "<leader>fd", fzf.diagnostics_document, { desc = "Diagnostics" })
+vim.keymap.set("n", "<leader>fs", fzf.lsp_document_symbols, { desc = "Symbols" })
+vim.keymap.set("n", "<leader>fS", fzf.lsp_workspace_symbols, { desc = "Workspace symbols" })
+vim.keymap.set("n", "<leader>fg", fzf.git_status, { desc = "Git status" })
+vim.keymap.set("n", "<leader>fl", fzf.git_commits, { desc = "Git log" })
+vim.keymap.set("n", "<leader>fL", fzf.git_bcommits, { desc = "Buffer git log" })
+vim.keymap.set("n", "<leader>fw", fzf.grep_cword, { desc = "Grep word" })
+vim.keymap.set("v", "<leader>fw", fzf.grep_visual, { desc = "Grep selection" })
+vim.keymap.set("n", "<leader>fm", fzf.marks, { desc = "Marks" })
+vim.keymap.set("n", "<leader>fR", fzf.registers, { desc = "Registers" })
+vim.keymap.set("n", "<leader>fK", fzf.keymaps, { desc = "Keymaps" })
+vim.keymap.set("n", "<leader>ft", fzf.resume, { desc = "Resume last picker" })
 
 -- ── Gitsigns ───────────────────────────────────
 require("gitsigns").setup({
@@ -220,8 +258,27 @@ vim.keymap.set("n", "<leader>ha", function()
 	harpoon:list():add()
 end, { desc = "Harpoon add" })
 vim.keymap.set("n", "<leader>hd", function()
-	harpoon:list():remove()
+	local list = harpoon:list()
+	local item = list.config.create_list_item(list.config)
+	for _, v in ipairs(list.items) do
+		if list.config.equals(v, item) then
+			list:remove(item)
+			return
+		end
+	end
+	vim.notify("File not in harpoon list", vim.log.levels.WARN)
 end, { desc = "Harpoon remove current" })
+vim.keymap.set("n", "<leader>hc", function()
+	local list = harpoon:list()
+	if #list.items == 0 then
+		vim.notify("Harpoon list is already empty", vim.log.levels.INFO)
+		return
+	end
+	list:clear()
+	harpoon:sync()
+	vim.cmd("redrawtabline")
+	vim.notify("Cleared harpoon list", vim.log.levels.INFO)
+end, { desc = "Harpoon clear" })
 vim.keymap.set("n", "<leader>1", function()
 	harpoon:list():select(1)
 end, { desc = "Harpoon 1" })
@@ -243,15 +300,27 @@ end, { desc = "Harpoon next" })
 
 vim.keymap.set("n", "<leader>hh", function()
 	local items = harpoon:list().items
+	if #items == 0 then
+		vim.notify("Harpoon list is empty", vim.log.levels.INFO)
+		return
+	end
+
 	local files = {}
 	for _, item in ipairs(items) do
-		table.insert(files, item.value)
+		local path = item.value or ""
+		if path ~= "" then
+			table.insert(files, path)
+		end
 	end
-	require("fzf-lua").fzf_exec(files, {
+
+	fzf.fzf_exec(files, {
 		prompt = "Harpoon> ",
-		previewer = "builtin",
 		actions = {
-			["default"] = require("fzf-lua.actions").file_edit,
+			["default"] = function(selected)
+				if selected and selected[1] then
+					vim.cmd("edit " .. selected[1])
+				end
+			end,
 		},
 	})
 end, { desc = "Harpoon menu" })
@@ -291,6 +360,13 @@ require("conform").setup({
 })
 
 -- ── Treesitter ─────────────────────────────────
+vim.api.nvim_create_autocmd("FileType", {
+	callback = function()
+		if pcall(vim.treesitter.start) then
+			vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+		end
+	end,
+})
 require("nvim-treesitter").setup({
 	ensure_installed = {
 		"bash",
@@ -323,8 +399,22 @@ require("markview").setup({
 	preview = {
 		icon_provider = "mini",
 		filetypes = { "markdown" },
+		ignore_buftypes = {},
 	},
 })
+
+-- ── img-clip (image paste) ─────────────────────
+require("img-clip").setup({
+	default = {
+		embed_image_as_base64 = false,
+		prompt_for_file_name = false,
+		drag_and_drop = {
+			insert_mode = true,
+		},
+	},
+})
+
+vim.keymap.set({ "n", "v" }, "<leader>pi", "<cmd>PasteImage<cr>", { desc = "Paste image" })
 
 -- ── Live Preview (browser) ─────────────────────
 require("livepreview.config").set({})
@@ -416,14 +506,11 @@ vim.keymap.set("n", "<leader>jr", function()
 		return
 	end
 	local recipes = vim.split(vim.trim(result), " ")
-	require("fzf-lua").fzf_exec(recipes, {
-		prompt = "Just> ",
-		actions = {
-			["default"] = function(selected)
-				vim.cmd("!" .. "just " .. selected[1])
-			end,
-		},
-	})
+	vim.ui.select(recipes, { prompt = "Just> " }, function(choice)
+		if choice then
+			vim.cmd("!" .. "just " .. choice)
+		end
+	end)
 end, { desc = "Just run recipe" })
 
 vim.keymap.set("n", "<leader>jl", function()

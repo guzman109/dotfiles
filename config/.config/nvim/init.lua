@@ -1,5 +1,5 @@
 -- ╔═══════════════════════════════════════════════╗
--- ║             ClaudlosVim v0.3.0                ║
+-- ║                 Neovim Config                 ║
 -- ║   Minimal. Native. Organized by language.     ║
 -- ╚═══════════════════════════════════════════════╝
 
@@ -15,10 +15,10 @@ vim.g.rainbow_delimiters = {
   strategy = {
     [''] = 'rainbow-delimiters.strategy.global',
   },
-  whitelist = { 'lua', 'python', 'cpp', 'c', 'zig' },
+  whitelist = { 'lua', 'python', 'cpp', 'c', 'zig', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'html', 'css', 'fish' },
 }
 
--- Disable netrw (oil.nvim replaces it)
+-- Disable netrw (mini.files replaces it)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -41,4 +41,3 @@ end })
 --   02-ui.lua      → colorscheme, rainbow-delimiters
 --   editor-*.lua   → language-agnostic plugins
 --   lang-*.lua     → one file per language (LSP + format + DAP + keymaps)
-
