@@ -17,7 +17,14 @@ require("mini.icons").setup({
 })
 MiniIcons.mock_nvim_web_devicons()
 require("mini.notify").setup()
-require("mini.cmdline").setup()
+require("mini.cmdline").setup({
+	autocomplete = {
+		enable = false,
+	},
+	autocorrect = {
+		enable = false,
+	},
+})
 require("mini.cursorword").setup()
 require("mini.jump").setup({ silent = true })
 require("mini.jump2d").setup({
@@ -31,6 +38,18 @@ require("mini.jump2d").setup({
 	},
 })
 require("mini.splitjoin").setup()
+require("mini.move").setup({
+	mappings = {
+		left = "<A-h>",
+		right = "<A-l>",
+		down = "<A-j>",
+		up = "<A-k>",
+		line_left = "<A-h>",
+		line_right = "<A-l>",
+		line_down = "<A-j>",
+		line_up = "<A-k>",
+	},
+})
 require("mini.trailspace").setup()
 require("mini.indentscope").setup({
 	draw = {

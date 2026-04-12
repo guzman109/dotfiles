@@ -168,12 +168,15 @@
 | `<leader>nr` | n | Run nearest test | 50_editor |
 | `<leader>nf` | n | Run file tests | 50_editor |
 | `<leader>nA` | n | Run all tests (suite) | 50_editor |
-| `<leader>nd` | n | Debug nearest test | 50_editor |
+| `<leader>nD` | n | Debug nearest test | 50_editor |
 | `<leader>ns` | n | Stop test | 50_editor |
 | `<leader>nl` | n | Run last test | 50_editor |
 | `<leader>no` | n | Show test output | 50_editor |
 | `<leader>nO` | n | Toggle output panel | 50_editor |
 | `<leader>nv` | n | Toggle test summary | 50_editor |
+| `<leader>nn` | n | Open sticky note | 50_editor |
+| `<leader>nN` | n | Browse sticky notes | 50_editor |
+| `<leader>nd` | n | Delete sticky note | 50_editor |
 
 ## Live Preview
 
@@ -295,7 +298,7 @@ Type letters to filter items, `<CR>` to confirm. Source: `40_ui`.
 | `<leader>g` | +git |
 | `<leader>c` | +code |
 | `<leader>d` | +debug |
-| `<leader>n` | +test |
+| `<leader>n` | +test/notes |
 | `<leader>t` | +tab/terminal |
 | `<leader>p` | +python |
 | `<leader>z` | +zig |

@@ -30,6 +30,8 @@ opt.wrap = false
 opt.showmode = false
 opt.pumheight = 10
 opt.cmdheight = 0
+opt.wildoptions = "pum,fuzzy"
+opt.wildmode = "full"
 
 -- Splits
 opt.splitright = true

@@ -49,6 +49,9 @@ vim.pack.add({
 
 	-- Fuzzy finder
 	"https://github.com/ibhagwan/fzf-lua",
+
+	-- Project sticky notes
+	"https://github.com/Sou1lah/StickyNotes.nvim",
 })
 
 local function open_mini_files(path, use_latest)
@@ -82,22 +85,48 @@ end, { desc = "File explorer (tab)" })
 -- ── fzf-lua ───────────────────────────────────
 local fzf = require("fzf-lua")
 
-local with_preview = {
-	height = 0.75,
-	width = 0.80,
-	row = 1,
-	col = 0,
-	preview = { hidden = "nohidden", layout = "horizontal", horizontal = "right:55%" },
-}
+-- Anchor float to bottom-left, just above the statusline
+local function fzf_bottom(h, w, preview)
+	local ch = vim.o.cmdheight
+	local win_h = math.floor((vim.o.lines - ch) * h)
+	local sl = (vim.o.laststatus > 0) and 1 or 0
+	return {
+		height = h,
+		width = w,
+		row = math.max(0, vim.o.lines - ch - sl - win_h),
+		col = 0,
+		preview = preview or { hidden = "hidden" },
+	}
+end
+
+local preview_winopts = { hidden = "nohidden", layout = "horizontal", horizontal = "right:55%" }
 
 fzf.setup({
 	"default-title",
-	winopts = {
-		height = 0.35,
-		width = 0.45,
-		row = 1,
-		col = 0,
-		preview = { hidden = "hidden" },
+	fzf_colors = true,
+	winopts = vim.tbl_extend("force", fzf_bottom(0.35, 0.45), { winhl = true }),
+	hls = {
+		backdrop = "FzfLuaBackdrop",
+		border = "FzfLuaBorder",
+		title = "FzfLuaTitle",
+		normal = "FzfLuaNormal",
+		cursorline = "FzfLuaCursorLine",
+		preview_border = "FzfLuaPreviewBorder",
+		preview_normal = "FzfLuaPreviewNormal",
+		preview_title = "FzfLuaPreviewTitle",
+		fzf = {
+			border = "FzfLuaFzfBorder",
+			cursorline = "FzfLuaFzfCursorLine",
+			gutter = "FzfLuaFzfGutter",
+			header = "FzfLuaFzfHeader",
+			info = "FzfLuaFzfInfo",
+			marker = "FzfLuaFzfMarker",
+			match = "FzfLuaFzfMatch",
+			normal = "FzfLuaFzfNormal",
+			pointer = "FzfLuaFzfPointer",
+			prompt = "FzfLuaFzfPrompt",
+			query = "FzfLuaFzfQuery",
+		},
 	},
 	keymap = {
 		fzf = {
@@ -105,17 +134,20 @@ fzf.setup({
 			["alt-k"] = "up",
 		},
 	},
-	files = { fd_opts = "--color=never --type f --hidden --follow --exclude .git", winopts = with_preview },
-	grep = { winopts = with_preview },
-	lsp = { winopts = with_preview },
-	git = { winopts = with_preview },
-	helptags = { winopts = with_preview },
-	oldfiles = { winopts = with_preview },
+	files = {
+		fd_opts = "--color=never --type f --hidden --follow --exclude .git",
+		winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end,
+	},
+	grep = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
+	lsp = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
+	git = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
+	helptags = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
+	oldfiles = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
 	buffers = {
 		winopts = function()
 			local count = #vim.fn.getbufinfo({ buflisted = 1 })
 			local h = math.max(0.20, math.min(0.50, (count + 4) / vim.o.lines))
-			return { height = h, width = 0.45, row = 1, col = 0, preview = { hidden = "hidden" } }
+			return fzf_bottom(h, 0.45)
 		end,
 	},
 })
@@ -123,8 +155,21 @@ fzf.register_ui_select(function(_, items)
 	local count = #items
 	local h = math.max(0.15, math.min(0.50, (count + 4) / vim.o.lines))
 	local w = math.max(0.25, math.min(0.50, 0.02 * count + 0.20))
-	return { winopts = { height = h, width = w, row = 1, col = 0 } }
+	return { winopts = fzf_bottom(h, w) }
 end)
+
+vim.api.nvim_create_autocmd("TermOpen", {
+	group = vim.api.nvim_create_augroup("NvimConfigTerminalTheme", { clear = true }),
+	callback = function(args)
+		local winid = vim.fn.bufwinid(args.buf)
+		if winid == -1 then
+			return
+		end
+		vim.wo[winid].winhighlight = "Normal:Normal,NormalNC:Normal,CursorLine:CursorLine"
+		vim.wo[winid].winbar = ""
+		vim.wo[winid].cursorline = false
+	end,
+})
 
 vim.keymap.set("n", "<leader><space>", fzf.files, { desc = "Find files" })
 vim.keymap.set("n", "ff", fzf.files, { desc = "Find files" })
@@ -330,6 +375,9 @@ require("conform").setup({
 		timeout_ms = 500,
 		lsp_format = "fallback",
 	},
+	log_level = vim.log.levels.WARN,
+	notify_on_error = true,
+	notify_no_formatters = true,
 	formatters_by_ft = {
 		c = { "clang_format" },
 		cpp = { "clang_format" },
@@ -342,7 +390,7 @@ require("conform").setup({
 		jsonc = { "biome" },
 		just = { "just" },
 		lua = { "stylua" },
-		python = { "ruff_format", "ruff_fix", "ruff_organize_imports" },
+		python = { "ruff_fix", "ruff_organize_imports", "ruff_format" },
 		typescript = { "biome" },
 		typescriptreact = { "biome" },
 		zig = { "zigfmt" },
@@ -448,7 +496,7 @@ end, { desc = "Run file tests" })
 vim.keymap.set("n", "<leader>nA", function()
 	require("neotest").run.run({ suite = true })
 end, { desc = "Run all tests" })
-vim.keymap.set("n", "<leader>nd", function()
+vim.keymap.set("n", "<leader>nD", function()
 	require("neotest").run.run({ strategy = "dap" })
 end, { desc = "Debug nearest test" })
 vim.keymap.set("n", "<leader>ns", function()
@@ -478,6 +526,15 @@ require("venv-selector").setup({
 	name = { "venv", ".venv", "env", ".env" },
 	auto_refresh = true,
 })
+
+-- ── Sticky Notes ───────────────────────────────
+require("sticky-notes").setup({
+	keymaps = false,
+})
+
+vim.keymap.set("n", "<leader>nn", "<cmd>StickyNote<cr>", { desc = "Open sticky note" })
+vim.keymap.set("n", "<leader>nN", "<cmd>StickyNotePicker<cr>", { desc = "Browse sticky notes" })
+vim.keymap.set("n", "<leader>nd", "<cmd>StickyNoteDelete<cr>", { desc = "Delete sticky note" })
 
 -- ── NVIM Highlight Colors ──────────────────────
 require("nvim-highlight-colors").setup({

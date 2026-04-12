@@ -63,6 +63,33 @@ require("blink.cmp").setup({
 			},
 		},
 	},
+	cmdline = {
+		enabled = true,
+		keymap = {
+			preset = "none",
+			["<Tab>"] = { "show", "select_next", "fallback" },
+			["<S-Tab>"] = { "show", "select_prev", "fallback" },
+			["<Space>"] = { "select_and_accept", "fallback" },
+			["<C-space>"] = { "show", "fallback" },
+			["<C-e>"] = { "cancel", "fallback" },
+		},
+		completion = {
+			menu = {
+				auto_show = function()
+					return vim.fn.getcmdtype() == ":"
+				end,
+			},
+			list = {
+				selection = {
+					preselect = true,
+					auto_insert = false,
+				},
+			},
+			ghost_text = {
+				enabled = false,
+			},
+		},
+	},
 	signature = {
 		enabled = true,
 	},

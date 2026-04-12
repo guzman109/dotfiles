@@ -1,5 +1,9 @@
 {
   "plugins": {
+    "StickyNotes.nvim": {
+      "rev": "6d7b0527002360f6c98f8e2cd8f31545b3405444",
+      "src": "https://github.com/Sou1lah/StickyNotes.nvim"
+    },
     "aerial.nvim": {
       "rev": "645d108a5242ec7b378cbe643eb6d04d4223f034",
       "src": "https://github.com/stevearc/aerial.nvim"
@@ -81,6 +85,10 @@
     "neotest-zig": {
       "rev": "de63f3b9a182d374d2e71cf44385326682ec90e7",
       "src": "https://github.com/lawrence-laz/neotest-zig"
+    },
+    "nightfox.nvim": {
+      "rev": "ba47d4b4c5ec308718641ba7402c143836f35aa9",
+      "src": "https://github.com/EdenEast/nightfox.nvim"
     },
     "nvim": {
       "rev": "384f304c8b04664c9e0091fbfb3923c5f97c1bcf",

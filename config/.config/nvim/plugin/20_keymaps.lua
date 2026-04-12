@@ -10,10 +10,6 @@ map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search" })
 map("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 map("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
-map("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move line down" })
-map("n", "<A-k>", "<cmd>m .-2<cr>==", { desc = "Move line up" })
-map("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
-map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 
 map("v", "<", "<gv")
 map("v", ">", ">gv")
