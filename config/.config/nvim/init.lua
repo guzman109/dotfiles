@@ -15,10 +15,10 @@ vim.g.rainbow_delimiters = {
   strategy = {
     [''] = 'rainbow-delimiters.strategy.global',
   },
-  whitelist = { 'lua', 'python', 'cpp', 'c', 'zig', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'html', 'css', 'fish' },
+  whitelist = { 'lua', 'python', 'cpp', 'c', 'zig', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'html', 'css', 'fish', 'swift' },
 }
 
--- Disable netrw (mini.files replaces it)
+-- Disable netrw (oil.nvim replaces it)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 

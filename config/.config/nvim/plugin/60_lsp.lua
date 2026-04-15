@@ -2,7 +2,7 @@
 -- Neovim config: LSP configuration and enabling.
 
 vim.pack.add({
-	"https://github.com/neovim/nvim-lspconfig",
+	{ src = "https://github.com/neovim/nvim-lspconfig", name = "nvim-lspconfig" },
 })
 
 vim.lsp.enable({
@@ -11,9 +11,11 @@ vim.lsp.enable({
 	"cssls",
 	"emmylua",
 	"fish_lsp",
+	"harper_ls",
 	"just",
 	"pyrefly",
 	"ruff",
+	"sourcekit",
 	"superhtml",
 	"tailwindcss",
 	"vtsls",
