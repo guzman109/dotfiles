@@ -2,7 +2,7 @@
 
 # ============ CONFIGURATION ============
 set MAX_WIDTH 80
-set ICON ""
+set ICON "󰓎"
 # =======================================
 
 # Parse arguments
@@ -64,9 +64,13 @@ if test -f $DB_FILE
             set INNER_WIDTH (math "$BOX_WIDTH - 4")  # Account for border and padding
 
             # Wrap the quote text only (without author)
-            # Account for icon + space on first line (2 chars)
+            # Account for icon + space on first line when an icon is configured.
             set QUOTE_TEXT "\"$QUOTE\""
-            set FOLD_WIDTH (math "$INNER_WIDTH - 2")
+            set ICON_PREFIX ""
+            if test -n "$ICON"
+                set ICON_PREFIX "$ICON "
+            end
+            set FOLD_WIDTH (math "$INNER_WIDTH - "(string length $ICON_PREFIX))
             set WRAPPED (echo $QUOTE_TEXT | fold -s -w $FOLD_WIDTH)
 
             # Draw top border
@@ -80,8 +84,8 @@ if test -f $DB_FILE
             set first_line true
             printf '%s\n' $WRAPPED | while read -l line
                 if test "$first_line" = "true"
-                    # First line: add icon at start
-                    set line_with_icon "$ICON $line"
+                    # First line: add icon at start when configured.
+                    set line_with_icon "$ICON_PREFIX$line"
                     set line_len (string length $line_with_icon)
                     set padding (math "$INNER_WIDTH - $line_len")
                     printf "│ %s%*s │\n" $line_with_icon $padding ""
@@ -95,7 +99,10 @@ if test -f $DB_FILE
 
             # Draw author on separate line (right-aligned with icon)
             if test -n "$AUTHOR"; and test "$AUTHOR" != "null"
-                set AUTHOR_LINE "— $AUTHOR $ICON"
+                set AUTHOR_LINE "— $AUTHOR"
+                if test -n "$ICON"
+                    set AUTHOR_LINE "$AUTHOR_LINE $ICON"
+                end
                 set author_len (string length $AUTHOR_LINE)
                 set left_padding (math "$INNER_WIDTH - $author_len")
                 printf "│ %*s%s │\n" $left_padding "" $AUTHOR_LINE
