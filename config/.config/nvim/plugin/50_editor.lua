@@ -1,86 +1,122 @@
 -- ── 50_editor.lua ──────────────────────────────
--- Neovim config: Editor plugins — finder, git, navigation, formatting, testing, commands.
+-- Neovim config: Editor plugins — finder, git, navigation, formatting, and project tools.
 
 vim.pack.add({
 	-- Git
-	"https://github.com/lewis6991/gitsigns.nvim",
+	{ src = "https://github.com/lewis6991/gitsigns.nvim", name = "gitsigns" },
+	{ src = "https://github.com/refractalize/oil-git-status.nvim", name = "oil-git-status" },
 
-	-- Code outline
-	"https://github.com/stevearc/aerial.nvim",
-	"https://github.com/Sang-it/fluoride",
+	-- Diagnostics and code navigation
+	{ src = "https://github.com/folke/trouble.nvim", name = "trouble" },
+
+	-- C/C++ memory layout inspection
+	{ src = "https://github.com/J-Cowsert/classlayout.nvim", name = "classlayout" },
 
 	-- Folding
-	"https://github.com/kevinhwang91/nvim-ufo",
-	"https://github.com/kevinhwang91/promise-async",
+	{ src = "https://github.com/kevinhwang91/nvim-ufo", name = "nvim-ufo" },
+	{ src = "https://github.com/kevinhwang91/promise-async", name = "promise-async" },
 
 	-- File navigation
-	{ src = "https://github.com/ThePrimeagen/harpoon", version = "harpoon2" },
-	"https://github.com/nvim-lua/plenary.nvim",
+	{ src = "https://github.com/ThePrimeagen/harpoon", name = "harpoon", version = "harpoon2" },
+	{ src = "https://github.com/nvim-lua/plenary.nvim", name = "plenary" },
+	{ src = "https://github.com/stevearc/oil.nvim", name = "oil" },
 
 	-- Formatting
-	"https://github.com/stevearc/conform.nvim",
+	{ src = "https://github.com/stevearc/conform.nvim", name = "conform" },
 
 	-- Treesitter
-	"https://github.com/nvim-treesitter/nvim-treesitter",
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", name = "nvim-treesitter" },
 
 	-- Markdown rendering
-	"https://github.com/OXY2DEV/markview.nvim",
+	{ src = "https://github.com/OXY2DEV/markview.nvim", name = "markview" },
 
-	-- Image paste
-	"https://github.com/HakonHarnes/img-clip.nvim",
+	-- Inline image rendering (required by diagram.nvim)
+	{ src = "https://github.com/3rd/image.nvim", name = "image" },
+
+	-- Inline diagram rendering (mermaid, etc.)
+	{ src = "https://github.com/3rd/diagram.nvim", name = "diagram" },
 
 	-- Live preview (browser-based for MD/HTML/SVG)
-	"https://github.com/brianhuster/live-preview.nvim",
+	{ src = "https://github.com/brianhuster/live-preview.nvim", name = "live-preview" },
 
-	-- Testing
-	"https://github.com/nvim-neotest/nvim-nio",
-	"https://github.com/nvim-neotest/neotest",
-	"https://github.com/nvim-neotest/neotest-python",
-	"https://github.com/alfaix/neotest-gtest",
-	"https://github.com/lawrence-laz/neotest-zig",
 	-- HTTP client
-	"https://github.com/mistweaverco/kulala.nvim",
+	{ src = "https://github.com/mistweaverco/kulala.nvim", name = "kulala" },
 
 	-- Venv selector
-	"https://github.com/linux-cultist/venv-selector.nvim",
+	{ src = "https://github.com/linux-cultist/venv-selector.nvim", name = "venv-selector" },
 
 	-- Highlight Colors (CSS, Tailwind)
-	"https://github.com/brenoprata10/nvim-highlight-colors",
+	{ src = "https://github.com/brenoprata10/nvim-highlight-colors", name = "nvim-highlight-colors" },
 
 	-- Fuzzy finder
-	"https://github.com/ibhagwan/fzf-lua",
-
-	-- Project sticky notes
-	"https://github.com/Sou1lah/StickyNotes.nvim",
+	{ src = "https://github.com/ibhagwan/fzf-lua", name = "fzf-lua" },
 })
 
-local function open_mini_files(path, use_latest)
-	local target = path
-	if not target or target == "" or vim.fn.filereadable(target) == 0 and vim.fn.isdirectory(target) == 0 then
-		target = vim.fn.getcwd()
-	end
-	require("mini.files").open(target, use_latest)
-end
-
-vim.keymap.set("n", "-", function()
-	local path = vim.api.nvim_buf_get_name(0)
-	if path == "" or vim.fn.filereadable(path) == 0 and vim.fn.isdirectory(path) == 0 then
-		path = vim.fn.getcwd()
-	end
-	open_mini_files(path, false)
-end, { desc = "Open parent directory" })
-vim.keymap.set("n", "<leader>e", function()
-	local path = vim.api.nvim_buf_get_name(0)
-	if path == "" or vim.fn.filereadable(path) == 0 and vim.fn.isdirectory(path) == 0 then
-		path = vim.fn.getcwd()
-	end
-	open_mini_files(path, false)
-end, { desc = "File explorer" })
+vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Open parent directory" })
+vim.keymap.set("n", "<leader>e", "<cmd>Oil<cr>", { desc = "File explorer" })
 vim.keymap.set("n", "<leader>E", function()
 	vim.cmd("tabnew")
-	local path = vim.fn.getcwd()
-	open_mini_files(path, false)
+	vim.cmd("Oil " .. vim.fn.getcwd())
 end, { desc = "File explorer (tab)" })
+
+require("oil").setup({
+	default_file_explorer = true,
+	view_options = {
+		show_hidden = true,
+	},
+	win_options = {
+		signcolumn = "yes:2",
+	},
+})
+
+require("oil-git-status").setup()
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = vim.api.nvim_create_augroup("NvimConfigOilKeymaps", { clear = true }),
+	pattern = "oil",
+	callback = function(event)
+		vim.keymap.set("n", "q", function()
+			local alt = vim.fn.bufnr("#")
+			if alt > 0 and vim.api.nvim_buf_is_valid(alt) then
+				vim.cmd("buffer #")
+			elseif vim.fn.winnr("$") > 1 then
+				vim.cmd("close")
+			else
+				vim.cmd("enew")
+			end
+		end, { buffer = event.buf, desc = "Back to previous buffer" })
+	end,
+})
+
+-- ── Trouble ────────────────────────────────────
+require("trouble").setup({
+	focus = false,
+	modes = {
+		symbols = {
+			groups = {
+				{ "filename", format = "{file_icon} {basename} {count}" },
+			},
+		},
+	},
+})
+
+vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Trouble diagnostics" })
+vim.keymap.set(
+	"n",
+	"<leader>xX",
+	"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+	{ desc = "Trouble buffer diagnostics" }
+)
+vim.keymap.set("n", "<leader>xs", "<cmd>Trouble symbols toggle focus=false<cr>", { desc = "Trouble symbols" })
+vim.keymap.set("n", "<leader>co", "<cmd>Trouble symbols toggle focus=false<cr>", { desc = "Code outline" })
+vim.keymap.set(
+	"n",
+	"<leader>xl",
+	"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+	{ desc = "Trouble LSP locations" }
+)
+vim.keymap.set("n", "<leader>xL", "<cmd>Trouble loclist toggle<cr>", { desc = "Trouble location list" })
+vim.keymap.set("n", "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", { desc = "Trouble quickfix list" })
 
 -- ── fzf-lua ───────────────────────────────────
 local fzf = require("fzf-lua")
@@ -100,6 +136,12 @@ local function fzf_bottom(h, w, preview)
 end
 
 local preview_winopts = { hidden = "nohidden", layout = "horizontal", horizontal = "right:55%" }
+
+local function fzf_titled(title, h, w, preview)
+	return function()
+		return vim.tbl_extend("force", fzf_bottom(h, w, preview), { title = title })
+	end
+end
 
 fzf.setup({
 	"default-title",
@@ -135,28 +177,74 @@ fzf.setup({
 		},
 	},
 	files = {
-		fd_opts = "--color=never --type f --hidden --follow --exclude .git",
-		winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end,
+		fd_opts = "--color=never --type f --follow --exclude .git",
+		hidden = false,
+		prompt = "Files: ",
+		winopts = fzf_titled("Files", 0.75, 0.80, preview_winopts),
 	},
-	grep = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
-	lsp = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
-	git = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
-	helptags = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
-	oldfiles = { winopts = function() return fzf_bottom(0.75, 0.80, preview_winopts) end },
+	grep = {
+		input_prompt = "Grep: ",
+		prompt = "Matches: ",
+		winopts = fzf_titled("Grep", 0.75, 0.80, preview_winopts),
+	},
+	lsp = {
+		prompt = "LSP: ",
+		winopts = fzf_titled("LSP", 0.75, 0.80, preview_winopts),
+	},
+	git = {
+		prompt = "Git: ",
+		winopts = fzf_titled("Git", 0.75, 0.80, preview_winopts),
+	},
+	helptags = {
+		prompt = "Help: ",
+		winopts = fzf_titled("Help", 0.75, 0.80, preview_winopts),
+	},
+	oldfiles = {
+		prompt = "Recent: ",
+		winopts = fzf_titled("Recent", 0.75, 0.80, preview_winopts),
+	},
 	buffers = {
+		prompt = "Buffers: ",
 		winopts = function()
 			local count = #vim.fn.getbufinfo({ buflisted = 1 })
 			local h = math.max(0.20, math.min(0.50, (count + 4) / vim.o.lines))
-			return fzf_bottom(h, 0.45)
+			return vim.tbl_extend("force", fzf_bottom(h, 0.45), { title = "Buffers" })
 		end,
+	},
+	diagnostics = {
+		prompt = "Diagnostics: ",
+		winopts = fzf_titled("Diagnostics", 0.75, 0.80, preview_winopts),
+	},
+	marks = {
+		prompt = "Marks: ",
+		winopts = fzf_titled("Marks", 0.50, 0.55, preview_winopts),
+	},
+	registers = {
+		prompt = "Registers: ",
+		winopts = fzf_titled("Registers", 0.50, 0.55),
+	},
+	keymaps = {
+		prompt = "Keymaps: ",
+		winopts = fzf_titled(
+			"Keymaps",
+			0.70,
+			0.72,
+			{ hidden = "nohidden", layout = "vertical", vertical = "down:45%" }
+		),
 	},
 })
 fzf.register_ui_select(function(_, items)
 	local count = #items
 	local h = math.max(0.15, math.min(0.50, (count + 4) / vim.o.lines))
 	local w = math.max(0.25, math.min(0.50, 0.02 * count + 0.20))
-	return { winopts = fzf_bottom(h, w) }
+	return { winopts = vim.tbl_extend("force", fzf_bottom(h, w), { title = "Select" }) }
 end)
+
+do
+	local fzf_config = require("fzf-lua.config")
+	local trouble_actions = require("trouble.sources.fzf").actions
+	fzf_config.defaults.actions.files["ctrl-t"] = trouble_actions.open
+end
 
 vim.api.nvim_create_autocmd("TermOpen", {
 	group = vim.api.nvim_create_augroup("NvimConfigTerminalTheme", { clear = true }),
@@ -188,6 +276,16 @@ vim.keymap.set("n", "<leader>fS", fzf.lsp_workspace_symbols, { desc = "Workspace
 vim.keymap.set("n", "<leader>fg", fzf.git_status, { desc = "Git status" })
 vim.keymap.set("n", "<leader>fl", fzf.git_commits, { desc = "Git log" })
 vim.keymap.set("n", "<leader>fL", fzf.git_bcommits, { desc = "Buffer git log" })
+local function find_todos()
+	fzf.grep_project({
+		search = [[\b(TODO|FIXME|HACK|NOTE|XXX|BUG|WARN|WARNING|PERF|OPTIMIZE|REVIEW|IDEA)\b]],
+		no_esc = true,
+		title = "Todos",
+	})
+end
+
+vim.api.nvim_create_user_command("TodoList", find_todos, { desc = "List project TODO comments" })
+vim.keymap.set("n", "<leader>fT", find_todos, { desc = "Todos" })
 vim.keymap.set("n", "<leader>fw", fzf.grep_cword, { desc = "Grep word" })
 vim.keymap.set("v", "<leader>fw", fzf.grep_visual, { desc = "Grep selection" })
 vim.keymap.set("n", "<leader>fm", fzf.marks, { desc = "Marks" })
@@ -224,20 +322,248 @@ require("gitsigns").setup({
 	end,
 })
 
--- ── Aerial ─────────────────────────────────────
-require("aerial").setup({
-	backends = { "lsp", "treesitter", "markdown" },
-	layout = { min_width = 30, default_direction = "right" },
-	show_guides = true,
-	filter_kind = false,
+vim.keymap.set("n", "<leader>gg", function()
+	vim.cmd("tabnew")
+	vim.cmd("terminal lazygit")
+	vim.cmd("startinsert")
+	vim.api.nvim_create_autocmd("TermClose", {
+		once = true,
+		buffer = 0,
+		callback = function()
+			vim.cmd("tabclose")
+		end,
+	})
+end, { desc = "Lazygit" })
+
+-- ── ClassLayout ────────────────────────────────
+local classlayout = require("classlayout")
+
+local function classlayout_split_blocks(output)
+	local blocks = {}
+	local current = {}
+	local in_block = false
+
+	for line in output:gmatch("[^\n]+") do
+		if line:match("%*%*%* Dumping AST Record Layout") then
+			if #current > 0 then
+				blocks[#blocks + 1] = current
+			end
+			current = {}
+			in_block = true
+		elseif in_block then
+			current[#current + 1] = line
+		end
+	end
+
+	if #current > 0 then
+		blocks[#blocks + 1] = current
+	end
+
+	return blocks
+end
+
+local function classlayout_type_from_block(block)
+	local line = block[1]
+	if not line then
+		return nil
+	end
+
+	local full_type = line:match("^%s*%d+%s*|%s*[%w_]+%s+(.+)$")
+	if not full_type then
+		return nil
+	end
+
+	full_type = full_type:gsub("%s*%(empty%)%s*$", "")
+	full_type = full_type:gsub("%s*%(sizeof.*$", "")
+	return vim.trim(full_type)
+end
+
+local function classlayout_name_variants(kind, name)
+	local variants = {}
+	local function add(value)
+		if value and value ~= "" and not vim.tbl_contains(variants, value) then
+			variants[#variants + 1] = value
+		end
+	end
+
+	add(name)
+	add((name or ""):match("::([%w_]+)$"))
+	add(kind and name and (kind .. " " .. name) or nil)
+	add(kind and name and (kind .. " " .. ((name or ""):match("::([%w_]+)$") or name)) or nil)
+	return variants
+end
+
+local function classlayout_matches_type(full_type, candidates)
+	if not full_type then
+		return false
+	end
+
+	local stripped = full_type:gsub("<.+>", "")
+	local unqualified = stripped:match("::([%w_]+)$") or stripped
+	local normalized = {
+		full_type,
+		stripped,
+		unqualified,
+		full_type:gsub("^(struct|class|union)%s+", ""),
+		stripped:gsub("^(struct|class|union)%s+", ""),
+		unqualified:gsub("^(struct|class|union)%s+", ""),
+	}
+
+	for _, candidate in ipairs(candidates) do
+		for _, value in ipairs(normalized) do
+			if value == candidate then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+local function classlayout_parse_any(output, candidates)
+	for _, block in ipairs(classlayout_split_blocks(output)) do
+		if classlayout_matches_type(classlayout_type_from_block(block), candidates) then
+			return block
+		end
+	end
+	return nil
+end
+
+local function classlayout_find_typedef_alias(start_line)
+	local depth = 0
+
+	for line_nr = start_line, vim.api.nvim_buf_line_count(0) do
+		local line = vim.api.nvim_buf_get_lines(0, line_nr - 1, line_nr, false)[1] or ""
+		for char in line:gmatch("[{}]") do
+			depth = depth + (char == "{" and 1 or -1)
+		end
+
+		if depth <= 0 then
+			return line:match("}%s*([%w_]+)%s*[,;]")
+		end
+	end
+
+	return nil
+end
+
+local function classlayout_record_at_line(line, line_nr)
+	local typedef, kind, rest = line:match("^%s*(typedef%s+)(struct|class|union)%s*(.*)$")
+	if not kind then
+		kind, rest = line:match("^%s*(struct|class|union)%s*(.*)$")
+	end
+	if not kind then
+		return nil
+	end
+
+	rest = rest:gsub("^__attribute__%s*%b()%s*", "")
+	rest = rest:gsub("^%[%[[^%]]+%]%]%s*", "")
+
+	local name = rest:match("^([%w_:]+)")
+	if name == "final" or name == "alignas" then
+		name = nil
+	end
+	if (not name or name == "") and typedef then
+		name = classlayout_find_typedef_alias(line_nr)
+	end
+	if not name or name == "" then
+		return nil
+	end
+
+	return { kind = kind, name = name, line_nr = line_nr }
+end
+
+local function classlayout_find_enclosing_record()
+	local current_line = vim.api.nvim_win_get_cursor(0)[1]
+
+	for line_nr = current_line, 1, -1 do
+		local line = vim.api.nvim_buf_get_lines(0, line_nr - 1, line_nr, false)[1] or ""
+		local record = classlayout_record_at_line(line, line_nr)
+		if record and (line:find("{", 1, true) or line_nr < current_line) then
+			return record
+		end
+	end
+
+	return nil
+end
+
+local function show_classlayout()
+	local ft = vim.bo.filetype
+	if ft ~= "c" and ft ~= "cpp" then
+		classlayout.show()
+		return
+	end
+
+	local filepath = vim.api.nvim_buf_get_name(0)
+	if filepath == "" then
+		vim.notify("ClassLayout: buffer has no file", vim.log.levels.WARN)
+		return
+	end
+
+	local record = classlayout_find_enclosing_record()
+	if not record then
+		classlayout.show()
+		return
+	end
+
+	local compiler = classlayout.config.compiler or "clang"
+	if vim.fn.executable(compiler) ~= 1 then
+		vim.notify("ClassLayout: '" .. compiler .. "' not found in PATH", vim.log.levels.ERROR)
+		return
+	end
+
+	local args = { compiler, "-Xclang", "-fdump-record-layouts-complete", "-fsyntax-only" }
+	if ft == "cpp" or record.kind == "class" then
+		args[#args + 1] = "-x"
+		args[#args + 1] = "c++"
+	end
+	args[#args + 1] = filepath
+
+	if classlayout.config.compile_commands then
+		for _, flag in ipairs(classlayout.get_compile_flags(filepath)) do
+			args[#args + 1] = flag
+		end
+	end
+
+	for _, arg in ipairs(classlayout.config.args or {}) do
+		args[#args + 1] = arg
+	end
+
+	local result = vim.system(args, { text = true }):wait()
+	local output = (result.stdout or "") .. (result.stderr or "")
+	local candidates = classlayout_name_variants(record.kind, record.name)
+	local block = classlayout_parse_any(output, candidates)
+
+	if block then
+		classlayout.open_float(block, record.name)
+		return
+	end
+
+	local available = {}
+	for _, dump_block in ipairs(classlayout_split_blocks(output)) do
+		local type_name = classlayout_type_from_block(dump_block)
+		if type_name then
+			available[#available + 1] = type_name
+		end
+	end
+
+	local message = string.format(
+		"ClassLayout: no layout found for '%s'. clang exit=%s. Dumped: %s",
+		record.name,
+		result.code or "?",
+		#available > 0 and table.concat(vim.list_slice(available, 1, 8), ", ") or "none"
+	)
+	vim.notify(message, vim.log.levels.WARN)
+end
+
+classlayout.setup({
+	keymap = "<leader>cl",
+	compiler = "clang",
+	compile_commands = true,
 })
 
-vim.keymap.set("n", "<leader>co", "<cmd>AerialToggle<cr>", { desc = "Code outline" })
-vim.keymap.set("n", "{", "<cmd>AerialPrev<cr>", { desc = "Prev symbol" })
-vim.keymap.set("n", "}", "<cmd>AerialNext<cr>", { desc = "Next symbol" })
-
--- ── Fluoride ───────────────────────────────────
-vim.keymap.set("n", "<leader>cS", "<cmd>Fluoride<cr>", { desc = "Symbol structure" })
+vim.api.nvim_create_user_command("ClassLayoutHere", show_classlayout, {
+	desc = "Show class memory layout for symbol or enclosing C/C++ type",
+})
 
 -- ── UFO (folding) ──────────────────────────────
 vim.o.foldcolumn = "1"
@@ -298,6 +624,23 @@ harpoon:extend({
 	end,
 })
 
+local function harpoon_picker_label(path)
+	local rel = vim.fn.fnamemodify(path, ":~:.")
+	local name = vim.fn.fnamemodify(rel, ":t")
+	local dir = vim.fn.fnamemodify(rel, ":h")
+	local icon = ""
+	if _G.MiniIcons then
+		local icon_text = select(1, MiniIcons.get("file", path))
+		if icon_text and icon_text ~= "" then
+			icon = icon_text .. " "
+		end
+	end
+	if dir == "." or dir == "" then
+		return icon .. name
+	end
+	return string.format("%s%s  %s", icon, name, dir)
+end
+
 -- File marks
 vim.keymap.set("n", "<leader>ha", function()
 	harpoon:list():add()
@@ -354,16 +697,22 @@ vim.keymap.set("n", "<leader>hh", function()
 	for _, item in ipairs(items) do
 		local path = item.value or ""
 		if path ~= "" then
-			table.insert(files, path)
+			local label = harpoon_picker_label(path)
+			table.insert(files, label .. "\t" .. path)
 		end
 	end
 
 	fzf.fzf_exec(files, {
 		prompt = "Harpoon> ",
+		fzf_opts = {
+			["--delimiter"] = "\t",
+			["--with-nth"] = "1",
+		},
 		actions = {
 			["default"] = function(selected)
 				if selected and selected[1] then
-					vim.cmd("edit " .. selected[1])
+					local path = selected[1]:match("\t(.+)$") or selected[1]
+					vim.cmd("edit " .. vim.fn.fnameescape(path))
 				end
 			end,
 		},
@@ -371,10 +720,15 @@ vim.keymap.set("n", "<leader>hh", function()
 end, { desc = "Harpoon menu" })
 -- ── Conform ────────────────────────────────────
 require("conform").setup({
-	format_on_save = {
-		timeout_ms = 500,
-		lsp_format = "fallback",
-	},
+	format_on_save = function(bufnr)
+		if vim.bo[bufnr].filetype == "oil" then
+			return
+		end
+		return {
+			timeout_ms = 500,
+			lsp_format = "fallback",
+		}
+	end,
 	log_level = vim.log.levels.WARN,
 	notify_on_error = true,
 	notify_no_formatters = true,
@@ -382,6 +736,7 @@ require("conform").setup({
 		c = { "clang_format" },
 		cpp = { "clang_format" },
 		css = { "biome" },
+		dockerfile = { "dockerfmt" },
 		fish = { "fish_indent" },
 		html = { "superhtml" },
 		javascript = { "biome" },
@@ -391,8 +746,10 @@ require("conform").setup({
 		just = { "just" },
 		lua = { "stylua" },
 		python = { "ruff_fix", "ruff_organize_imports", "ruff_format" },
+		swift = { "swift_format" },
 		typescript = { "biome" },
 		typescriptreact = { "biome" },
+		["yaml.docker-compose"] = { "yamlfmt" },
 		zig = { "zigfmt" },
 	},
 	formatters = {
@@ -402,6 +759,11 @@ require("conform").setup({
 		just = {
 			command = "just",
 			args = { "--fmt", "--unstable", "-f", "$FILENAME" },
+			stdin = false,
+		},
+		swift_format = {
+			command = "swift-format",
+			args = { "format", "--in-place", "$FILENAME" },
 			stdin = false,
 		},
 	},
@@ -421,6 +783,7 @@ require("nvim-treesitter").setup({
 		"c",
 		"css",
 		"cpp",
+		"dockerfile",
 		"fish",
 		"javascript",
 		"just",
@@ -431,8 +794,10 @@ require("nvim-treesitter").setup({
 		"lua",
 		"markdown",
 		"markdown_inline",
+		"meson",
 		"python",
 		"query",
+		"swift",
 		"toml",
 		"tsx",
 		"typescript",
@@ -442,6 +807,52 @@ require("nvim-treesitter").setup({
 	},
 })
 
+local function refresh_markview_highlights()
+	local ok, markview_highlights = pcall(require, "markview.highlights")
+	if not ok then
+		return
+	end
+
+	for _, group in ipairs(vim.fn.getcompletion("Markview", "highlight")) do
+		vim.api.nvim_set_hl(0, group, {})
+	end
+	markview_highlights.setup()
+end
+
+local function mermaid_theme()
+	return vim.o.background == "dark" and "dark" or "neutral"
+end
+
+local function refresh_diagram_mermaid_theme(render_current)
+	local ok, diagram = pcall(require, "diagram")
+	if not ok then
+		return
+	end
+
+	local _, state = debug.getupvalue(diagram.setup, 1)
+	if type(state) == "table" then
+		state.renderer_options = state.renderer_options or {}
+		state.renderer_options.mermaid = vim.tbl_deep_extend("force", state.renderer_options.mermaid or {}, {
+			theme = mermaid_theme(),
+			scale = 2,
+		})
+	end
+
+	local cache_dir = vim.fn.stdpath("cache") .. "/diagram-cache/mermaid"
+	vim.fn.delete(cache_dir, "rf")
+	vim.fn.mkdir(cache_dir, "p")
+
+	if render_current then
+		vim.schedule(function()
+			if vim.bo.filetype ~= "markdown" then
+				return
+			end
+			pcall(diagram.clear)
+			pcall(diagram.render)
+		end)
+	end
+end
+
 -- ── Markview (markdown rendering) ──────────────
 require("markview").setup({
 	preview = {
@@ -449,20 +860,48 @@ require("markview").setup({
 		filetypes = { "markdown" },
 		ignore_buftypes = {},
 	},
-})
-
--- ── img-clip (image paste) ─────────────────────
-require("img-clip").setup({
-	default = {
-		embed_image_as_base64 = false,
-		prompt_for_file_name = false,
-		drag_and_drop = {
-			insert_mode = true,
+	markdown = {
+		code_blocks = {
+			["mermaid"] = {
+				block_hl = "MarkviewPalette5",
+				pad_hl = "MarkviewPalette5",
+			},
 		},
 	},
 })
+refresh_markview_highlights()
 
-vim.keymap.set({ "n", "v" }, "<leader>pi", "<cmd>PasteImage<cr>", { desc = "Paste image" })
+-- ── image.nvim ─────────────────────────────────
+require("image").setup({
+	backend = "kitty",
+	processor = "magick_cli",
+	integrations = {},
+	max_width_window_percentage = 60,
+	max_height_window_percentage = 40,
+	hijack_file_patterns = {},
+})
+
+-- ── diagram.nvim ────────────────────────────────
+require("diagram").setup({
+	integrations = {
+		require("diagram.integrations.markdown"),
+	},
+	renderer_options = {
+		mermaid = {
+			theme = mermaid_theme(),
+			scale = 2,
+		},
+	},
+})
+refresh_diagram_mermaid_theme(false)
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+	group = vim.api.nvim_create_augroup("NvimConfigMarkdownThemeRefresh", { clear = true }),
+	callback = function()
+		refresh_markview_highlights()
+		refresh_diagram_mermaid_theme(true)
+	end,
+})
 
 -- ── Live Preview (browser) ─────────────────────
 require("livepreview.config").set({})
@@ -471,70 +910,27 @@ vim.keymap.set("n", "<leader>mp", "<cmd>LivePreview start<cr>", { desc = "Start 
 vim.keymap.set("n", "<leader>ms", "<cmd>LivePreview stop<cr>", { desc = "Stop live preview" })
 vim.keymap.set("n", "<leader>mf", "<cmd>LivePreview pick<cr>", { desc = "Pick file to preview" })
 
--- ── Neotest ────────────────────────────────────
-require("neotest").setup({
-	adapters = {
-		require("neotest-python")({
-			dap = { justMyCode = false },
-			runner = "pytest",
-		}),
-		require("neotest-gtest").setup({}),
-		require("neotest-zig")({
-			dap = { adapter = "codelldb" },
-		}),
-	},
-	status = { virtual_text = true },
-	output = { open_on_run = true },
-})
-
-vim.keymap.set("n", "<leader>nr", function()
-	require("neotest").run.run()
-end, { desc = "Run nearest test" })
-vim.keymap.set("n", "<leader>nf", function()
-	require("neotest").run.run(vim.fn.expand("%"))
-end, { desc = "Run file tests" })
-vim.keymap.set("n", "<leader>nA", function()
-	require("neotest").run.run({ suite = true })
-end, { desc = "Run all tests" })
-vim.keymap.set("n", "<leader>nD", function()
-	require("neotest").run.run({ strategy = "dap" })
-end, { desc = "Debug nearest test" })
-vim.keymap.set("n", "<leader>ns", function()
-	require("neotest").run.stop()
-end, { desc = "Stop test" })
-vim.keymap.set("n", "<leader>nl", function()
-	require("neotest").run.run_last()
-end, { desc = "Run last test" })
-vim.keymap.set("n", "<leader>no", function()
-	require("neotest").output.open({ enter = true, auto_close = true })
-end, { desc = "Show output" })
-vim.keymap.set("n", "<leader>nO", function()
-	require("neotest").output_panel.toggle()
-end, { desc = "Toggle output panel" })
-vim.keymap.set("n", "<leader>nv", function()
-	require("neotest").summary.toggle()
-end, { desc = "Toggle summary" })
-
 -- ── Kulala (HTTP) ──────────────────────────────
 require("kulala").setup({
 	default_view = "body",
 	default_env = "dev",
 })
 
+vim.keymap.set({ "n", "v" }, "<leader>kr", function()
+	require("kulala").run()
+end, { desc = "Run HTTP request" })
+vim.keymap.set("n", "<leader>kR", function()
+	require("kulala.ui").show_script_output()
+end, { desc = "Show HTTP script output" })
+vim.keymap.set("n", "<leader>ke", function()
+	require("kulala").set_selected_env()
+end, { desc = "Select HTTP environment" })
+
 -- ── Venv Selector ──────────────────────────────
 require("venv-selector").setup({
 	name = { "venv", ".venv", "env", ".env" },
 	auto_refresh = true,
 })
-
--- ── Sticky Notes ───────────────────────────────
-require("sticky-notes").setup({
-	keymaps = false,
-})
-
-vim.keymap.set("n", "<leader>nn", "<cmd>StickyNote<cr>", { desc = "Open sticky note" })
-vim.keymap.set("n", "<leader>nN", "<cmd>StickyNotePicker<cr>", { desc = "Browse sticky notes" })
-vim.keymap.set("n", "<leader>nd", "<cmd>StickyNoteDelete<cr>", { desc = "Delete sticky note" })
 
 -- ── NVIM Highlight Colors ──────────────────────
 require("nvim-highlight-colors").setup({
@@ -548,32 +944,3 @@ require("nvim-highlight-colors").setup({
 	enable_named_colors = true,
 	enable_tailwind = true,
 })
-
--- ── Just (command runner) ──────────────────────
-vim.keymap.set("n", "<leader>jr", function()
-	local handle = io.popen("just --summary 2>/dev/null")
-	if not handle then
-		vim.notify("No justfile found", vim.log.levels.WARN)
-		return
-	end
-	local result = handle:read("*a")
-	handle:close()
-	if result == "" then
-		vim.notify("No justfile found", vim.log.levels.WARN)
-		return
-	end
-	local recipes = vim.split(vim.trim(result), " ")
-	vim.ui.select(recipes, { prompt = "Just> " }, function(choice)
-		if choice then
-			vim.cmd("!" .. "just " .. choice)
-		end
-	end)
-end, { desc = "Just run recipe" })
-
-vim.keymap.set("n", "<leader>jl", function()
-	vim.cmd("!just --list")
-end, { desc = "Just list recipes" })
-
-vim.keymap.set("n", "<leader>je", function()
-	vim.cmd("e justfile")
-end, { desc = "Edit justfile" })

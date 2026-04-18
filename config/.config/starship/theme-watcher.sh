@@ -13,9 +13,9 @@ update_theme() {
     local appearance=$(get_appearance)
 
     if [ "$appearance" = "Dark" ]; then
-        sed -i '' "s/palette = 'catppuccin_.*'/palette = 'catppuccin_mocha'/" "$CONFIG_FILE"
+        sed -i '' 's/^palette = ".*"$/palette = "ember_soft"/' "$CONFIG_FILE"
     else
-        sed -i '' "s/palette = 'catppuccin_.*'/palette = 'catppuccin_latte'/" "$CONFIG_FILE"
+        sed -i '' 's/^palette = ".*"$/palette = "ember_light"/' "$CONFIG_FILE"
     fi
 }
 

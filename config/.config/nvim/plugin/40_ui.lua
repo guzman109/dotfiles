@@ -2,11 +2,12 @@
 -- Neovim config: Colorscheme and visual enhancements. Loads early so colors are set before first draw.
 
 vim.pack.add({
-	"https://github.com/catppuccin/nvim",
-	"https://github.com/EdenEast/nightfox.nvim",
-	"https://github.com/HiPhish/rainbow-delimiters.nvim",
-	"https://github.com/f-person/auto-dark-mode.nvim",
-	"https://github.com/lukas-reineke/indent-blankline.nvim",
+	{ src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
+	{ src = "https://github.com/EdenEast/nightfox.nvim", name = "nightfox" },
+	{ src = "https://github.com/ember-theme/nvim", name = "ember" },
+	{ src = "https://github.com/HiPhish/rainbow-delimiters.nvim", name = "rainbow-delimiters" },
+	{ src = "https://github.com/f-person/auto-dark-mode.nvim", name = "auto-dark-mode" },
+	{ src = "https://github.com/lukas-reineke/indent-blankline.nvim", name = "indent-blankline" },
 })
 
 local theme_pairs = {
@@ -22,12 +23,19 @@ local theme_pairs = {
 		light = "dayfox",
 		dark = "carbonfox",
 	},
+	ember = {
+		light = "ember-light",
+		dark = "ember",
+	},
+	embersoft = {
+		light = "ember-light",
+		dark = "ember-soft",
+	},
 }
 
-local default_theme_pair = "nightfox"
+local default_theme_pair = "embersoft"
 
 vim.g.theme_pair = theme_pairs[vim.g.theme_pair] and vim.g.theme_pair or default_theme_pair
-vim.opt.shortmess:append("I")
 
 local function active_theme_name()
 	local pair = theme_pairs[vim.g.theme_pair] or theme_pairs.nightfox
@@ -133,6 +141,105 @@ local function hsv_fade_steps(hex, steps)
 	return out
 end
 
+local function persist_theme_pair(theme_pair)
+	local config_file = vim.fn.stdpath("config") .. "/plugin/40_ui.lua"
+	local lines = vim.fn.readfile(config_file)
+	for i, line in ipairs(lines) do
+		if line:match('^local default_theme_pair = ".+"$') then
+			lines[i] = string.format('local default_theme_pair = "%s"', theme_pair)
+			vim.fn.writefile(lines, config_file)
+			return true
+		end
+	end
+	return false
+end
+
+local apply_nightfox_popup_highlights
+
+local function apply_trouble_highlights()
+	vim.api.nvim_set_hl(0, "TroubleNormal", { link = "Normal" })
+	vim.api.nvim_set_hl(0, "TroubleNormalNC", { link = "Normal" })
+end
+
+local function apply_catppuccin_popup_highlights()
+	local colorscheme = vim.g.colors_name or ""
+	local flavour = colorscheme:match("latte") and "latte" or "mocha"
+	local c = require("catppuccin.palettes").get_palette(flavour)
+	local float_bg = c.mantle
+	local muted_bg = c.crust
+	local select_bg = c.surface1
+	local accent_fg = c.lavender
+
+	local highlights = {
+		CursorLine = { bg = c.surface0 },
+		CursorLineNr = { fg = c.peach, bg = c.surface0, bold = true },
+		Visual = { bg = c.surface1 },
+		NormalFloat = { fg = c.text, bg = float_bg },
+		FloatBorder = { fg = c.surface2, bg = float_bg },
+		FloatTitle = { fg = accent_fg, bg = float_bg, bold = true },
+		Pmenu = { fg = c.text, bg = float_bg },
+		PmenuSel = { fg = c.text, bg = select_bg },
+		PmenuSbar = { bg = muted_bg },
+		PmenuThumb = { bg = c.overlay0 },
+		FzfLuaNormal = { fg = c.text, bg = float_bg },
+		FzfLuaBorder = { fg = c.surface2, bg = float_bg },
+		FzfLuaTitle = { fg = accent_fg, bg = float_bg, bold = true },
+		FzfLuaBackdrop = { bg = muted_bg, blend = 90 },
+		FzfLuaCursorLine = { bg = c.surface0 },
+		FzfLuaPreviewNormal = { fg = c.text, bg = float_bg },
+		FzfLuaPreviewBorder = { fg = c.surface2, bg = float_bg },
+		FzfLuaPreviewTitle = { fg = accent_fg, bg = float_bg, bold = true },
+		FzfLuaFzfNormal = { fg = c.text, bg = float_bg },
+		FzfLuaFzfBorder = { fg = c.surface2, bg = float_bg },
+		FzfLuaFzfGutter = { bg = float_bg },
+		FzfLuaFzfCursorLine = { fg = c.text, bg = select_bg },
+		FzfLuaFzfPointer = { fg = c.mauve, bg = select_bg, bold = true },
+		FzfLuaFzfMarker = { fg = c.red, bg = select_bg, bold = true },
+		FzfLuaFzfPrompt = { fg = accent_fg, bg = float_bg, bold = true },
+		FzfLuaFzfQuery = { fg = c.text, bg = float_bg },
+		FzfLuaFzfInfo = { fg = c.overlay1, bg = float_bg },
+		FzfLuaFzfHeader = { fg = c.subtext1, bg = float_bg },
+		FzfLuaFzfMatch = { fg = c.lavender, bg = select_bg, bold = true },
+	}
+
+	for group, spec in pairs(highlights) do
+		vim.api.nvim_set_hl(0, group, spec)
+	end
+end
+
+local function apply_ember_popup_highlights()
+	local highlights = {
+		CursorLineNr = { bold = true },
+		FloatTitle = { bold = true },
+	}
+
+	for group, spec in pairs(highlights) do
+		vim.api.nvim_set_hl(0, group, spec)
+	end
+end
+
+local function apply_popup_highlights()
+	if vim.g.colors_name and vim.g.colors_name:match("catppuccin") then
+		apply_catppuccin_popup_highlights()
+		apply_trouble_highlights()
+		return
+	end
+	if vim.g.colors_name and vim.g.colors_name:match("fox$") then
+		apply_nightfox_popup_highlights()
+		apply_trouble_highlights()
+		return
+	end
+	-- if vim.g.colors_name and vim.g.colors_name:match("^ember") then
+	-- 	apply_ember_popup_highlights()
+	-- end
+	apply_trouble_highlights()
+end
+
+local function apply_active_theme()
+	vim.cmd.colorscheme(active_theme_name())
+	apply_popup_highlights()
+end
+
 -- ── Nightfox ───────────────────────────────────
 require("nightfox").setup({
 	options = {
@@ -147,6 +254,89 @@ require("nightfox").setup({
 			operators = "bold",
 		},
 	},
+})
+
+-- ── Ember ──────────────────────────────────────
+require("ember").setup({
+	variant = "ember",
+	styles = {
+		comments = { italic = true, bold = true },
+		keywords = { italic = true, bold = true },
+		functions = { italic = true },
+		types = { italic = true, bold = true },
+	},
+	on_highlights = function(highlights, theme)
+		local is_light = vim.o.background == "light"
+
+		-- Ember palette (https://github.com/ember-theme/ember)
+		local bg = (theme.ui and theme.ui.bg) or (is_light and "#e6dac4" or "#1c1b19")
+		local fg = (theme.ui and theme.ui.fg) or (is_light and "#282418" or "#d8d0c0")
+		local accent = theme.accent or (is_light and "#b84c30" or "#e08060") -- coral
+		local func = (theme.syntax and theme.syntax.func) or (is_light and "#7a6820" or "#c8b468") -- gold
+		local typ = (theme.syntax and theme.syntax.type) or (is_light and "#3a6080" or "#7890a0") -- steel
+
+		-- Derive a clearly distinct inactive-tab background from bg via HSV so
+		-- inactive tabs always stand out from the editor background, regardless of
+		-- which ember variant is active (ember, ember-soft, ember-light).
+		local bg_hsv = hex_to_hsv(bg)
+		local muted = hsv_to_hex({
+			h = bg_hsv.h,
+			s = bg_hsv.s,
+			v = is_light and clamp01(bg_hsv.v - 0.14) or clamp01(bg_hsv.v + 0.14),
+		})
+
+		local nontext = (theme.ui and theme.ui.nontext) or bg
+
+		local current_fades = hsv_fade_steps(accent, {
+			{ s = 0.95, v = 0.92 },
+			{ s = 0.75, v = 0.72 },
+			{ s = 0.45, v = 0.45 },
+		})
+
+		local hidden_fades = hsv_fade_steps(muted, {
+			{ s = 0.95, v = 0.92 },
+			{ s = 0.80, v = 0.78 },
+			{ s = 0.60, v = 0.62 },
+		})
+
+		local harpoon_current_fades = hsv_fade_steps(func, {
+			{ s = 0.95, v = 0.92 },
+			{ s = 0.75, v = 0.72 },
+			{ s = 0.45, v = 0.45 },
+		})
+
+		local harpoon_hidden_fades = hsv_fade_steps(typ, {
+			{ s = 0.95, v = 0.90 },
+			{ s = 0.75, v = 0.70 },
+			{ s = 0.45, v = 0.42 },
+		})
+
+		highlights.CursorLineNr = vim.tbl_extend("force", highlights.CursorLineNr or {}, { bold = true })
+		highlights.FloatTitle = vim.tbl_extend("force", highlights.FloatTitle or {}, { bold = true })
+
+		highlights.NvimTablineCurrent = { fg = bg, bg = accent, bold = true, italic = true }
+		highlights.NvimTablineCurrentFade1 = { fg = current_fades[1], bg = bg }
+		highlights.NvimTablineCurrentFade2 = { fg = current_fades[2], bg = bg }
+		highlights.NvimTablineCurrentFade3 = { fg = current_fades[3], bg = bg }
+
+		highlights.NvimTablineHidden = { fg = fg, bg = muted, bold = true }
+		highlights.NvimTablineHiddenFade1 = { fg = hidden_fades[1], bg = bg }
+		highlights.NvimTablineHiddenFade2 = { fg = hidden_fades[2], bg = bg }
+		highlights.NvimTablineHiddenFade3 = { fg = hidden_fades[3], bg = bg }
+
+		highlights.NvimTablineHarpoonCurrent = { fg = bg, bg = func, bold = true, italic = true }
+		highlights.NvimTablineHarpoonCurrentFade1 = { fg = harpoon_current_fades[1], bg = bg }
+		highlights.NvimTablineHarpoonCurrentFade2 = { fg = harpoon_current_fades[2], bg = bg }
+		highlights.NvimTablineHarpoonCurrentFade3 = { fg = harpoon_current_fades[3], bg = bg }
+
+		highlights.NvimTablineHarpoonHidden = { fg = bg, bg = typ, bold = true }
+		highlights.NvimTablineHarpoonHiddenFade1 = { fg = harpoon_hidden_fades[1], bg = bg }
+		highlights.NvimTablineHarpoonHiddenFade2 = { fg = harpoon_hidden_fades[2], bg = bg }
+		highlights.NvimTablineHarpoonHiddenFade3 = { fg = harpoon_hidden_fades[3], bg = bg }
+
+		highlights.NvimTablineFill = { fg = nontext, bg = bg }
+		highlights.NvimTablineSection = { fg = bg, bg = accent, bold = true }
+	end,
 })
 
 -- ── Catppuccin ─────────────────────────────────
@@ -271,82 +461,6 @@ require("catppuccin").setup({
 	},
 })
 
-local function apply_catppuccin_popup_highlights()
-	local colorscheme = vim.g.colors_name or ""
-	local flavour = colorscheme:match("latte") and "latte" or "mocha"
-	local c = require("catppuccin.palettes").get_palette(flavour)
-	local float_bg = c.mantle
-	local muted_bg = c.crust
-	local select_bg = c.surface1
-	local accent_fg = c.lavender
-
-	local highlights = {
-		CursorLine = { bg = c.surface0 },
-		CursorLineNr = { fg = c.peach, bg = c.surface0, bold = true },
-		Visual = { bg = c.surface1 },
-		NormalFloat = { fg = c.text, bg = float_bg },
-		FloatBorder = { fg = c.surface2, bg = float_bg },
-		FloatTitle = { fg = accent_fg, bg = float_bg, bold = true },
-		Pmenu = { fg = c.text, bg = float_bg },
-		PmenuSel = { fg = c.text, bg = select_bg },
-		PmenuSbar = { bg = muted_bg },
-		PmenuThumb = { bg = c.overlay0 },
-		FzfLuaNormal = { fg = c.text, bg = float_bg },
-		FzfLuaBorder = { fg = c.surface2, bg = float_bg },
-		FzfLuaTitle = { fg = accent_fg, bg = float_bg, bold = true },
-		FzfLuaBackdrop = { bg = muted_bg, blend = 90 },
-		FzfLuaCursorLine = { bg = c.surface0 },
-		FzfLuaPreviewNormal = { fg = c.text, bg = float_bg },
-		FzfLuaPreviewBorder = { fg = c.surface2, bg = float_bg },
-		FzfLuaPreviewTitle = { fg = accent_fg, bg = float_bg, bold = true },
-		FzfLuaFzfNormal = { fg = c.text, bg = float_bg },
-		FzfLuaFzfBorder = { fg = c.surface2, bg = float_bg },
-		FzfLuaFzfGutter = { bg = float_bg },
-		FzfLuaFzfCursorLine = { fg = c.text, bg = select_bg },
-		FzfLuaFzfPointer = { fg = c.mauve, bg = select_bg, bold = true },
-		FzfLuaFzfMarker = { fg = c.red, bg = select_bg, bold = true },
-		FzfLuaFzfPrompt = { fg = accent_fg, bg = float_bg, bold = true },
-		FzfLuaFzfQuery = { fg = c.text, bg = float_bg },
-		FzfLuaFzfInfo = { fg = c.overlay1, bg = float_bg },
-		FzfLuaFzfHeader = { fg = c.subtext1, bg = float_bg },
-		FzfLuaFzfMatch = { fg = c.lavender, bg = select_bg, bold = true },
-	}
-
-	for group, spec in pairs(highlights) do
-		vim.api.nvim_set_hl(0, group, spec)
-	end
-end
-
-local apply_nightfox_popup_highlights
-
-local function apply_popup_highlights()
-	if vim.g.colors_name and vim.g.colors_name:match("catppuccin") then
-		apply_catppuccin_popup_highlights()
-		return
-	end
-	if vim.g.colors_name and vim.g.colors_name:match("fox$") then
-		apply_nightfox_popup_highlights()
-	end
-end
-
-local function apply_active_theme()
-	vim.cmd.colorscheme(active_theme_name())
-	apply_popup_highlights()
-end
-
-local function persist_theme_pair(theme_pair)
-	local config_file = vim.fn.stdpath("config") .. "/plugin/40_ui.lua"
-	local lines = vim.fn.readfile(config_file)
-	for i, line in ipairs(lines) do
-		if line:match('^local default_theme_pair = ".+"$') then
-			lines[i] = string.format('local default_theme_pair = "%s"', theme_pair)
-			vim.fn.writefile(lines, config_file)
-			return true
-		end
-	end
-	return false
-end
-
 apply_nightfox_popup_highlights = function()
 	local p = require("nightfox.palette").load(vim.g.colors_name)
 	local bg = p.bg1
@@ -359,55 +473,15 @@ apply_nightfox_popup_highlights = function()
 		return value
 	end
 
-	local current_fades = hsv_fade_steps(nf_color(p.magenta), {
-		{ s = 0.95, v = 0.92 },
-		{ s = 0.75, v = 0.72 },
-		{ s = 0.45, v = 0.45 },
-	})
-
-	local hidden_fades = hsv_fade_steps(p.bg3, {
-		{ s = 0.95, v = 0.92 },
-		{ s = 0.80, v = 0.78 },
-		{ s = 0.60, v = 0.62 },
-	})
-
-	local harpoon_current_fades = hsv_fade_steps(nf_color(p.blue), {
-		{ s = 0.95, v = 0.92 },
-		{ s = 0.75, v = 0.72 },
-		{ s = 0.45, v = 0.45 },
-	})
-
-	local harpoon_hidden_fades = hsv_fade_steps(nf_color(p.cyan), {
-		{ s = 0.95, v = 0.90 },
-		{ s = 0.75, v = 0.70 },
-		{ s = 0.45, v = 0.42 },
-	})
-
 	local highlights = {
 		CursorLine = { bg = p.bg3 },
 		CursorLineNr = { fg = nf_color(p.orange), bg = p.bg3, bold = true },
 		Visual = { bg = sel },
 
 		NvimTablineCurrent = { fg = p.bg0, bg = nf_color(p.magenta), bold = true, italic = true },
-		NvimTablineCurrentFade1 = { fg = current_fades[1], bg = p.bg0 },
-		NvimTablineCurrentFade2 = { fg = current_fades[2], bg = p.bg0 },
-		NvimTablineCurrentFade3 = { fg = current_fades[3], bg = p.bg0 },
-
 		NvimTablineHidden = { fg = p.fg2, bg = p.bg3, bold = true },
-		NvimTablineHiddenFade1 = { fg = hidden_fades[1], bg = p.bg0 },
-		NvimTablineHiddenFade2 = { fg = hidden_fades[2], bg = p.bg0 },
-		NvimTablineHiddenFade3 = { fg = hidden_fades[3], bg = p.bg0 },
-
 		NvimTablineHarpoonCurrent = { fg = p.bg0, bg = nf_color(p.blue), bold = true, italic = true },
-		NvimTablineHarpoonCurrentFade1 = { fg = harpoon_current_fades[1], bg = p.bg0 },
-		NvimTablineHarpoonCurrentFade2 = { fg = harpoon_current_fades[2], bg = p.bg0 },
-		NvimTablineHarpoonCurrentFade3 = { fg = harpoon_current_fades[3], bg = p.bg0 },
-
 		NvimTablineHarpoonHidden = { fg = p.bg0, bg = nf_color(p.cyan), bold = true },
-		NvimTablineHarpoonHiddenFade1 = { fg = harpoon_hidden_fades[1], bg = p.bg0 },
-		NvimTablineHarpoonHiddenFade2 = { fg = harpoon_hidden_fades[2], bg = p.bg0 },
-		NvimTablineHarpoonHiddenFade3 = { fg = harpoon_hidden_fades[3], bg = p.bg0 },
-
 		NvimTablineFill = { fg = p.comment, bg = p.bg0 },
 		NvimTablineSection = { fg = p.bg0, bg = p.bg4, bold = true },
 
@@ -448,7 +522,7 @@ apply_active_theme()
 
 vim.api.nvim_create_autocmd("ColorScheme", {
 	group = vim.api.nvim_create_augroup("NvimConfigThemePopupHighlights", { clear = true }),
-	pattern = { "catppuccin*", "*fox" },
+	pattern = { "catppuccin*", "*fox", "ember*" },
 	callback = apply_popup_highlights,
 })
 
@@ -493,124 +567,6 @@ require("ibl").setup({
 	},
 	scope = { enabled = false },
 	exclude = {
-		filetypes = { "help", "alpha", "mason", "checkhealth", "ministarter" },
+		filetypes = { "help", "alpha", "checkhealth" },
 	},
-})
-
-local function get_quote()
-	local ok, quote = pcall(vim.fn.system, "fish ~/.config/inspiration/quote-cache.fish --type motivation --box 58")
-	if ok and vim.v.shell_error == 0 then
-		return quote:gsub("\n$", "")
-	end
-	return ""
-end
-
-local function clean_plugins()
-	local unused = vim.iter(vim.pack.get())
-		:filter(function(x)
-			return not x.active
-		end)
-		:map(function(x)
-			return x.spec.name
-		end)
-		:totable()
-
-	if #unused == 0 then
-		vim.notify("No unused plugins to clean", vim.log.levels.INFO)
-		return
-	end
-
-	vim.notify("Removing: " .. table.concat(unused, ", "), vim.log.levels.INFO)
-	for _, name in ipairs(unused) do
-		vim.pack.del({ name }, { force = true })
-	end
-	vim.notify("Done! Removed " .. #unused .. " plugins", vim.log.levels.INFO)
-end
-
--- ── Mini.starter (dashboard) ──────────────────
-local starter = require("mini.starter")
-
-local function build_header()
-	local logo = {
-		"███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗",
-		"████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║",
-		"██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║",
-		"██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║",
-		"██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║",
-		"╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
-	}
-	local version = vim.version()
-	local rule = string.rep("─", 58)
-
-	local header_lines = {
-		"",
-		"",
-		"",
-		"v" .. version.major .. "." .. version.minor .. "." .. version.patch,
-		"",
-		get_quote(),
-		"",
-		os.date("%A, %B %d, %Y"),
-		rule,
-	}
-
-	for i = #logo, 1, -1 do
-		table.insert(header_lines, 5, logo[i])
-	end
-
-	return table.concat(header_lines, "\n")
-end
-
-starter.setup({
-	header = build_header,
-	items = {
-		{
-			name = "f  Find files",
-			action = function()
-				require("fzf-lua").files()
-			end,
-			section = "Files",
-		},
-		{
-			name = "g  Live grep",
-			action = function()
-				require("fzf-lua").live_grep()
-			end,
-			section = "Files",
-		},
-		{
-			name = "t  TODOs",
-			action = function()
-				require("fzf-lua").grep({ search = "TODO|FIXME|HACK|NOTE|WARN" })
-			end,
-			section = "Files",
-		},
-		{ name = "e  Edit config", action = "e " .. vim.fn.stdpath("config") .. "/init.lua", section = "Config" },
-		{ name = "k  Keymaps", action = "e " .. vim.fn.stdpath("config") .. "/KEYMAPS.md", section = "Config" },
-		{ name = "c  Commands", action = "e " .. vim.fn.stdpath("config") .. "/COMMANDS.md", section = "Config" },
-		{ name = "u  Update plugins", action = "lua vim.pack.update()", section = "Core" },
-		{ name = "x  Clean plugins", action = clean_plugins, section = "Core" },
-		{ name = "r  Restart", action = "restart", section = "Core" },
-		{ name = "q  Quit", action = "qa", section = "Core" },
-	},
-	content_hooks = {
-		starter.gen_hook.aligning("center", "center"),
-	},
-	footer = "",
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-	group = vim.api.nvim_create_augroup("NvimConfigStarter", { clear = true }),
-	pattern = "ministarter",
-	callback = function()
-		vim.opt_local.foldenable = false
-		vim.opt_local.wrap = false
-		vim.opt_local.number = false
-		vim.opt_local.relativenumber = false
-		vim.opt_local.signcolumn = "no"
-		vim.opt_local.statuscolumn = ""
-		vim.opt_local.foldcolumn = "0"
-		vim.opt_local.cursorline = false
-		vim.opt_local.list = false
-	end,
 })

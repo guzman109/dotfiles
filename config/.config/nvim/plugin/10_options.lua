@@ -56,6 +56,8 @@ opt.clipboard = "unnamedplus"
 opt.mouse = "a"
 opt.laststatus = 3
 opt.autoread = true
+opt.exrc = true
+opt.secure = true
 
 -- Fold icons, hide ~ on empty lines
 opt.fillchars = {
@@ -68,17 +70,20 @@ opt.fillchars = {
 
 -- ── Diagnostics ────────────────────────────────
 vim.diagnostic.config({
-	virtual_text = {
-		source = "if_many",
-		spacing = 2,
-	},
+	virtual_text = false,
 	virtual_lines = false,
 	signs = {
 		text = {
-			[vim.diagnostic.severity.ERROR] = "●",
-			[vim.diagnostic.severity.WARN] = "●",
-			[vim.diagnostic.severity.HINT] = "●",
-			[vim.diagnostic.severity.INFO] = "●",
+			[vim.diagnostic.severity.ERROR] = "󰅚",
+			[vim.diagnostic.severity.WARN] = "󰀪",
+			[vim.diagnostic.severity.INFO] = "󰋽",
+			[vim.diagnostic.severity.HINT] = "󰌶",
+		},
+		numhl = {
+			[vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+			[vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+			[vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+			[vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
 		},
 	},
 	underline = true,
@@ -95,3 +100,22 @@ vim.g.loaded_python3_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
+
+vim.filetype.add({
+	filename = {
+		["compose.yaml"] = "yaml.docker-compose",
+		["compose.yml"] = "yaml.docker-compose",
+		["docker-compose.yaml"] = "yaml.docker-compose",
+		["docker-compose.yml"] = "yaml.docker-compose",
+	},
+})
+
+-- Auto-refresh buffers when files change outside Neovim.
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+	group = vim.api.nvim_create_augroup("NvimConfigAutoRead", { clear = true }),
+	callback = function()
+		if vim.fn.getcmdwintype() == "" and vim.fn.mode() ~= "c" then
+			vim.cmd("silent! checktime")
+		end
+	end,
+})

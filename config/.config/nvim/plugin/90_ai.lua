@@ -109,8 +109,14 @@ local function set_agent_buffer_meta(bufnr, agent, model, label)
 end
 
 local function pick(title, items, callback)
+	local prompt = vim.trim(title)
+	if not prompt:match("[:>]$") then
+		prompt = prompt .. ":"
+	end
+	prompt = prompt .. " "
+
 	vim.ui.select(items, {
-		prompt = title,
+		prompt = prompt,
 		format_item = function(item)
 			return item.text
 		end,
@@ -129,7 +135,7 @@ local function pick_agent(callback)
 			value = agent,
 		})
 	end
-	pick("Agent  ", items, callback)
+	pick("Agent", items, callback)
 end
 
 local function pick_model(agent, callback)
@@ -146,7 +152,7 @@ local function pick_model(agent, callback)
 			value = model,
 		})
 	end
-	pick("Model  ", items, function(choice)
+	pick("Model", items, function(choice)
 		callback(choice and choice.value or nil)
 	end)
 end

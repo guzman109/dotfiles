@@ -1,0 +1,14 @@
+set dotenv-load := true
+set export := true
+
+default:
+	@just --list
+
+fmt:
+	stylua .
+
+check:
+	nvim --headless '+quitall'
+
+docs:
+	nvim README.md

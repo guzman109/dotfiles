@@ -1,7 +1,7 @@
 -- ── 30_mini.lua ────────────────────────────────
 -- Neovim config: mini.nvim modules.
 
-vim.pack.add({ "https://github.com/nvim-mini/mini.nvim" })
+vim.pack.add({ { src = "https://github.com/nvim-mini/mini.nvim", name = "mini.nvim" } })
 
 require("mini.icons").setup({
 	file = {
@@ -9,10 +9,10 @@ require("mini.icons").setup({
 		["conanfile.txt"] = { glyph = "󰆦", hl = "MiniIconsBlue" },
 	},
 	extension = {
-		hpp = { glyph = "󰫵", hl = "MiniIconsBlue" },
+		hpp = { glyph = "󰫵", hl = "MiniIconsPurple" },
 	},
 	filetype = {
-		meson = { glyph = "󰔷", hl = "MiniIconsBlue" },
+		meson = { glyph = "󰫺", hl = "MiniIconsPurple" },
 	},
 })
 MiniIcons.mock_nvim_web_devicons()
@@ -56,17 +56,42 @@ require("mini.indentscope").setup({
 		animation = require("mini.indentscope").gen_animation.none(),
 	},
 })
-require("mini.files").setup({
-	options = {
-		use_as_default_explorer = true,
-	},
-	windows = {
-		preview = true,
-		width_focus = 36,
-		width_nofocus = 18,
-		width_preview = 48,
-	},
+-- ── Kitty tabs indicator ──────────────────────
+-- Async-refreshes the output of ~/.config/starship/kitty-tabs.sh and exposes it
+-- as `kitty_tabs_text` for the statusline. Cached so the statusline never shells out.
+local kitty_tabs_text = ""
+local kitty_tabs_script = vim.fn.expand("~/.config/starship/kitty-tabs.sh")
+
+local function refresh_kitty_tabs()
+	if (vim.env.KITTY_WINDOW_ID or "") == "" then
+		return
+	end
+	if vim.fn.executable(kitty_tabs_script) == 0 then
+		return
+	end
+	vim.system({ kitty_tabs_script }, { text = true }, function(obj)
+		if obj.code ~= 0 then
+			return
+		end
+		local text = vim.trim(obj.stdout or "")
+		if text ~= kitty_tabs_text then
+			kitty_tabs_text = text
+			vim.schedule(function()
+				vim.cmd("redrawstatus")
+			end)
+		end
+	end)
+end
+
+vim.api.nvim_create_autocmd({ "VimEnter", "FocusGained" }, {
+	group = vim.api.nvim_create_augroup("NvimConfigKittyTabs", { clear = true }),
+	callback = refresh_kitty_tabs,
 })
+
+local kitty_tabs_timer = vim.uv.new_timer()
+if kitty_tabs_timer then
+	kitty_tabs_timer:start(500, 5000, vim.schedule_wrap(refresh_kitty_tabs))
+end
 
 require("mini.statusline").setup({
 	use_icons = true,
@@ -81,6 +106,7 @@ require("mini.statusline").setup({
 			local encoding = MiniStatusline.is_truncated(120) and ""
 				or (vim.bo.fileencoding ~= "" and vim.bo.fileencoding or vim.o.encoding)
 			local datetime = MiniStatusline.is_truncated(140) and "" or os.date("%a %b %d %I:%M %p")
+			local kitty_tabs = MiniStatusline.is_truncated(75) and "" or kitty_tabs_text
 			local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 			local raw_search = MiniStatusline.section_searchcount({ trunc_width = 75 })
 			local location = MiniStatusline.is_truncated(75) and "" or string.format("Row %d Col %d", row, col)
@@ -94,7 +120,6 @@ require("mini.statusline").setup({
 				end
 			end
 			local file_label = icon ~= "" and (icon .. filename) or filename
-
 			return MiniStatusline.combine_groups({
 				{ hl = mode_hl, strings = { mode } },
 				"%<",
@@ -105,7 +130,7 @@ require("mini.statusline").setup({
 				{ hl = "MiniStatuslineDevinfo", strings = { diagnostics } },
 				{ hl = "MiniStatuslineDevinfo", strings = { search, progress, location } },
 				-- { hl = "MiniStatuslineFileinfo", strings = { search, progress, encoding } },
-				{ hl = mode_hl, strings = { datetime } },
+				{ hl = mode_hl, strings = { kitty_tabs, datetime } },
 			})
 		end,
 	},
@@ -143,9 +168,11 @@ miniclue.setup({
 
 		{ mode = "n", keys = "[" },
 		{ mode = "n", keys = "]" },
+		{ mode = "n", keys = "<Leader>j" },
 	},
 
 	clues = {
+		miniclue.gen_clues.square_brackets(),
 		miniclue.gen_clues.builtin_completion(),
 		miniclue.gen_clues.g(),
 		miniclue.gen_clues.marks(),
@@ -157,22 +184,22 @@ miniclue.setup({
 		{ mode = "n", keys = "<Leader>g", desc = "+git" },
 		{ mode = "n", keys = "<Leader>c", desc = "+code" },
 		{ mode = "n", keys = "<Leader>d", desc = "+debug" },
-		{ mode = "n", keys = "<Leader>n", desc = "+test" },
+		{ mode = "n", keys = "<Leader>N", desc = "+nvim" },
+		{ mode = "n", keys = "<Leader>p", desc = "+project" },
 		{ mode = "n", keys = "<Leader>t", desc = "+tab/terminal" },
-		{ mode = "n", keys = "<Leader>p", desc = "+python" },
-		{ mode = "n", keys = "<Leader>z", desc = "+zig" },
 		{ mode = "n", keys = "<Leader>h", desc = "+harpoon" },
 		{ mode = "n", keys = "<Leader>k", desc = "+kulala" },
 		{ mode = "n", keys = "<Leader>a", desc = "+ai" },
-		{ mode = "n", keys = "<Leader>l", desc = "+lua" },
 		{ mode = "n", keys = "<Leader>m", desc = "+preview" },
 		{ mode = "n", keys = "<Leader>w", desc = "+window" },
+		{ mode = "n", keys = "<Leader>x", desc = "+trouble" },
 		{ mode = "v", keys = "<Leader>a", desc = "+ai" },
-		{ mode = "n", keys = "<Leader>j", desc = "+just" },
+		{ mode = "n", keys = "<Leader>j", desc = "+jump" },
+		{ mode = "v", keys = "<Leader>f", desc = "+find" },
 	},
 
 	window = {
-		delay = 300,
+		delay = 150,
 		config = {
 			width = "auto",
 		},
@@ -184,12 +211,12 @@ require("mini.animate").setup({
 	scroll = { enable = false },
 })
 
-vim.api.nvim_create_autocmd("TextYankPost", {
-	group = vim.api.nvim_create_augroup("NvimConfigMiniYank", { clear = true }),
-	callback = function()
-		vim.highlight.on_yank({ higroup = "IncSearch", timeout = 120 })
-	end,
-})
+	vim.api.nvim_create_autocmd("TextYankPost", {
+		group = vim.api.nvim_create_augroup("NvimConfigMiniYank", { clear = true }),
+		callback = function()
+			vim.hl.on_yank({ higroup = "IncSearch", timeout = 120 })
+		end,
+	})
 
 -- Hipatters
 require("mini.hipatterns").setup({

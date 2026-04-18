@@ -1,186 +1,138 @@
-# NeoVim
+# AgentVim
 
-> Minimal. Native. No framework. No magic.
+> Agentic editing. Native speed. Project-owned tasks.
 
-Built on `vim.pack` — Neovim's built-in package manager. Each numbered file in `plugin/` is auto-sourced at startup. Language configs live in `after/ftplugin/` and `after/lsp/` exactly where Neovim expects them.
+AgentVim is a personal Neovim config built on `vim.pack`. Global config owns editing, navigation, LSP, formatting, debugging primitives, and a small `just` recipe launcher. Project-specific build/test/run behavior belongs in local `justfile` recipes.
 
-No lazy-loading complexity. No plugin manager to debug. Just files.
+## Layout
 
----
-
-## Structure
-
-```
+```text
 ~/.config/nvim/
-├── init.lua                   # loader cache, leader key, global hooks
-│
-├── plugin/                    # auto-sourced at startup, in order
-│   ├── 10_options.lua         # vim.opt settings, diagnostics
-│   ├── 20_keymaps.lua         # keymaps, autocmds
-│   ├── 30_mini.lua            # mini.nvim — surround, pairs, icons, statusline
-│   ├── 40_ui.lua              # catppuccin, mini UI, rainbow-delimiters
-│   ├── 50_editor.lua          # mini.files, mini.pick, gitsigns, harpoon, conform, ufo
-│   ├── 60_mason.lua           # mason — LSP auto-installer
-│   ├── 70_completion.lua      # blink.cmp
-│   ├── 80_dap.lua             # nvim-dap + dap-ui
-│   └── 90_ai.lua              # Claude Code + Codex launcher
-│
+├── init.lua
+├── plugin/
+│   ├── 10_options.lua
+│   ├── 20_keymaps.lua
+│   ├── 30_mini.lua
+│   ├── 40_ui.lua
+│   ├── 50_editor.lua
+│   ├── 60_lsp.lua
+│   ├── 70_completion.lua
+│   ├── 80_dap.lua
+│   └── 90_ai.lua
 ├── after/
-│   ├── ftplugin/              # per-language settings (tabstop, formatters, keymaps)
-│   │   ├── c.lua / cpp.lua
-│   │   ├── python.lua
-│   │   ├── zig.lua
-│   │   ├── lua.lua
-│   │   ├── markdown.lua
-│   │   └── http.lua
-│   └── lsp/                   # LSP server configs (auto-loaded by vim.lsp)
-│       ├── clangd.lua
-│       ├── pyrefly.lua
-│       ├── ruff.lua
-│       ├── zls.lua
-│       └── lua_ls.lua
+│   ├── ftplugin/              # editing defaults only
+│   └── lsp/                   # LSP server configs
+├── lua/project_init.lua       # project scaffolds
+├── KEYMAPS.md
+└── COMMANDS.md
 ```
 
----
+## Project Tasks
 
-## Adding a Language
+Local project tasks live in a `justfile`:
 
-**1.** Create `after/lsp/rust_analyzer.lua`:
+```make
+set dotenv-load := true
+set export := true
 
-```lua
--- after/lsp/rust_analyzer.lua
-return {
-  settings = {
-    ['rust-analyzer'] = {
-      checkOnSave = { command = 'clippy' },
-    },
-  },
-}
+default:
+	@just --list
+
+build:
+	meson compile -C build
+
+test:
+	meson test -C build --print-errorlogs
+
+fmt:
+	clang-format -i src/**/*.cpp include/**/*.hpp
 ```
 
-**2.** Create `after/ftplugin/rust.lua`:
+Use `<leader>pp` or `:Just` from anywhere inside the project to pick a recipe. Use `<leader>pe` to edit the nearest `justfile`.
 
-```lua
--- after/ftplugin/rust.lua
-vim.opt_local.tabstop = 4
-vim.opt_local.shiftwidth = 4
+## Project Init
 
-vim.lsp.enable('rust_analyzer')
+Use `:ProjectInit` or `<leader>pI` to scaffold project files. Available templates:
 
-require('conform').formatters_by_ft.rust = { 'rustfmt' }
+```text
+C++
+Zig
+Python uv
+Lua
+Swift
+TypeScript
+Prose
 ```
 
-Drop both files in. Restart. Done.
-
----
-
-## Tool Management
-
-| Tool | Manager | Install |
-|------|---------|---------|
-| clangd, clang-format, lldb-dap | Homebrew | `brew install llvm` |
-| zls | zvm | `zvm install zls` |
-| pyrefly | uv | `uv tool install pyrefly` |
-| ruff | uv | `uv tool install ruff` |
-| debugpy | uv | `uv tool install debugpy` |
-| lua_ls | Mason | auto-installed |
-| stylua | Homebrew | `brew install stylua` |
-
----
+The scaffolder creates missing files only; it does not overwrite existing project files.
 
 ## Key Bindings
 
-### General
+| Key | Action |
+|-----|--------|
+| `<leader>pp` | Pick and run a `just` recipe |
+| `<leader>pe` | Edit `justfile` |
+| `<leader>pI` | Initialize project files |
+| `<leader>Ni` | Edit `init.lua` |
+| `<leader>Nu` | Update plugins |
+| `<leader>Nx` | Clean inactive plugins |
+| `<leader>cf` | Format current buffer |
+| `-` / `<leader>e` | Open Oil |
+| `<leader><space>` / `ff` | Find files |
+| `<leader>/` | Live grep |
+| `<leader>ac` | Open AI agent |
 
-| Key | Mode | Action |
-|-----|------|--------|
-| `<C-s>` | n/i | Save |
-| `<leader>q` | n | Quit |
-| `<leader>/` | n | Live grep |
-| `-` / `<leader>e` | n | File explorer (mini.files) |
-| `<leader>cf` | n | Format |
+See [KEYMAPS.md](KEYMAPS.md) for the full list.
 
-### Navigation
+## Language Support
 
-| Key | Mode | Action |
-|-----|------|--------|
-| `<leader><space>` | n | Find files |
-| `<leader>ff` | n | Find files |
-| `<leader>jj` | n | Jump2d |
-| `<leader>b` | n | Buffer switcher |
-| `<leader><Tab>` | n | Alternate buffer |
-| `<leader>fb` | n | Find buffers |
-| `<leader>fr` | n | Recent files |
+Focused language support:
 
-### Harpoon
+| Language | LSP / Tools |
+|----------|-------------|
+| C/C++ | `clangd`, `clang-tidy`, `clang-format` |
+| Meson | `mesonlsp` |
+| Zig | `zls`, `zigfmt` |
+| Python | `pyrefly`, `ruff`, `venv-selector` |
+| Lua | `emmylua`, `stylua` |
+| Swift | `sourcekit-lsp`, `swift-format` |
+| TypeScript / JavaScript | `vtsls`, `biome` |
+| Docker / Compose | `docker-language-server`, `dockerfmt`, `yamlfmt` |
 
-| Key | Mode | Action |
-|-----|------|--------|
-| `<leader>ha` | n | Add file |
-| `<leader>hh` | n | Quick menu |
-| `<leader>1–4` | n | Jump to mark 1–4 |
+Python venv maps attach only in Python contexts:
 
-### LSP
+| Key | Action |
+|-----|--------|
+| `<leader>pv` | Select venv |
+| `<leader>pV` | Activate cached venv |
+| `<leader>pX` | Deactivate venv |
+| `<leader>pP` | Show active Python |
 
-| Key | Mode | Action |
-|-----|------|--------|
-| `gd` | n | Go to definition (new tab) |
-| `gi` | n | Go to implementation (new tab) |
-| `gr` | n | References |
-| `K` | n | Hover docs |
-| `<leader>cr` | n | Rename |
-| `<leader>ca` | n | Code action |
-| `[d` / `]d` | n | Prev/next diagnostic |
+## HTTP
 
-### DAP
+Kulala stays separate from project tasks and uses a small dedicated keymap group:
 
-| Key | Mode | Action |
-|-----|------|--------|
-| `<leader>db` | n | Toggle breakpoint |
-| `<leader>dB` | n | Conditional breakpoint |
-| `<leader>dc` | n | Continue |
-| `<leader>di` | n | Step into |
-| `<leader>do` | n | Step over |
-| `<leader>dt` | n | Terminate |
-| `<leader>du` | n | Toggle DAP UI |
-| `<leader>de` | n | Eval under cursor |
+| Key | Action |
+|-----|--------|
+| `<leader>kr` | Run current request |
+| `<leader>kR` | Show script output |
+| `<leader>ke` | Select environment |
 
-### Language-specific
-
-| Key | Lang | Action |
-|-----|------|--------|
-| `<leader>pv` | Python | Select venv |
-| `<leader>pr` | Python | Run file |
-| `<leader>dm` | Python | Debug test method |
-| `<leader>dk` | Python | Debug test class |
-| `<leader>ch` | C/C++ | Switch header/source |
-| `<leader>cb` | C/C++ | Build (cmake/make/meson) |
-| `<leader>zb` | Zig | Build |
-| `<leader>zt` | Zig | Test |
-| `<leader>zr` | Zig | Run |
-
----
-
-## Installation
+## External Tools
 
 ```bash
-# Tools
-brew install llvm stylua fzf ripgrep
+brew install go llvm stylua fzf ripgrep meson ninja conan
 uv tool install pyrefly ruff debugpy
-
-# Config
-mv ~/.config/nvim ~/.config/nvim.bak
-git clone https://github.com/guzman109/dotfiles ~/.dotfiles
-stow -d ~/.dotfiles config
-nvim
+cargo install mesonlsp
+go install github.com/docker/docker-language-server/cmd/docker-language-server@latest
+go install github.com/reteps/dockerfmt@latest
+go install github.com/google/yamlfmt/cmd/yamlfmt@latest
 ```
 
-## Updating Plugins
+Install `zls` with your Zig toolchain manager.
+
+## Plugin Updates
 
 ```vim
 :lua vim.pack.update()
 ```
-
----
-
-> Only add something when you feel the pain of not having it.

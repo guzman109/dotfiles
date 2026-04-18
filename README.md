@@ -173,6 +173,13 @@ Packages are organized into separate files:
 | `Masfile` | Mac App Store app IDs |
 | `Cargofile` | Rust crates |
 
+**Bootstrap a new machine:**
+```fish
+bundle_all  # runs brew bundle for each Brew file, then cargo_bundle
+```
+
+`Brewfile`, `BrewCaskfile`, `BrewTapfile`, and `Masfile` are consumed natively by `brew bundle`. `Cargofile` uses a custom `cargo "name"[, git: "url"][, branch|tag|rev: "..."]` syntax loaded by the `cargo_bundle` fish function.
+
 **Update all packages:**
 ```bash
 brew_update  # alias defined in fish config

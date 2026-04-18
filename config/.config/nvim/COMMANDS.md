@@ -1,112 +1,87 @@
-# Neovim Commands
+# AgentVim Commands
 
-> Enter with `:` in normal mode. Tab-complete to browse.
+> Enter commands with `:` in normal mode. Tab-complete to browse.
 
 ## LSP
 
-| Command | Action | File |
-|---------|--------|------|
-| `:LspStart` | Start LSP for current buffer | 20_keymaps |
-| `:LspStop` | Stop all LSP clients on current buffer | 20_keymaps |
-| `:LspRestart` | Restart all LSP clients on current buffer | 20_keymaps |
-| `:LspInfo` | Show attached LSP clients | 20_keymaps |
+| Command | Action |
+|---------|--------|
+| `:LspStart` | Start LSP for current buffer |
+| `:LspStop` | Stop all LSP clients on current buffer |
+| `:LspRestart` | Restart all LSP clients on current buffer |
+| `:LspInfo` | Show attached LSP clients |
 
-## Code Outline
+## Project
 
-| Command | Action | File |
-|---------|--------|------|
-| `:AerialToggle` | Toggle code outline panel | 50_editor |
-| `:AerialPrev` | Jump to previous symbol | 50_editor |
-| `:AerialNext` | Jump to next symbol | 50_editor |
-| `:Fluoride` | Symbol structure view | 50_editor |
+| Command | Action |
+|---------|--------|
+| `:Just` | Pick and run a recipe from the nearest `justfile` |
+| `:Just <recipe>` | Run a recipe from the nearest `justfile` |
+| `:Just <recipe> <args...>` | Run a recipe with arguments |
+| `:JustEdit` | Edit nearest `justfile`, or create one in cwd |
+| `:ProjectInit` | Pick a project scaffold template |
+| `:ProjectInit C++` | Create C++ scaffold files |
+| `:ProjectInit Zig` | Create Zig scaffold files |
+| `:ProjectInit Python uv` | Create Python uv scaffold files |
+| `:ProjectInit Lua` | Create Lua scaffold files |
+| `:ProjectInit Swift` | Create Swift scaffold files |
+| `:ProjectInit TypeScript` | Create TypeScript scaffold files |
+| `:ProjectInit Prose` | Create prose lint scaffold files |
 
-## Finder (mini.pick)
+## Finder
 
-| Command | Action | File |
-|---------|--------|------|
-| `:Pick files` | Find files | 50_editor |
-| `:Pick grep_live` | Live grep | 50_editor |
-| `:Pick buffers` | Open buffers | 50_editor |
-| `:Pick oldfiles` | Recent files | 50_editor |
-| `:Pick help` | Help tags | 50_editor |
-| `:Pick diagnostic scope='current'` | Document diagnostics | 50_editor |
-| `:Pick lsp scope='document_symbol'` | Document symbols | 50_editor |
-| `:Pick <picker>` | Any other mini picker | 50_editor |
+| Command | Action |
+|---------|--------|
+| `:FzfLua files` | Find files |
+| `:FzfLua live_grep` | Live grep |
+| `:FzfLua buffers` | Buffers |
+| `:FzfLua oldfiles` | Recent files |
+| `:FzfLua help_tags` | Help tags |
+| `:FzfLua diagnostics_document` | Document diagnostics |
+| `:FzfLua lsp_document_symbols` | Document symbols |
 
-## Live Preview
+## Tools
 
-| Command | Action | File |
-|---------|--------|------|
-| `:LivePreview start` | Start browser live preview | 50_editor |
-| `:LivePreview stop` | Stop browser live preview | 50_editor |
-| `:LivePreview pick` | Pick file to preview | 50_editor |
+| Command | Action |
+|---------|--------|
+| `:Oil` | Open file explorer |
+| `:AerialToggle` | Toggle code outline |
+| `:LivePreview start` | Start browser live preview |
+| `:LivePreview stop` | Stop browser live preview |
+| `:LivePreview pick` | Pick file to preview |
+| `:ConformInfo` | Show active formatters for current buffer |
 
-## AI (claude-preview)
+## HTTP
 
-| Command | Action | File |
-|---------|--------|------|
-| `:ClaudePreviewInstallHooks` | Install Claude Code hooks in project | 90_ai |
+Kulala stays separate from project tasks. Use `<leader>k` maps for normal HTTP work, or call commands directly:
 
-## Plugin Management (vim.pack)
+| Command | Action |
+|---------|--------|
+| `:lua require("kulala").run()` | Run current request |
+| `:lua require("kulala").run_all()` | Run all requests |
+| `:lua require("kulala").set_selected_env()` | Select environment |
+| `:lua require("kulala.ui").show_script_output()` | Show script output |
+
+## Python Environment
+
+| Command | Action |
+|---------|--------|
+| `:VenvSelect` | Select Python virtual environment |
+| `:VenvSelectCached` | Use cached Python virtual environment when available |
+
+## Plugin And Parser Management
 
 | Command | Action |
 |---------|--------|
 | `:lua vim.pack.update()` | Update all plugins |
-| `:lua vim.pack.update({ 'name' })` | Update specific plugin |
-| `:lua vim.pack.del({ 'name' }, { force = true })` | Remove plugin |
-
-## Treesitter
-
-| Command | Action |
-|---------|--------|
-| `:TSInstall <lang>` | Install parser for language |
-| `:TSUpdate` | Update all installed parsers |
-| `:TSModuleInfo` | Show module status per filetype |
+| `:lua vim.pack.update({ "name" })` | Update specific plugin |
+| `:lua vim.pack.del({ "name" }, { force = true })` | Remove plugin |
+| `:TSUpdate` | Update installed Tree-sitter parsers |
 | `:InspectTree` | Show parse tree for current buffer |
+| `:Mason` | Open Mason UI for DAP tools |
 
-## Mason (DAP tools)
-
-| Command | Action |
-|---------|--------|
-| `:Mason` | Open Mason UI |
-| `:MasonInstall <pkg>` | Install a package |
-| `:MasonUninstall <pkg>` | Uninstall a package |
-| `:MasonUpdate` | Update all installed packages |
-
-## Formatting
+## AI
 
 | Command | Action |
 |---------|--------|
-| `:ConformInfo` | Show active formatters for current buffer |
-
-## Markdown Rendering (markview)
-
-| Command | Action |
-|---------|--------|
-| `:Markview` | Toggle markdown rendering |
-| `:Markview enable` | Enable rendering |
-| `:Markview disable` | Disable rendering |
-
-## Testing (neotest)
-
-| Command | Action |
-|---------|--------|
-| `:Neotest run` | Run nearest test |
-| `:Neotest run file` | Run all tests in file |
-| `:Neotest stop` | Stop running test |
-| `:Neotest output` | Show test output |
-| `:Neotest output-panel` | Toggle output panel |
-| `:Neotest summary` | Toggle test summary panel |
-
-## Python (only in .py files)
-
-| Command | Action | File |
-|---------|--------|------|
-| `:VenvSelect` | Select Python virtual environment | ftplugin/python |
-| `:VenvSelectCached` | Use cached Python virtual environment | ftplugin/python |
-
-## C/C++ (only in .c/.cpp files)
-
-| Command | Action | File |
-|---------|--------|------|
-| `:ClangdSwitchSourceHeader` | Switch between header and source file | ftplugin/cpp |
+| `:ClaudePreviewInstallHooks` | Install Claude Code hooks in project |

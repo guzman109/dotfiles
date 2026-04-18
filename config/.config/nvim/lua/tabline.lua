@@ -20,7 +20,8 @@ local function tab_parts(tabid)
 	local winid = vim.api.nvim_tabpage_get_win(tabid)
 	local bufnr = vim.api.nvim_win_get_buf(winid)
 	local agent_id = vim.b[bufnr].ai_agent_id
-	local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")
+	local ok, tab_title = pcall(vim.api.nvim_tabpage_get_var, tabid, "title")
+	local name = ok and tab_title or vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")
 
 	if name == "" then
 		name = "[No Name]"

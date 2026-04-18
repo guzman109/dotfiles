@@ -3,10 +3,13 @@
 
 vim.pack.add({
 	-- Pin to release tag so prebuilt Rust fuzzy binary auto-downloads
-	{ src = "https://github.com/saghen/blink.cmp", version = vim.version.range("^1") },
+	{ src = "https://github.com/saghen/blink.cmp", name = "blink.cmp", version = vim.version.range("^1") },
 })
 
 require("blink.cmp").setup({
+	enabled = function()
+		return vim.bo.filetype ~= "oil"
+	end,
 	keymap = {
 		preset = "default",
 		["<C-space>"] = { "show", "show_documentation", "hide_documentation" },

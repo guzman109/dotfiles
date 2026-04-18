@@ -1,6 +1,0 @@
-vim.keymap.set('n', '<leader>kr', function() require('kulala').run() end, { buffer = true, desc = 'Run request' })
-vim.keymap.set('n', '<leader>ka', function() require('kulala').run_all() end, { buffer = true, desc = 'Run all' })
-vim.keymap.set('n', '<leader>kn', function() require('kulala').jump_next() end, { buffer = true, desc = 'Next request' })
-vim.keymap.set('n', '<leader>kp', function() require('kulala').jump_prev() end, { buffer = true, desc = 'Prev request' })
-vim.keymap.set('n', '<leader>ke', function() require('kulala').set_selected_env() end, { buffer = true, desc = 'Select env' })
-vim.keymap.set('n', '<leader>kc', function() require('kulala').copy() end, { buffer = true, desc = 'Copy as cURL' })
