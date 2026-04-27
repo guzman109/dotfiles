@@ -1,13 +1,22 @@
 # ~/.config/fish/config.fish
 
 # ─── Platform Detection ───
-set -l is_mac (test (uname -s) = Darwin && echo yes || echo no)
+set -gx DOTFILES_OS (uname -s)
+set -gx DOTFILES_IS_MACOS 0
+if test "$DOTFILES_OS" = Darwin
+    set -gx DOTFILES_IS_MACOS 1
+end
 
 # ─── Homebrew (macOS only) ───
-if test $is_mac = yes
-    /opt/homebrew/bin/brew shellenv | source
-    alias spm="swift package"
-    spm completion-tool generate-fish-script | source
+if test "$DOTFILES_IS_MACOS" = 1
+    if test -x /opt/homebrew/bin/brew
+        /opt/homebrew/bin/brew shellenv | source
+    end
+
+    if command -q swift
+        alias spm="swift package"
+        spm completion-tool generate-fish-script | source
+    end
 end
 
 # ─── PATHs ───
@@ -17,7 +26,7 @@ fish_add_path --path \
     $HOME/.local/share/bob/nvim-bin \
     $HOME/.local/bin
 
-if test $is_mac = yes
+if test "$DOTFILES_IS_MACOS" = 1
     fish_add_path --path \
         /opt/homebrew/bin \
         /opt/homebrew/opt/libpq/bin \
@@ -55,7 +64,7 @@ end
 command -q eza && alias ls="eza"
 command -q bat && alias cat="bat"
 
-if test $is_mac = yes
+if test "$DOTFILES_IS_MACOS" = 1
     alias brew_update="brew bundle --file ~/.config/homebrew/Brewfile"
 end
 

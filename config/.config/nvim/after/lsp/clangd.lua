@@ -10,12 +10,11 @@ return {
 		"--header-insertion=iwyu",
 		"--pch-storage=memory",
 	},
-	filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
+	filetypes = { "c", "cpp", "cuda", "proto" },
 	root_markers = {
 		".clangd",
 		"compile_commands.json",
 		"compile_flags.txt",
-		"meson.build",
 		"conanfile.py",
 		"conanfile.txt",
 		"CMakeLists.txt",

@@ -63,6 +63,7 @@
 | `<leader>cd` | n | Line diagnostics |
 | `[d` / `]d` | n | Previous / next diagnostic |
 | `<leader>co` | n | Toggle code outline |
+| `{` / `}` | n | Previous / next symbol |
 | `<leader>cl` | n | Show C/C++ class layout |
 | `gd` / `gD` | n | Go to definition / declaration |
 | `gr` / `gi` | n | References / implementations |
@@ -79,7 +80,6 @@
 |-----|------|--------|
 | `<leader>xx` | n | Workspace diagnostics |
 | `<leader>xX` | n | Buffer diagnostics |
-| `<leader>xs` | n | Document symbols |
 | `<leader>xl` | n | LSP definitions, references, implementations |
 | `<leader>xL` | n | Location list |
 | `<leader>xQ` | n | Quickfix list |
@@ -121,8 +121,9 @@
 | `]h` / `[h` | n | Next / previous hunk |
 | `<leader>gs` / `<leader>gr` | n | Stage / reset hunk |
 | `<leader>gS` / `<leader>gu` | n | Stage buffer / undo staged hunk |
-| `<leader>gp` / `<leader>gb` / `<leader>gd` | n | Preview hunk / blame line / diff this |
-| `<leader>gg` | n | Lazygit in a tab |
+| `<leader>gi` / `<leader>gp` | n | Inspect / preview hunk |
+| `<leader>gb` / `<leader>gd` | n | Blame line / diff this |
+| `<leader>gg` / `<leader>gG` | n | Gitui in a tab |
 
 ## Debug
 

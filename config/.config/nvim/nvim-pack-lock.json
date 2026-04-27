@@ -1,5 +1,9 @@
 {
   "plugins": {
+    "aerial": {
+      "rev": "645d108a5242ec7b378cbe643eb6d04d4223f034",
+      "src": "https://github.com/stevearc/aerial.nvim"
+    },
     "auto-dark-mode": {
       "rev": "54058b4fe414bd64bd2904a6f8a63f1f14e3d8df",
       "src": "https://github.com/f-person/auto-dark-mode.nvim"
@@ -53,6 +57,10 @@
     "kulala": {
       "rev": "6656c9d332735ca6a27725e0fb45a1715c4372d9",
       "src": "https://github.com/mistweaverco/kulala.nvim"
+    },
+    "lensline": {
+      "rev": "93c14465c742511a645bb454db33ddd96f23bf76",
+      "src": "https://github.com/oribarilan/lensline.nvim"
     },
     "live-preview": {
       "rev": "c1fcf75c5f9c9c01dd392852de44204b60f1b5b1",
@@ -129,6 +137,10 @@
     "venv-selector": {
       "rev": "bcb2f58533c59b01565285eba49693f00bc460f5",
       "src": "https://github.com/linux-cultist/venv-selector.nvim"
+    },
+    "which-key": {
+      "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
+      "src": "https://github.com/folke/which-key.nvim"
     }
   }
 }

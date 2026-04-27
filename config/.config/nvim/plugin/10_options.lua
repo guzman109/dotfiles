@@ -45,7 +45,7 @@ opt.shada = "!,'100,<50,s10,h"
 
 -- Responsiveness
 opt.updatetime = 250
-opt.timeoutlen = 300
+opt.timeoutlen = 700
 
 -- Navigation
 opt.jumpoptions = "stack"

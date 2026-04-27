@@ -1,7 +1,10 @@
 -- ── 30_mini.lua ────────────────────────────────
 -- Neovim config: mini.nvim modules.
 
-vim.pack.add({ { src = "https://github.com/nvim-mini/mini.nvim", name = "mini.nvim" } })
+vim.pack.add({
+	{ src = "https://github.com/nvim-mini/mini.nvim", name = "mini.nvim" },
+	{ src = "https://github.com/folke/which-key.nvim", name = "which-key" },
+})
 
 require("mini.icons").setup({
 	file = {
@@ -9,10 +12,11 @@ require("mini.icons").setup({
 		["conanfile.txt"] = { glyph = "󰆦", hl = "MiniIconsBlue" },
 	},
 	extension = {
+		cmake = { glyph = "󰔷", hl = "MiniIconsBlue" },
 		hpp = { glyph = "󰫵", hl = "MiniIconsPurple" },
 	},
 	filetype = {
-		meson = { glyph = "󰫺", hl = "MiniIconsPurple" },
+		cmake = { glyph = "󰔷", hl = "MiniIconsBlue" },
 	},
 })
 MiniIcons.mock_nvim_web_devicons()
@@ -142,68 +146,32 @@ require("mini.surround").setup()
 -- Auto-close brackets and quotes
 require("mini.pairs").setup()
 
--- ── Clue (keymap hints) ───────────────────────
-local miniclue = require("mini.clue")
-miniclue.setup({
-	triggers = {
-		{ mode = "n", keys = "<Leader>" },
-		{ mode = "x", keys = "<Leader>" },
-		{ mode = "v", keys = "<Leader>" },
-
-		{ mode = "n", keys = "g" },
-		{ mode = "x", keys = "g" },
-		{ mode = "n", keys = "'" },
-		{ mode = "x", keys = "'" },
-		{ mode = "n", keys = "`" },
-		{ mode = "x", keys = "`" },
-		{ mode = "n", keys = '"' },
-		{ mode = "x", keys = '"' },
-		{ mode = "i", keys = "<C-r>" },
-		{ mode = "c", keys = "<C-r>" },
-
-		{ mode = "n", keys = "<C-w>" },
-
-		{ mode = "n", keys = "z" },
-		{ mode = "x", keys = "z" },
-
-		{ mode = "n", keys = "[" },
-		{ mode = "n", keys = "]" },
-		{ mode = "n", keys = "<Leader>j" },
+-- ── Which Key (keymap hints) ───────────────────
+local wk = require("which-key")
+wk.setup({
+	preset = "modern",
+	delay = 150,
+	disable = {
+		bt = { "terminal" },
 	},
-
-	clues = {
-		miniclue.gen_clues.square_brackets(),
-		miniclue.gen_clues.builtin_completion(),
-		miniclue.gen_clues.g(),
-		miniclue.gen_clues.marks(),
-		miniclue.gen_clues.registers(),
-		miniclue.gen_clues.windows(),
-		miniclue.gen_clues.z(),
-
-		{ mode = "n", keys = "<Leader>f", desc = "+find" },
-		{ mode = "n", keys = "<Leader>g", desc = "+git" },
-		{ mode = "n", keys = "<Leader>c", desc = "+code" },
-		{ mode = "n", keys = "<Leader>d", desc = "+debug" },
-		{ mode = "n", keys = "<Leader>N", desc = "+nvim" },
-		{ mode = "n", keys = "<Leader>p", desc = "+project" },
-		{ mode = "n", keys = "<Leader>t", desc = "+tab/terminal" },
-		{ mode = "n", keys = "<Leader>h", desc = "+harpoon" },
-		{ mode = "n", keys = "<Leader>k", desc = "+kulala" },
-		{ mode = "n", keys = "<Leader>a", desc = "+ai" },
-		{ mode = "n", keys = "<Leader>m", desc = "+preview" },
-		{ mode = "n", keys = "<Leader>w", desc = "+window" },
-		{ mode = "n", keys = "<Leader>x", desc = "+trouble" },
-		{ mode = "v", keys = "<Leader>a", desc = "+ai" },
-		{ mode = "n", keys = "<Leader>j", desc = "+jump" },
-		{ mode = "v", keys = "<Leader>f", desc = "+find" },
-	},
-
-	window = {
-		delay = 150,
-		config = {
-			width = "auto",
-		},
-	},
+})
+wk.add({
+	{ "<leader>N", group = "nvim" },
+	{ "<leader>a", group = "ai" },
+	{ "<leader>c", group = "code" },
+	{ "<leader>d", group = "debug" },
+	{ "<leader>f", group = "find" },
+	{ "<leader>g", group = "git" },
+	{ "<leader>h", group = "harpoon" },
+	{ "<leader>j", group = "jump" },
+	{ "<leader>k", group = "kulala" },
+	{ "<leader>m", group = "preview" },
+	{ "<leader>p", group = "project" },
+	{ "<leader>t", group = "tab/terminal" },
+	{ "<leader>w", group = "window" },
+	{ "<leader>x", group = "trouble" },
+	{ "<leader>a", group = "ai", mode = "v" },
+	{ "<leader>f", group = "find", mode = "v" },
 })
 
 -- Animate

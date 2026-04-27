@@ -21,7 +21,7 @@ stow config
 | Component | Description |
 |-----------|-------------|
 | **Fish Shell** | Shell configuration with Starship prompt, vi-style keybindings |
-| **Neovim** | LazyVim-based setup with LSP for Swift, Python, Zig |
+| **Neovim** | AgentVim setup focused on C++, Python, Zig, embedded, robotics, and computer vision |
 | **Kitty** | Terminal emulator with theme auto-switching |
 | **Starship** | Custom prompt with git status, language versions, quotes |
 | **Homebrew** | Package lists for reproducible installs |
@@ -33,7 +33,7 @@ stow config
 ├── config/.config/
 │   ├── fish/              # Fish shell
 │   │   ├── config.fish    # Main config with PATH, aliases, keybindings
-│   │   ├── completions/   # Tool completions (docker, swift, uv)
+│   │   ├── completions/   # Tool completions (docker, uv)
 │   │   ├── functions/     # Custom functions (brew, cargo, mas)
 │   │   └── conf.d/        # Auto-loaded configs
 │   │
@@ -140,8 +140,8 @@ Based on [LazyVim](https://www.lazyvim.org/) with custom plugins:
 **Language Support:**
 | Language | LSP | Formatter | Linter |
 |----------|-----|-----------|--------|
-| Swift | sourcekit-lsp | swiftformat | - |
-| Python | basedpyright | ruff | ruff |
+| C/C++ | clangd | clang-format | clang-tidy |
+| Python | pyrefly | ruff | ruff |
 | Zig | zls | zigfmt | - |
 
 **Key Plugins:**

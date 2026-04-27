@@ -5,22 +5,29 @@ vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig", name = "nvim-lspconfig" },
 })
 
-vim.lsp.enable({
+local servers = {
 	"biome",
 	"clangd",
 	"cssls",
-	"docker_language_server",
 	"emmylua",
 	"fish_lsp",
 	"harper_ls",
 	"just",
-	"mesonlsp",
+	"neocmake",
 	"pyrefly",
 	"ruff",
-	"sourcekit",
 	"superhtml",
 	"tailwindcss",
 	"vale_ls",
 	"vtsls",
-	"zls",
-})
+}
+
+if vim.fn.executable("docker-language-server") == 1 then
+	table.insert(servers, "docker_language_server")
+end
+
+if vim.fn.executable("zls") == 1 then
+	table.insert(servers, "zls")
+end
+
+vim.lsp.enable(servers)

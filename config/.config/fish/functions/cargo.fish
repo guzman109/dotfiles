@@ -84,7 +84,11 @@ function cargo --description "Wrapper for cargo that auto-tracks installed crate
                     for arg in $argv[2..-1]
                         # Skip flags (uninstall only has simple flags, no values)
                         string match -q -- '-*' $arg; and continue
-                        sed -i '' -E "/^cargo \"$arg\"(,|\$)/d" $cargofile
+                        if test (uname -s) = Darwin
+                            command sed -i '' -E "/^cargo \"$arg\"(,|\$)/d" $cargofile
+                        else
+                            command sed -i -E "/^cargo \"$arg\"(,|\$)/d" $cargofile
+                        end
                     end
                 end
         end

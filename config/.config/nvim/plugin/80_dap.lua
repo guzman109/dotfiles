@@ -42,7 +42,6 @@ dap.adapters.lldb = {
 		"lldb-dap",
 		"/opt/homebrew/opt/llvm/bin/lldb-dap",
 		"/usr/local/opt/llvm/bin/lldb-dap",
-		"/Applications/Xcode.app/Contents/Developer/usr/bin/lldb-dap",
 	}),
 	name = "lldb",
 }

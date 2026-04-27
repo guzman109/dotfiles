@@ -1,4 +1,6 @@
 function mas --description "Wrapper for mas that auto-appends to Masfile"
+    __dotfiles_require_macos mas; or return 1
+
     set -l masfile "$HOME/.config/homebrew/Masfile"
 
     command mas $argv
@@ -22,7 +24,7 @@ function mas --description "Wrapper for mas that auto-appends to Masfile"
                 if test -f $masfile
                     for app_id in $argv[2..-1]
                         string match -q -- '-*' $app_id; and continue
-                        sed -i '' "/id: $app_id/d" $masfile
+                        __dotfiles_delete_line "/id: $app_id/d" $masfile
                     end
                 end
         end

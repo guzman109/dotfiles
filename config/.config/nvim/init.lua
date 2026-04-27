@@ -10,6 +10,10 @@ vim.loader.enable()
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- Tree-sitter parser aliases for filetypes without same-named parsers.
+vim.treesitter.language.register("javascript", "javascriptreact")
+vim.treesitter.language.register("tsx", "typescriptreact")
+
 -- Rainbow delimiters — must be set BEFORE plugin loads
 vim.g.rainbow_delimiters = {
 	strategy = {
@@ -20,7 +24,7 @@ vim.g.rainbow_delimiters = {
 		"python",
 		"cpp",
 		"c",
-		"meson",
+		"cmake",
 		"zig",
 		"javascript",
 		"typescript",

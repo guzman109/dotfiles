@@ -33,7 +33,7 @@ local theme_pairs = {
 	},
 }
 
-local default_theme_pair = "embersoft"
+local default_theme_pair = "ember"
 
 vim.g.theme_pair = theme_pairs[vim.g.theme_pair] and vim.g.theme_pair or default_theme_pair
 

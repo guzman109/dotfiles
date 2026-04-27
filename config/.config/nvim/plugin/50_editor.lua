@@ -6,7 +6,9 @@ vim.pack.add({
 	{ src = "https://github.com/lewis6991/gitsigns.nvim", name = "gitsigns" },
 	{ src = "https://github.com/refractalize/oil-git-status.nvim", name = "oil-git-status" },
 
-	-- Diagnostics and code navigation
+	-- Diagnostics, outline, and code navigation
+	{ src = "https://github.com/stevearc/aerial.nvim", name = "aerial" },
+	{ src = "https://github.com/oribarilan/lensline.nvim", name = "lensline" },
 	{ src = "https://github.com/folke/trouble.nvim", name = "trouble" },
 
 	-- C/C++ memory layout inspection
@@ -71,6 +73,32 @@ require("oil").setup({
 
 require("oil-git-status").setup()
 
+require("lensline").setup({
+	profiles = {
+		{
+			name = "default",
+			providers = {
+				{
+					name = "usages",
+					enabled = true,
+					include = { "refs" },
+					breakdown = false,
+					show_zero = false,
+				},
+				{
+					name = "last_author",
+					enabled = true,
+				},
+			},
+			style = {
+				placement = "inline",
+				prefix = "",
+				render = "focused",
+			},
+		},
+	},
+})
+
 vim.api.nvim_create_autocmd("FileType", {
 	group = vim.api.nvim_create_augroup("NvimConfigOilKeymaps", { clear = true }),
 	pattern = "oil",
@@ -87,6 +115,67 @@ vim.api.nvim_create_autocmd("FileType", {
 		end, { buffer = event.buf, desc = "Back to previous buffer" })
 	end,
 })
+
+-- ── Aerial ─────────────────────────────────────
+require("aerial").setup({
+	backends = {
+		["_"] = { "lsp", "treesitter", "markdown", "man" },
+		json = { "treesitter" },
+		jsonc = { "treesitter" },
+	},
+	default_bindings = true,
+	filter_kind = {
+		["_"] = {
+			"Class",
+			"Constructor",
+			"Enum",
+			"Function",
+			"Interface",
+			"Module",
+			"Method",
+			"Struct",
+		},
+		json = false,
+		jsonc = false,
+	},
+	keymaps = {
+		["?"] = "actions.show_help",
+		["g?"] = "actions.show_help",
+		["<CR>"] = "actions.jump",
+		["<2-LeftMouse>"] = "actions.jump",
+		["<C-v>"] = "actions.jump_vsplit",
+		["<C-s>"] = "actions.jump_split",
+		["p"] = "actions.scroll",
+		["<C-j>"] = "actions.down_and_scroll",
+		["<C-k>"] = "actions.up_and_scroll",
+		["{"] = "actions.prev",
+		["}"] = "actions.next",
+		["[["] = "actions.prev_up",
+		["]]"] = "actions.next_up",
+		["q"] = "actions.close",
+		["o"] = "actions.tree_toggle",
+		["za"] = "actions.tree_toggle",
+		["O"] = "actions.tree_toggle_recursive",
+		["zA"] = "actions.tree_toggle_recursive",
+		["h"] = "actions.tree_close",
+		["l"] = "actions.tree_open",
+		["H"] = "actions.tree_close_recursive",
+		["L"] = "actions.tree_open_recursive",
+		["zM"] = "actions.tree_close_all",
+		["zR"] = "actions.tree_open_all",
+	},
+	layout = {
+		default_direction = "right",
+		min_width = 28,
+	},
+	on_attach = function(bufnr)
+		vim.keymap.set("n", "{", "<cmd>AerialPrev<cr>", { buffer = bufnr, desc = "Previous symbol" })
+		vim.keymap.set("n", "}", "<cmd>AerialNext<cr>", { buffer = bufnr, desc = "Next symbol" })
+	end,
+	show_guides = true,
+})
+
+vim.keymap.set("n", "<leader>co", "<cmd>AerialToggle<cr>", { desc = "Code outline" })
 
 -- ── Trouble ────────────────────────────────────
 require("trouble").setup({
@@ -107,8 +196,6 @@ vim.keymap.set(
 	"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
 	{ desc = "Trouble buffer diagnostics" }
 )
-vim.keymap.set("n", "<leader>xs", "<cmd>Trouble symbols toggle focus=false<cr>", { desc = "Trouble symbols" })
-vim.keymap.set("n", "<leader>co", "<cmd>Trouble symbols toggle focus=false<cr>", { desc = "Code outline" })
 vim.keymap.set(
 	"n",
 	"<leader>xl",
@@ -314,6 +401,7 @@ require("gitsigns").setup({
 		map("n", "<leader>gr", gs.reset_hunk, "Reset hunk")
 		map("n", "<leader>gS", gs.stage_buffer, "Stage buffer")
 		map("n", "<leader>gu", gs.undo_stage_hunk, "Undo stage hunk")
+		map("n", "<leader>gi", gs.preview_hunk, "Inspect hunk")
 		map("n", "<leader>gp", gs.preview_hunk, "Preview hunk")
 		map("n", "<leader>gb", function()
 			gs.blame_line({ full = true })
@@ -322,9 +410,14 @@ require("gitsigns").setup({
 	end,
 })
 
-vim.keymap.set("n", "<leader>gg", function()
+local function open_gitui()
+	if vim.fn.executable("gitui") ~= 1 then
+		vim.notify("gitui is not installed or not on PATH", vim.log.levels.ERROR)
+		return
+	end
+
 	vim.cmd("tabnew")
-	vim.cmd("terminal lazygit")
+	vim.cmd("terminal gitui")
 	vim.cmd("startinsert")
 	vim.api.nvim_create_autocmd("TermClose", {
 		once = true,
@@ -333,7 +426,10 @@ vim.keymap.set("n", "<leader>gg", function()
 			vim.cmd("tabclose")
 		end,
 	})
-end, { desc = "Lazygit" })
+end
+
+vim.keymap.set("n", "<leader>gg", open_gitui, { desc = "Gitui" })
+vim.keymap.set("n", "<leader>gG", open_gitui, { desc = "Gitui" })
 
 -- ── ClassLayout ────────────────────────────────
 local classlayout = require("classlayout")
@@ -734,6 +830,7 @@ require("conform").setup({
 	notify_no_formatters = true,
 	formatters_by_ft = {
 		c = { "clang_format" },
+		cmake = { "gersemi" },
 		cpp = { "clang_format" },
 		css = { "biome" },
 		dockerfile = { "dockerfmt" },
@@ -746,7 +843,6 @@ require("conform").setup({
 		just = { "just" },
 		lua = { "stylua" },
 		python = { "ruff_fix", "ruff_organize_imports", "ruff_format" },
-		swift = { "swift_format" },
 		typescript = { "biome" },
 		typescriptreact = { "biome" },
 		["yaml.docker-compose"] = { "yamlfmt" },
@@ -756,14 +852,13 @@ require("conform").setup({
 		clang_format = {
 			command = "/opt/homebrew/opt/llvm/bin/clang-format",
 		},
+		gersemi = {
+			command = "gersemi",
+			args = { "-" },
+		},
 		just = {
 			command = "just",
 			args = { "--fmt", "--unstable", "-f", "$FILENAME" },
-			stdin = false,
-		},
-		swift_format = {
-			command = "swift-format",
-			args = { "format", "--in-place", "$FILENAME" },
 			stdin = false,
 		},
 	},
@@ -773,6 +868,9 @@ require("conform").setup({
 vim.api.nvim_create_autocmd("FileType", {
 	callback = function()
 		if pcall(vim.treesitter.start) then
+			if vim.bo.filetype == "python" then
+				return
+			end
 			vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 		end
 	end,
@@ -781,6 +879,7 @@ require("nvim-treesitter").setup({
 	ensure_installed = {
 		"bash",
 		"c",
+		"cmake",
 		"css",
 		"cpp",
 		"dockerfile",
@@ -794,10 +893,8 @@ require("nvim-treesitter").setup({
 		"lua",
 		"markdown",
 		"markdown_inline",
-		"meson",
 		"python",
 		"query",
-		"swift",
 		"toml",
 		"tsx",
 		"typescript",
@@ -914,6 +1011,23 @@ vim.keymap.set("n", "<leader>mf", "<cmd>LivePreview pick<cr>", { desc = "Pick fi
 require("kulala").setup({
 	default_view = "body",
 	default_env = "dev",
+	contenttypes = {
+		["application/graphql"] = {
+			ft = "graphql",
+			formatter = vim.fn.executable("biome") == 1 and { "biome", "format", "--stdin-file-path", "file.graphql" },
+			pathresolver = nil,
+		},
+		["application/javascript"] = {
+			ft = "javascript",
+			formatter = vim.fn.executable("biome") == 1 and { "biome", "format", "--stdin-file-path", "file.js" },
+			pathresolver = nil,
+		},
+		["text/html"] = {
+			ft = "html",
+			formatter = vim.fn.executable("superhtml") == 1 and { "superhtml", "fmt", "--stdin" },
+			pathresolver = nil,
+		},
+	},
 })
 
 vim.keymap.set({ "n", "v" }, "<leader>kr", function()

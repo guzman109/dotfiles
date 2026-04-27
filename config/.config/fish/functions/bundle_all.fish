@@ -1,4 +1,6 @@
 function bundle_all --description "Install everything from all bundle files (Brew, Cask, Tap, Mas, Cargo)"
+    __dotfiles_require_macos bundle_all; or return 1
+
     set -l homebrew_dir "$HOME/.config/homebrew"
 
     for name in BrewTapfile Brewfile BrewCaskfile Masfile

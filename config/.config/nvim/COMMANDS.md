@@ -24,7 +24,6 @@
 | `:ProjectInit Zig` | Create Zig scaffold files |
 | `:ProjectInit Python uv` | Create Python uv scaffold files |
 | `:ProjectInit Lua` | Create Lua scaffold files |
-| `:ProjectInit Swift` | Create Swift scaffold files |
 | `:ProjectInit TypeScript` | Create TypeScript scaffold files |
 | `:ProjectInit Prose` | Create prose lint scaffold files |
 

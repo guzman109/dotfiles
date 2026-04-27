@@ -1,4 +1,6 @@
 function mac_update --description "Function to update all packages installed"
+    __dotfiles_require_macos mac_update; or return 1
+
     printf "Updating Brew Packages.\n"
     command brew upgrade
     printf "Updating VCPKG.\n"

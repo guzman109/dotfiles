@@ -1,4 +1,6 @@
 function brew --description "Wrapper for brew that auto-appends to separate files"
+    __dotfiles_require_macos brew; or return 1
+
     set -l configdir "$HOME/.config/homebrew"
     set -l brewfile "$configdir/Brewfile"
     set -l caskfile "$configdir/BrewCaskfile"
@@ -32,17 +34,17 @@ function brew --description "Wrapper for brew that auto-appends to separate file
                 if contains -- --cask $argv
                     for pkg in $argv[2..-1]
                         string match -q -- '-*' $pkg; and continue
-                        test -f $caskfile; and sed -i '' "/^cask \"$pkg\"\$/d" $caskfile
+                        __dotfiles_delete_line "/^cask \"$pkg\"\$/d" $caskfile
                     end
                 else
                     for pkg in $argv[2..-1]
                         string match -q -- '-*' $pkg; and continue
                         # Packages from taps (contain /) are in tapfile
                         if string match -q '*/*' $pkg
-                            test -f $tapfile; and sed -i '' "/^brew \"$pkg\"\$/d" $tapfile
+                            __dotfiles_delete_line "/^brew \"$pkg\"\$/d" $tapfile
                         else
-                            test -f $brewfile; and sed -i '' "/^brew \"$pkg\"\$/d" $brewfile
-                            test -f $caskfile; and sed -i '' "/^cask \"$pkg\"\$/d" $caskfile
+                            __dotfiles_delete_line "/^brew \"$pkg\"\$/d" $brewfile
+                            __dotfiles_delete_line "/^cask \"$pkg\"\$/d" $caskfile
                         end
                     end
                 end
@@ -58,9 +60,9 @@ function brew --description "Wrapper for brew that auto-appends to separate file
                     for t in $argv[2..-1]
                         string match -q -- '-*' $t; and continue
                         # Remove the tap entry
-                        sed -i '' "/^tap \"$t\"\$/d" $tapfile
+                        __dotfiles_delete_line "/^tap \"$t\"\$/d" $tapfile
                         # Remove any brew packages from this tap (e.g., brew "oven-sh/bun/...")
-                        sed -i '' "/^brew \"$t\//d" $tapfile
+                        __dotfiles_delete_line "/^brew \"$t\//d" $tapfile
                     end
                 end
         end

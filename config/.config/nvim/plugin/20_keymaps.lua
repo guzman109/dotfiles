@@ -285,7 +285,7 @@ end, {
 	desc = "Create project scaffold files",
 	nargs = "?",
 	complete = function()
-		return { "C++", "Lua", "Python uv", "Swift", "TypeScript", "Zig" }
+		return { "C++", "Lua", "Python uv", "TypeScript", "Zig" }
 	end,
 })
 

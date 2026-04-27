@@ -39,13 +39,14 @@ default:
 	@just --list
 
 build:
-	meson compile -C build
+	cmake --build build
 
 test:
-	meson test -C build --print-errorlogs
+	ctest --test-dir build --output-on-failure
 
 fmt:
 	clang-format -i src/**/*.cpp include/**/*.hpp
+	gersemi -i CMakeLists.txt
 ```
 
 Use `<leader>pp` or `:Just` from anywhere inside the project to pick a recipe. Use `<leader>pe` to edit the nearest `justfile`.
@@ -59,7 +60,6 @@ C++
 Zig
 Python uv
 Lua
-Swift
 TypeScript
 Prose
 ```
@@ -91,11 +91,11 @@ Focused language support:
 | Language | LSP / Tools |
 |----------|-------------|
 | C/C++ | `clangd`, `clang-tidy`, `clang-format` |
-| Meson | `mesonlsp` |
+| CMake | `neocmakelsp`, `gersemi` |
 | Zig | `zls`, `zigfmt` |
 | Python | `pyrefly`, `ruff`, `venv-selector` |
 | Lua | `emmylua`, `stylua` |
-| Swift | `sourcekit-lsp`, `swift-format` |
+| JSON / JSONC | `biome` |
 | TypeScript / JavaScript | `vtsls`, `biome` |
 | Docker / Compose | `docker-language-server`, `dockerfmt`, `yamlfmt` |
 
@@ -121,9 +121,10 @@ Kulala stays separate from project tasks and uses a small dedicated keymap group
 ## External Tools
 
 ```bash
-brew install go llvm stylua fzf ripgrep meson ninja conan
+brew install go llvm stylua fzf ripgrep cmake ninja conan
 uv tool install pyrefly ruff debugpy
-cargo install mesonlsp
+cargo install neocmakelsp
+pipx install gersemi
 go install github.com/docker/docker-language-server/cmd/docker-language-server@latest
 go install github.com/reteps/dockerfmt@latest
 go install github.com/google/yamlfmt/cmd/yamlfmt@latest
